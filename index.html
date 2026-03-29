@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Le Pas du Rôdeur</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0b0c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="settings-btn" onclick="toggleSettings()">⚙️</div>
+    <div id="settings-menu">
+        <button id="lang-btn" onclick="toggleLanguage()">🇬🇧 EN</button>
+        <button id="mute-btn" onclick="toggleMute()">🔇 AUDIO OFF</button>
+    </div>
+
+    <div id="tavern-screen">
+        <div class="player-profile-bar">
+            <div class="profile-info">
+                <span class="profile-name">Dirhael</span>
+                <span class="level-badge"><span data-i18n="ui_level">Niv.</span> <span id="ui-player-level">1</span></span>
+            </div>
+            <div class="xp-container">
+                <div id="ui-xp-fill" class="xp-fill"></div>
+                <div class="xp-text"><span id="ui-xp-current">0</span> / <span id="ui-xp-needed">100</span> XP</div>
+            </div>
+            <div class="currency-box">
+                <span id="ui-eclats" class="gold-text" style="font-weight: bold; font-size: 18px;">0</span> ✦ <span data-i18n="ui_shards">Éclats d'Ombre</span>
+            </div>
+            <button class="arsenal-btn" onclick="openArsenal()" data-i18n="ui_btn_arsenal">L'Arsenal</button>
+        </div>
+
+        <div class="tavern-header">
+            <h1 class="title-oswald gold-text large-title" data-i18n="ui_tavern_title">L'AUBERGE DU PONT-AUX-PIERRES</h1>
+            <p class="subtitle-merriweather" data-i18n="ui_tavern_sub">Dirhael, les ombres s'allongent. Choisissez votre table.</p>
+            <button class="rules-btn" onclick="showRules()" data-i18n="ui_btn_rules">Lire le Grimoire</button>
+        </div>
+        
+        <div class="tables-grid">
+            <div class="table-card" onclick="enterDuel('brag', 'Brag l\'Éventreur')">
+                <img src="images/Brag.png" alt="Brag">
+                <div class="table-name" data-i18n="name_brag">BRAG</div>
+                <div class="diff-easy" data-i18n="diff_easy">FACILE</div>
+            </div>
+            <div class="table-card" onclick="enterDuel('zamin', 'Zâmin le Colporteur')">
+                <img src="images/Zamin.png" alt="Zamin">
+                <div class="table-name" data-i18n="name_zamin">ZÂMIN</div>
+                <div class="diff-normal" data-i18n="diff_normal">NORMAL</div>
+            </div>
+            <div class="table-card" onclick="enterDuel('kael', 'Kael le Traître')">
+                <img src="images/Kael.png" alt="Kael">
+                <div class="table-name" data-i18n="name_kael">KAEL</div>
+                <div class="diff-hard" data-i18n="diff_hard">DIFFICILE</div>
+            </div>
+            <div class="table-card" onclick="enterDuel('letranger', 'L\'Étranger')">
+                <img src="images/Letranger.png" alt="L'Étranger">
+                <div class="table-name" data-i18n="name_etranger">L'ÉTRANGER</div>
+                <div class="diff-random" data-i18n="diff_random">ALÉATOIRE</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="duel-screen">
+        <div class="character-panel">
+            <div class="char-name hero-name">Dirhael</div>
+            <div id="hero-title" class="hero-title">Le Rôdeur</div>
+            <img src="images/Dirhael.png" class="char-portrait hero-portrait" alt="Portrait de Dirhael">
+            
+            <div class="resource-zone">
+                <div class="res-label" data-i18n="ui_res_lives">Vies (Déroute = -1)</div>
+                <div class="token-row" id="ui-hero-lives"></div>
+            </div>
+            <div class="resource-zone">
+                <div class="res-label" data-i18n="ui_res_hope">Espoir (Défense)</div>
+                <div class="token-row" id="ui-espoir-tokens">
+                    <div class="token espoir"></div><div class="token espoir"></div><div class="token espoir"></div>
+                </div>
+            </div>
+            <div class="resource-zone">
+                <div class="res-label" data-i18n="ui_res_shadow">Ombre (Risque mortel > 3)</div>
+                <div class="token-row" id="ui-ombre-tokens"></div>
+            </div>
+            <div class="dialogue-box hero-dialogue" id="ui-hero-dialogue">"..."</div>
+        </div>
+
+        <div id="center-board">
+            <div id="rounds-tracker" style="text-align: center; margin-bottom: 20px; font-family: 'Oswald', sans-serif; color: #888; font-size: 18px; letter-spacing: 2px;">
+                <span data-i18n="ui_rounds_won">MANCHES REMPORTÉES :</span> <span id="rounds-hero" style="color: var(--gold); font-size: 24px;">0</span> - <span id="rounds-enemy" style="color: var(--enemy-color); font-size: 24px;">0</span>
+            </div>
+
+            <div style="width: 90%; display: flex; justify-content: space-between; font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 5px;">
+                <span style="color: var(--gold);"><span id="score-hero-display" style="font-size: 24px; font-weight: bold;">0</span> / 100</span>
+                <span style="color: var(--enemy-color);"><span id="score-enemy-display" style="font-size: 24px; font-weight: bold;">0</span> / 100</span>
+            </div>
+            <div id="race-track-container">
+                <div id="race-track">
+                    <div id="progress-hero"></div>
+                    <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.2); z-index: 1;"></div>
+                    <div id="progress-enemy"></div>
+                </div>
+                <div class="race-badge" data-i18n="ui_100_leagues">100 LIEUES</div>
+            </div>
+            
+            <div class="turn-info-container">
+                <div class="turn-info-label" id="game-status">Avancée du tour</div>
+                <div id="current-turn-score">0 <span>LIEUES</span></div>
+            </div>
+
+            <div id="dice-arena"></div>
+
+            <div id="turn-controls">
+                <button id="btn-roll" onclick="playHeroTurn()" data-i18n="ui_btn_roll">Forcer l'allure</button>
+                <button id="btn-stop" onclick="initiateCamp()" disabled data-i18n="ui_btn_stop">Établir le camp</button>
+            </div>
+
+            <button class="back-btn" onclick="exitDuel()" data-i18n="ui_btn_leave">Quitter la table</button>
+        </div>
+
+        <div class="character-panel">
+            <div class="char-name enemy-name" id="ui-enemy-name">Adversaire</div>
+            <div class="hero-title" style="visibility: hidden;">-</div>
+            <img src="" id="enemy-portrait-img" class="char-portrait enemy-portrait" alt="Portrait de l'adversaire">
+            
+            <div class="resource-zone text-right">
+                <div class="res-label" data-i18n="ui_res_lives">Vies (Déroute = -1)</div>
+                <div class="token-row justify-end" id="ui-enemy-lives"></div>
+            </div>
+            <div class="resource-zone text-right">
+                <div class="res-label" data-i18n="ui_res_hate">Haine (Attaque)</div>
+                <div class="token-row justify-end" id="ui-haine-tokens"></div>
+            </div>
+            <div class="dialogue-box enemy-dialogue" id="ui-enemy-dialogue">"..."</div>
+        </div>
+    </div>
+
+    <div id="end-modal"><div class="end-content"><h2 class="title-oswald" id="end-title">TITRE</h2><p id="end-message">Message</p><button id="end-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
+    <div id="event-modal"><div class="event-content"><h2 class="title-oswald" id="event-title">ÉVÉNEMENT</h2><p id="event-message">Message</p><button id="event-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
+    <div id="rules-modal"><div class="rules-content"><h2 class="title-oswald gold-text" style="margin-top:0; font-size: 28px; text-align: center;" data-i18n="rules_title">LE GRIMOIRE DU RÔDEUR</h2><div class="rules-text" id="rules-container"></div><div style="text-align: center; margin-top: 25px;"><button onclick="hideRules()" style="background: var(--gold); color: #000; border: none; box-shadow: 0 0 15px rgba(212,175,55,0.4); font-weight: bold; padding: 12px 25px; border-radius: 4px; cursor: pointer;" data-i18n="rules_close">Fermer le Grimoire</button></div></div></div>
+    
+    <div id="reward-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center;">
+        <div class="end-content" style="border-color: var(--gold); box-shadow: 0 0 50px var(--gold);">
+            <h2 class="title-oswald gold-text" data-i18n="ui_reward_title">MANCHE GAGNÉE</h2>
+            <p data-i18n="ui_reward_msg" style="font-size:18px; margin-bottom:30px;">L'ennemi recule. Choisissez votre avantage :</p>
+            <div style="display:flex; flex-direction:column; gap:15px; align-items:center;">
+                <button onclick="applyReward('initiative')" data-i18n="ui_reward_init" style="border-color:var(--gold); color:var(--gold); width:100%;">L'Initiative (Jouer en premier)</button>
+                <button onclick="applyReward('vie')" data-i18n="ui_reward_heal" style="border-color:var(--blood); color:var(--blood); width:100%;">Le Repos (+1 Vie, l'ennemi commence)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="arsenal-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,11,12,0.98); z-index:10000; justify-content:center; align-items:center;">
+        <div class="rules-content" style="max-width: 900px; padding: 20px; display: flex; flex-direction: column; height: 90vh; border-color: var(--gold); box-shadow: 0 0 40px rgba(0,0,0,1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: baseline; gap: 15px;">
+                    <h2 class="title-oswald gold-text" style="margin:0; font-size: 28px;" data-i18n="ui_arsenal_title">L'ARSENAL</h2>
+                    <span class="gold-text" style="font-family: 'Oswald', sans-serif;"><span id="ui-arsenal-eclats">0</span> ✦ <span data-i18n="ui_shards_short">Éclats</span></span>
+                </div>
+                <button onclick="closeArsenal()" style="padding: 5px 15px; background: #333; border: none; color: #fff;" data-i18n="ui_btn_close">Fermer</button>
+            </div>
+            
+            <div class="arsenal-tabs">
+                <button class="tab-btn active" onclick="switchArsenalTab('vestiaire')" data-i18n="ui_tab_vestiaire">Le Vestiaire</button>
+                <button class="tab-btn" onclick="switchArsenalTab('marche')" data-i18n="ui_tab_market">Le Marché Noir</button>
+                <button class="tab-btn" onclick="switchArsenalTab('achievements')" data-i18n="ui_tab_achiev">Les Hauts Faits</button>
+                <button class="tab-btn" onclick="switchArsenalTab('stats')" data-i18n="ui_tab_stats">Le Registre</button>
+                <button class="tab-btn" onclick="switchArsenalTab('save')" data-i18n="ui_tab_save">Sauvegarde</button>
+            </div>
+
+            <div id="arsenal-content-area" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;">
+                </div>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast-hidden">Message</div>
+
+    <script src="game.js"></script>
+    <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); }); }</script>
+</body>
+</html>

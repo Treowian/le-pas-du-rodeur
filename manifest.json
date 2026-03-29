@@ -1,0 +1,17 @@
+{
+  "name": "Le Pas du Rôdeur",
+  "short_name": "Rôdeur",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0b0c",
+  "theme_color": "#d4af37",
+  "description": "Un jeu de dés périlleux dans les ombres de la Terre du Milieu.",
+  "icons": [
+    {
+      "src": "images/Dirhael.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
