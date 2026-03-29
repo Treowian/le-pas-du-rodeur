@@ -112,7 +112,7 @@ body {
 #current-turn-score { font-size: 48px; font-family: 'Oswald', sans-serif; font-weight: bold; color: var(--gold); text-shadow: 0 0 10px rgba(212,175,55,0.3); }
 #current-turn-score span { font-size: 20px; color: #888; text-shadow: none; }
 
-#turn-controls { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; justify-content: center; width: 100%; }
+#turn-controls { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; justify-content: center; width: 100%; min-height: 48px; }
 button { font-family: 'Oswald', sans-serif; font-size: 16px; text-transform: uppercase; padding: 12px 25px; cursor: pointer; border: 1px solid #555; background: #111; color: var(--bone); border-radius: 4px; transition: 0.3s; font-weight: bold; }
 button:disabled { opacity: 0.3; cursor: not-allowed; }
 #btn-roll { border-color: var(--gold); color: var(--gold); }
@@ -152,29 +152,85 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 /* COSMÉTIQUES ET SKINS DE L'ARSENAL         */
 /* ========================================= */
 
-/* --- SKINS DE DÉS --- */
-.die.skin-bone { background: linear-gradient(135deg, #e3dac9 0%, #c4b7a6 100%); border-color: #8b7355; color: #333; }
+/* --- SKINS DE DÉS (Optimisés pour la lisibilité) --- */
+.die.skin-bone { background: linear-gradient(135deg, #e3dac9 0%, #c4b7a6 100%); border-color: #8b7355; }
+.die.skin-bone.die-neutral { color: #777; }
+.die.skin-bone.die-advance { color: #2980b9; border-color: #2980b9; } 
+.die.skin-bone.die-triumph { color: #b8860b; border-color: #b8860b; box-shadow: 0 0 15px rgba(184,134,11,0.5); text-shadow: none; }
 .die.skin-bone.die-danger { color: var(--blood); border-color: var(--blood); }
-.die.skin-bone.die-triumph { color: #b8860b; border-color: #b8860b; text-shadow: none; box-shadow: 0 0 15px #b8860b; }
-.die.skin-blood { background: linear-gradient(135deg, #4a0e0e 0%, #200000 100%); border-color: #8b0000; color: #ffcccc; }
-.die.skin-blood.die-danger { background: #ff0000; color: #fff; }
-.die.skin-void { background: #050505; border-color: #333; color: #555; }
+
+.die.skin-blood { background: linear-gradient(135deg, #4a0e0e 0%, #200000 100%); border-color: #8b0000; }
+.die.skin-blood.die-neutral { color: #999; }
+.die.skin-blood.die-advance { color: #85c1e9; border-color: #85c1e9; }
+.die.skin-blood.die-triumph { color: var(--gold); border-color: var(--gold); }
+.die.skin-blood.die-danger { background: #ff0000; color: #fff; border-color: #fff; }
+
+.die.skin-void { background: #050505; border-color: #333; }
+.die.skin-void.die-neutral { color: #555; }
+.die.skin-void.die-advance { color: #6baed6; border-color: #6baed6; }
 .die.skin-void.die-triumph { color: var(--corruption); border-color: var(--corruption); text-shadow: 0 0 10px var(--corruption); box-shadow: inset 0 0 10px var(--corruption); }
-.die.skin-numenor { background: linear-gradient(135deg, #ecf0f1 0%, #95a5a6 100%); border-color: #fff; color: #2c3e50; }
+.die.skin-void.die-danger { color: var(--blood); border-color: var(--blood); }
+
+.die.skin-numenor { background: linear-gradient(135deg, #ecf0f1 0%, #95a5a6 100%); border-color: #fff; }
+.die.skin-numenor.die-neutral { color: #7f8c8d; }
+.die.skin-numenor.die-advance { color: #2980b9; border-color: #2980b9; }
 .die.skin-numenor.die-triumph { color: #fff; background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%); border-color: #fff; box-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
-.die.skin-moria { background: #1a1a1a; border-color: #000; color: #7f8c8d; }
+.die.skin-numenor.die-danger { color: #c0392b; border-color: #c0392b; }
+
+.die.skin-moria { background: #1a1a1a; border-color: #000; }
+.die.skin-moria.die-neutral { color: #7f8c8d; }
+.die.skin-moria.die-advance { color: #5dade2; border-color: #5dade2; }
+.die.skin-moria.die-triumph { color: #f1c40f; border-color: #f1c40f; }
 .die.skin-moria.die-danger { color: #e67e22; border-color: #e67e22; text-shadow: 0 0 15px #e67e22; }
 
-/* Boutiques exclusives */
-.die.skin-amethyst { background: linear-gradient(135deg, #8e44ad 0%, #2c3e50 100%); border-color: #9b59b6; color: #fff; }
-.die.skin-forest { background: linear-gradient(135deg, #1e8449 0%, #145a32 100%); border-color: #27ae60; color: #f1c40f; }
-.die.skin-highelf { background: #fff; border-color: #bdc3c7; color: #2980b9; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
-.die.skin-goblin { background: linear-gradient(135deg, #424949 0%, #212f3c 100%); border-color: #7b241c; color: #a93226; }
-.die.skin-dwarf { background: linear-gradient(135deg, #154360 0%, #1b4f72 100%); border-color: #f1c40f; color: #f1c40f; border-width: 3px; }
-.die.skin-dwarf.die-triumph { box-shadow: 0 0 20px rgba(241, 196, 15, 0.6); }
-.die.skin-arkenstone { background: rgba(255,255,255,0.9); border-color: #aed6f1; color: #2980b9; box-shadow: 0 0 20px rgba(174, 214, 241, 0.8), inset 0 0 15px rgba(255,255,255,1); text-shadow: 0 0 10px #5dade2; }
-.die.skin-orc { background: #1a0f0f; border-color: #4a0e0e; color: #880000; }
-.die.skin-evenstar { background: #e6f2ff; border-color: #aed6f1; color: #154360; box-shadow: inset 0 0 15px #aed6f1; }
+.die.skin-amethyst { background: linear-gradient(135deg, #8e44ad 0%, #2c3e50 100%); border-color: #9b59b6; }
+.die.skin-amethyst.die-neutral { color: #bdc3c7; }
+.die.skin-amethyst.die-advance { color: #85c1e9; border-color: #85c1e9; }
+.die.skin-amethyst.die-triumph { color: #f1c40f; border-color: #f1c40f; }
+.die.skin-amethyst.die-danger { color: #ff9999; border-color: #e74c3c; }
+
+.die.skin-forest { background: linear-gradient(135deg, #1e8449 0%, #145a32 100%); border-color: #27ae60; }
+.die.skin-forest.die-neutral { color: #a6b5a1; }
+.die.skin-forest.die-advance { color: #85c1e9; border-color: #85c1e9; }
+.die.skin-forest.die-triumph { color: #f1c40f; border-color: #f1c40f; }
+.die.skin-forest.die-danger { color: #e74c3c; border-color: #e74c3c; }
+
+.die.skin-highelf { background: #fff; border-color: #bdc3c7; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+.die.skin-highelf.die-neutral { color: #95a5a6; }
+.die.skin-highelf.die-advance { color: #2980b9; border-color: #2980b9; }
+.die.skin-highelf.die-triumph { color: #f39c12; border-color: #f39c12; }
+.die.skin-highelf.die-danger { color: #c0392b; border-color: #c0392b; }
+
+.die.skin-goblin { background: linear-gradient(135deg, #424949 0%, #212f3c 100%); border-color: #7b241c; }
+.die.skin-goblin.die-neutral { color: #7f8c8d; }
+.die.skin-goblin.die-advance { color: #5dade2; border-color: #5dade2; }
+.die.skin-goblin.die-triumph { color: #f1c40f; border-color: #f1c40f; }
+.die.skin-goblin.die-danger { color: #a93226; border-color: #a93226; }
+
+.die.skin-dwarf { background: linear-gradient(135deg, #154360 0%, #1b4f72 100%); border-color: #f1c40f; border-width: 3px; }
+.die.skin-dwarf.die-neutral { color: #95a5a6; }
+.die.skin-dwarf.die-advance { color: #85c1e9; border-color: #85c1e9; }
+.die.skin-dwarf.die-triumph { color: #f1c40f; border-color: #f1c40f; box-shadow: 0 0 20px rgba(241, 196, 15, 0.6); }
+.die.skin-dwarf.die-danger { color: #e74c3c; border-color: #e74c3c; }
+
+.die.skin-arkenstone { background: rgba(255,255,255,0.9); border-color: #aed6f1; box-shadow: 0 0 20px rgba(174, 214, 241, 0.8), inset 0 0 15px rgba(255,255,255,1); }
+.die.skin-arkenstone.die-neutral { color: #7f8c8d; }
+.die.skin-arkenstone.die-advance { color: #2980b9; border-color: #2980b9; text-shadow: 0 0 10px #5dade2; }
+.die.skin-arkenstone.die-triumph { color: #f39c12; border-color: #f39c12; }
+.die.skin-arkenstone.die-danger { color: #c0392b; border-color: #c0392b; }
+
+.die.skin-orc { background: #1a0f0f; border-color: #4a0e0e; }
+.die.skin-orc.die-neutral { color: #7f8c8d; }
+.die.skin-orc.die-advance { color: #5dade2; border-color: #5dade2; }
+.die.skin-orc.die-triumph { color: #f1c40f; border-color: #f1c40f; }
+.die.skin-orc.die-danger { color: #ff0000; border-color: #ff0000; }
+
+.die.skin-evenstar { background: #e6f2ff; border-color: #aed6f1; box-shadow: inset 0 0 15px #aed6f1; }
+.die.skin-evenstar.die-neutral { color: #7f8c8d; }
+.die.skin-evenstar.die-advance { color: #2980b9; border-color: #2980b9; }
+.die.skin-evenstar.die-triumph { color: #f39c12; border-color: #f39c12; }
+.die.skin-evenstar.die-danger { color: #c0392b; border-color: #c0392b; }
+
 
 /* --- FONDS DE TABLE (Boards) --- */
 #center-board.board-wood { background: linear-gradient(rgba(26,16,5,0.9), rgba(26,16,5,0.9)), url('images/wood.jpg') center/cover; border-color: #3e2723; box-shadow: inset 0 0 50px rgba(0,0,0,0.9); }

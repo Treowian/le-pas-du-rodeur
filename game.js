@@ -1,192 +1,5 @@
 // ==========================================
-// 1. DICTIONNAIRE COMPLET (STRICT I18N)
-// ==========================================
-let currentLang = 'fr';
-const i18n = {
-    fr: {
-        // UI Taverne & Duel
-        ui_tavern_title: "L'AUBERGE DU PONT-AUX-PIERRES", ui_tavern_sub: "Dirhael, les ombres s'allongent. Choisissez votre table.",
-        ui_btn_rules: "Lire le Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_etranger: "L'ÉTRANGER",
-        diff_easy: "FACILE", diff_normal: "NORMAL", diff_hard: "DIFFICILE", diff_random: "ALÉATOIRE",
-        ui_res_lives: "Vies (Déroute = -1)", ui_res_hope: "Espoir (Défense)", ui_res_shadow: "Ombre (Risque mortel > 3)", ui_res_hate: "Haine (Attaque)",
-        ui_rounds_won: "MANCHES REMPORTÉES :", ui_100_leagues: "100 LIEUES",
-        ui_btn_roll: "Forcer l'allure", ui_btn_stop: "Établir le camp", ui_btn_leave: "Quitter la table", ui_btn_continue: "CONTINUER", 
-        rules_title: "LE GRIMOIRE DU RÔDEUR", rules_close: "Fermer le Grimoire", ui_leagues: "LIEUES",
-        rules_text: `<p><strong>LE BUT</strong> Gagner 2 manches de 100 Lieues, OU tuer l'adversaire (0 Vie = Mort définitive).</p><p><strong>LA DÉROUTE</strong> Le "1" est une Embuscade (Rouge). Deux "1" en un lancer (ou un "1" sans marquer de points) déclenchent la Déroute : perte d'1 Vie.</p><p><strong>L'ESPOIR ET LA SURVIE</strong> Dépensez 1 Espoir pour relancer un dé maudit. <em>Attention : vos Vies ne se régénèrent pas entre les manches. Au Campement, sacrifiez un Triomphe (10) pour regagner 1 Espoir.</em></p><p><strong>L'OMBRE (Attaque)</strong> Quand l'ennemi fait un 5 ou un 6, prenez +1 Ombre pour le détruire. <em>⚠️ Plus vous avez d'Ombre, plus vos dés sont pipés. Au-delà de 3 Ombres, la 4ème a 25% de chances de vous tuer, la 5ème 50%, etc.</em></p><p><strong>LA HAINE</strong> L'ennemi dépense sa Haine pour voler vos dés. S'il n'a plus de Haine <span style="color: var(--gold); font-weight: bold;">et qu'il est en retard</span>, il peut s'Acharner avec un risque de mourir sur le coup.</p>`,
-        status_turn_hero: "À vous de jouer.", status_turn_enemy: "L'adversaire réfléchit...", status_rolling: "Les dés roulent...",
-        status_sabotage_kael: "SABOTAGE ! L'ennemi cible votre Triomphe...", status_sabotage_kael_res: "Votre dé est corrompu en Embuscade !",
-        status_sabotage_brag: "VOL ! L'ennemi s'intéresse à votre butin...", status_sabotage_brag_res: "L'ennemi vous dérobe votre dé !",
-        status_sabotage_zamin: "USURE ! L'ennemi évalue vos actifs...", status_sabotage_zamin_res: "L'ennemi a gelé l'un de vos dés neutres !",
-        status_deroute_imminent: "DÉROUTE IMMINENTE ! Que décidez-vous ?", status_impasse_ask: "IMPASSE ! Relancer avec la Boussole ?",
-        status_impasse_lost: "IMPASSE ! Terrain hostile. Tour perdu.", status_action_purify: "ACTION REQUISE : CLIQUEZ sur le DÉ ROUGE !",
-        status_urgency: "URGENCE : Défendez-vous d'abord !", status_purify_success: "Sacrifice héroïque : Embuscade purifiée !",
-        status_hope_used: "ESPOIR ! Vous relancez le dé maudit...", status_deroute_forced: "VOUS NE POUVEZ PLUS VOUS DÉFENDRE.",
-        status_cannot_purify: "Impossible de purifier : aucun Triomphe ni Espoir.", status_compass_used: "La Boussole vous guide ! Relance...", status_impasse_accepted: "Impasse acceptée. Tour perdu.",
-        status_shadow_6: "L'adversaire a tiré un 6 ! Le corrompre ?", status_shadow_other: "L'adversaire a tiré un {val} ! L'Ombre a soif...",
-        status_shadow_corrupt: "Vous corrompez son Triomphe !", status_shadow_devour: "L'Ombre a dévoré son {val} !",
-        status_shadow_survive: "Miracle ! Vous survivez (Risque : {chance}%) !",
-        status_enemy_purify_6: "L'adversaire sacrifie un 6 pour survivre !", status_enemy_impasse: "IMPASSE pour l'adversaire.",
-        status_deroute_hero: "DÉROUTE ! Perte d'1 Vie.", status_deroute_enemy: "DÉROUTE ! L'adversaire perd 1 Vie.",
-        status_camp_hero: "Vous avez établi le camp.", status_camp_enemy: "L'adversaire a établi le camp.", status_select_dice: "Sélectionnez vos dés bleus/or.",
-        status_acharnement: "L'ennemi s'acharne sur votre Triomphe ! (Risque : {chance}%)", status_acharnement_fail_score: "L'effort l'épuise ! Il recule de 15 Lieues.",
-        status_acharnement_fail_life: "L'effort le brise ! Il perd 1 Vie.", status_acharnement_success: "C'est passé ! L'ennemi survit !",
-        status_camp_choice: "Sacrifier un Triomphe pour +1 Espoir ?",
-        btn_defend: "Se Défendre", btn_suffer: "Subir la Déroute", btn_compass: "La Boussole", btn_accept_defeat: "Accepter l'Impasse",
-        btn_corrupt: "Corrompre (+1 Ombre)", btn_devour: "Dévorer (+1 Ombre)", btn_ignore: "Ignorer", btn_camp_sacrifice: "Sacrifier (+1 Espoir)", btn_camp_normal: "Garder les points",
-        ev_pas_title: "LE PAS DU RÔDEUR", ev_pas_msg: "Succès Magistral ! Vous rejouez !", ev_pas_btn: "Continuer",
-        ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Espoir détruit...", ev_gouffre_btn: "Subir la Déroute",
-        ev_elan_title: "ÉLAN TÉNÉBREUX", ev_elan_msg: "L'Ennemi fait une percée de {val} Lieues !", ev_elan_btn: "Subir",
-        ev_malediction_title: "MALÉDICTION", ev_malediction_msg: "Échec Magistral de l'Ennemi !", ev_malediction_btn: "Déroute",
-        end_vic_title: "VICTOIRE TOTALE", end_vic_msg: "Vous remportez ce duel mortel !", end_vic_btn: "Quitter",
-        end_def_title: "DÉFAITE FATALE", end_def_msg: "Votre voyage s'arrête ici.", end_def_btn: "Fuir",
-        end_manche_lose_title: "MANCHE PERDUE", end_manche_lose_msg: "L'ennemi gagne cette course.", end_manche_lose_btn: "Continuer",
-        end_shadow_title: "CONSUMÉ", end_shadow_msg: "Votre avidité vous a tué.", end_shadow_btn: "Quitter",
-        ui_reward_title: "COURSE GAGNÉE", ui_reward_msg: "Choisissez votre avantage :",
-        ui_reward_init: "L'Initiative (Jouer en premier)", ui_reward_heal: "Le Repos (+1 Vie, l'ennemi commence)",
-        
-        // Progression & Arsenal UI
-        ui_level: "Niv.", ui_shards: "Éclats d'Ombre", ui_shards_short: "Éclats", ui_btn_arsenal: "L'Arsenal",
-        ui_arsenal_title: "L'ARSENAL", ui_btn_close: "Fermer",
-        ui_tab_vestiaire: "Le Vestiaire", ui_tab_market: "Le Marché Noir", ui_tab_achiev: "Les Hauts Faits", ui_tab_stats: "Le Registre", ui_tab_save: "Sauvegarde",
-        ui_ars_boards: "Fonds de Table", ui_ars_dice: "Skins de Dés", ui_ars_frames: "Cadres de Portrait", ui_ars_titles: "Titres Honorifiques",
-        ui_ars_ex_boards: "Fonds Exclusifs", ui_ars_ex_dice: "Dés Maudits", ui_ars_ex_frames: "Cadres Corrompus", ui_ars_ex_titles: "Titres Prestigieux",
-        ui_btn_equip: "Équiper", ui_btn_equipped: "ÉQUIPÉ", ui_btn_buy: "ACHETER", ui_locked_lvl: "Verrouillé (Niveau Requis)",
-        ui_market_desc: "Dépensez vos Éclats d'Ombre. Zâmin ne fait pas crédit.",
-        
-        // Stats
-        stat_lvl: "Niveau :", stat_xp: "XP Totale :", stat_leagues: "Lieues parcourues :", stat_played: "Parties jouées :", stat_won: "Victoires :",
-        stat_shadows: "Ombres dévorées :", stat_purif: "Embuscades purifiées :", stat_routs: "Déroutes subies :", stat_streak: "Série de victoires actuelle :",
-        stat_1life: "Victoires in extremis (1 Vie) :",
-        
-        // Sauvegarde
-        save_title: "Sauvegarder et Transférer", save_desc1: "Copiez ce code pour sauvegarder votre progression ou la transférer sur un autre appareil.",
-        save_btn_gen: "Générer le Code", save_desc2: "Collez un code de sauvegarde ci-dessous pour restaurer votre progression. ⚠️ Attention, cela effacera votre partie actuelle !",
-        save_btn_import: "Restaurer la Sauvegarde",
-
-        // Toasts
-        toast_lvl_up: "Niveau Supérieur ! Niveau {lvl} atteint !", toast_buy_ok: "Achat réussi !", toast_buy_fail: "Vous n'avez pas assez d'Éclats d'Ombre !",
-        toast_copy_ok: "Code copié dans le presse-papier !", toast_import_ok: "Progression restaurée avec succès !", toast_import_fail: "Code invalide ou corrompu.",
-
-        // Titres
-        title_ranger: "Le Rôdeur", title_walker: "Le Marcheur", title_deathcheater: "Trompe-la-Mort", title_dunedain: "Dúnadan", title_lordchance: "Seigneur du Hasard",
-        title_reckless: "Le Téméraire", title_orcblight: "Fléau des Orques", title_kingnocrown: "Roi sans Couronne", title_eternal: "L'Éternel", title_lightbearer: "Porteur de Lumière",
-        title_bearer: "Le Porteur", title_bloodwest: "Sang de l'Ouest", title_thiefshadow: "Voleur dans l'Ombre", title_hobbit: "Hobbit Égaré",
-
-        dialogues: {
-            dirhael: { greetings: ["Chaque pas compte."], success: ["La piste est bonne."], failure: ["Le fardeau devient lourd..."], purify: ["Un mal pour un bien."], hope_hate: ["L'espoir est ma boussole."], impasse: ["Maudites broussailles..."], camp: ["Prenons un instant."], shadow: ["Pardonnez-moi, ancêtres..."] },
-            brag: { greetings: ["Amène tes pièces !"], success: ["Je t'ai plumé !"], failure: ["Mes os !"], purify: ["Lâcher mon butin..."], hope_hate: ["Mes os, mes règles !"], impasse: ["On s'égare ?"], camp: ["Moi j'empoche !"] },
-            zamin: { greetings: ["La Maison gagne toujours."], success: ["Le profit avant tout."], failure: ["Anomalie statistique."], purify: ["Déficit tactique."], hope_hate: ["Je gèle ces actifs."], impasse: ["Le marché stagne."], camp: ["Investissement sécurisé."] },
-            kael: { greetings: ["Le Gondor est mort."], success: ["Succombe au désespoir."], failure: ["Flamme vacillante !"], purify: ["Sacrifice pour la survie."], hope_hate: ["Illusion, Dúnadan !"], impasse: ["Nous tournons en rond."], camp: ["Le filet se resserre."] },
-            letranger: { greetings: ["Donne-moi les dés."], success: ["Tu glisses..."], failure: ["Trop de lumière..."], purify: ["*Sifflement*"], hope_hate: ["L'ombre s'étend..."], impasse: ["*Silence oppressant*"], camp: ["*Il vous observe*"] }
-        }
-    },
-    en: {
-        // UI Taverne & Duel
-        ui_tavern_title: "THE STONEBRIDGE TAVERN", ui_tavern_sub: "Dirhael, the shadows lengthen. Choose your table.",
-        ui_btn_rules: "Read Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_etranger: "THE STRANGER",
-        diff_easy: "EASY", diff_normal: "NORMAL", diff_hard: "HARD", diff_random: "RANDOM",
-        ui_res_lives: "Lives (Rout = -1)", ui_res_hope: "Hope (Defense)", ui_res_shadow: "Shadow (Death Risk > 3)", ui_res_hate: "Hate (Attack)",
-        ui_rounds_won: "ROUNDS WON :", ui_100_leagues: "100 LEAGUES",
-        ui_btn_roll: "Push the pace", ui_btn_stop: "Set up camp", ui_btn_leave: "Leave table", ui_btn_continue: "CONTINUE", 
-        rules_title: "THE RANGER'S GRIMOIRE", rules_close: "Close Grimoire", ui_leagues: "LEAGUES",
-        rules_text: `<p><strong>THE GOAL</strong> Win 2 rounds of 100 Leagues, OR kill the opponent.</p><p><strong>THE ROUT</strong> The "1" is an Ambush. Two "1"s trigger a Rout: lose 1 Life.</p><p><strong>HOPE & SURVIVAL</strong> Spend 1 Hope to reroll a cursed die. <em>Sacrifice a Triumph (6) while camping to regain 1 Hope.</em></p><p><strong>SHADOW (Attack)</strong> When the enemy rolls a 5 or 6, take +1 Shadow to destroy it. <em>⚠️ Risk of instant death increases past 3 Shadows.</em></p><p><strong>HATE</strong> The enemy spends Hate to steal your dice. If they have none <span style="color: var(--gold); font-weight: bold;">and are trailing behind</span>, they can use Desperation with a risk of instant death.</p>`,
-        status_turn_hero: "It's your turn.", status_turn_enemy: "The opponent is thinking...", status_rolling: "Rolling...",
-        status_sabotage_kael: "SABOTAGE! Enemy targets your Triumph...", status_sabotage_kael_res: "Die corrupted into Ambush!",
-        status_sabotage_brag: "THEFT! Enemy eyes your loot...", status_sabotage_brag_res: "Enemy steals your die!",
-        status_sabotage_zamin: "ATTRITION! Enemy evaluates assets...", status_sabotage_zamin_res: "Enemy froze a neutral die!",
-        status_deroute_imminent: "IMMINENT ROUT! What do you decide?", status_impasse_ask: "DEAD END! Reroll with Compass?",
-        status_impasse_lost: "DEAD END! Hostile terrain. Turn lost.", status_action_purify: "ACTION REQUIRED: CLICK the RED DIE!",
-        status_urgency: "URGENCY: Defend yourself first!", status_purify_success: "Heroic sacrifice: Ambush purified!",
-        status_hope_used: "HOPE! Rerolling cursed die...", status_deroute_forced: "YOU CAN NO LONGER DEFEND YOURSELF.",
-        status_cannot_purify: "Cannot purify: no Triumph or Hope.", status_compass_used: "The Compass guides you! Rerolling...", status_impasse_accepted: "Dead End accepted. Turn lost.",
-        status_shadow_6: "Opponent rolled a 6! Corrupt it?", status_shadow_other: "Opponent rolled a {val}! Shadow thirsts...",
-        status_shadow_corrupt: "You corrupted their Triumph!", status_shadow_devour: "The Shadow devoured their {val}!",
-        status_shadow_survive: "Miracle! You survived (Risk: {chance}%)!",
-        status_enemy_purify_6: "Opponent sacrifices a 6 to survive!", status_enemy_impasse: "DEAD END for the opponent.",
-        status_deroute_hero: "ROUT! You lose 1 Life.", status_deroute_enemy: "ROUT! Opponent loses 1 Life.",
-        status_camp_hero: "You have set up camp.", status_camp_enemy: "Opponent set up camp.", status_select_dice: "Select your dice.",
-        status_acharnement: "Enemy is desperate for your Triumph! (Risk: {chance}%)", status_acharnement_fail_score: "Effort exhausts them! They lose 15 Leagues.",
-        status_acharnement_fail_life: "Effort breaks them! They lose 1 Life.", status_acharnement_success: "It worked! Enemy survives!",
-        status_camp_choice: "Sacrifice a Triumph for +1 Hope?",
-        btn_defend: "Defend", btn_suffer: "Suffer Rout", btn_compass: "Compass", btn_accept_defeat: "Accept Dead End",
-        btn_corrupt: "Corrupt (+1 Shadow)", btn_devour: "Devour (+1 Shadow)", btn_ignore: "Ignore", btn_camp_sacrifice: "Sacrifice (+1 Hope)", btn_camp_normal: "Keep points",
-        ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! You replay!", ev_pas_btn: "Continue",
-        ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope destroyed...", ev_gouffre_btn: "Suffer Rout",
-        ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure",
-        ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy Masterful Failure!", ev_malediction_btn: "Rout",
-        end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table",
-        end_def_title: "FATAL DEFEAT", end_def_msg: "Your journey ends here.", end_def_btn: "Flee tavern",
-        end_manche_lose_title: "ROUND LOST", end_manche_lose_msg: "Enemy wins this race.", end_manche_lose_btn: "Continue",
-        end_shadow_title: "CONSUMED", end_shadow_msg: "Your greed killed you.", end_shadow_btn: "Quit",
-        ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage:",
-        ui_reward_init: "Initiative (Play first)", ui_reward_heal: "Rest (+1 Life, Enemy plays first)",
-
-        // Progression & Arsenal UI
-        ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal",
-        ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close",
-        ui_tab_vestiaire: "The Wardrobe", ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game",
-        ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles",
-        ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles",
-        ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked (Level Required)",
-        ui_market_desc: "Spend your Shadow Shards. Zâmin doesn't do credit.",
-
-        // Stats
-        stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:",
-        stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:",
-        stat_1life: "Close calls (1 Life wins):",
-        
-        // Save
-        save_title: "Save and Transfer", save_desc1: "Copy this code to save your progress or transfer it to another device.",
-        save_btn_gen: "Generate Code", save_desc2: "Paste a save code below to restore your progress. ⚠️ Warning: this overwrites current progress!",
-        save_btn_import: "Restore Save",
-
-        // Toasts
-        toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shadow Shards!",
-        toast_copy_ok: "Code copied to clipboard!", toast_import_ok: "Progress successfully restored!", toast_import_fail: "Invalid or corrupted code.",
-
-        // Titles
-        title_ranger: "The Ranger", title_walker: "The Walker", title_deathcheater: "Death-Cheater", title_dunedain: "Dúnadan", title_lordchance: "Lord of Chance",
-        title_reckless: "The Reckless", title_orcblight: "Orc Bane", title_kingnocrown: "King Without a Crown", title_eternal: "The Eternal", title_lightbearer: "Light Bearer",
-        title_bearer: "The Bearer", title_bloodwest: "Blood of the West", title_thiefshadow: "Thief in the Shadow", title_hobbit: "Lost Hobbit",
-
-        dialogues: {
-            dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope is my compass."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
-            brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["My bones, my rules!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
-            zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Freezing assets."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
-            kael: { greetings: ["Gondor is dead."], success: ["Succumb to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Illusion, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
-            letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
-        }
-    }
-};
-
-function t(key, params = {}) {
-    let text = i18n[currentLang][key] || i18n['fr'][key]; if (!text) return key; 
-    for (let p in params) { text = text.replace(`{${p}}`, params[p]); } return text;
-}
-
-function toggleLanguage() { 
-    currentLang = (currentLang === 'fr') ? 'en' : 'fr'; 
-    document.getElementById('lang-btn').innerText = (currentLang === 'fr') ? "🇬🇧 EN" : "🇫🇷 FR";
-    updateStaticUI(); 
-    
-    // Refresh texts in Duel dynamically
-    let turnScoreEl = document.getElementById('current-turn-score');
-    if (turnScoreEl) turnScoreEl.innerHTML = `${gameState.turnScore} <span>${t('ui_leagues')}</span>`;
-    let btnRoll = document.getElementById('btn-roll'); if(btnRoll) btnRoll.innerText = t('ui_btn_roll');
-    let btnStop = document.getElementById('btn-stop'); if(btnStop) btnStop.innerText = t('ui_btn_stop');
-    let btnLeave = document.querySelector('.back-btn'); if(btnLeave) btnLeave.innerText = t('ui_btn_leave');
-    applyCosmetics(); // Refreshes title language
-    if(document.getElementById('arsenal-modal').style.display === 'flex') { switchArsenalTab(document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'(.*?)'/)[1]); }
-}
-
-function updateStaticUI() {
-    document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (i18n[currentLang] && i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key]; });
-    const rulesContainer = document.getElementById('rules-container');
-    if (rulesContainer && i18n[currentLang].rules_text) rulesContainer.innerHTML = i18n[currentLang].rules_text;
-}
-
-// ==========================================
-// 2. PROFIL, PROGRESSION ET SAUVEGARDE
+// 0. PROFIL, PROGRESSION ET HAUTS FAITS
 // ==========================================
 const defaultProfile = {
     xp: 0, level: 1, eclatsOmbre: 0,
@@ -263,6 +76,168 @@ function showToast(message, type = 'success') {
 // ==========================================
 const audioManager = { bgmMusic: new Audio(), isMuted: true, tracks: { tavern: 'audio/tavern_theme.mp3', duel_brag: 'audio/duel_brag.mp3', duel_zamin: 'audio/duel_zamin.mp3', duel_kael: 'audio/duel_kael.mp3', duel_letranger: 'audio/duel_letranger.mp3' }, playBGM(trackName) { if (this.isMuted) return; if (this.bgmMusic.src.includes(this.tracks[trackName])) return; this.bgmMusic.src = this.tracks[trackName]; this.bgmMusic.loop = true; this.bgmMusic.volume = 0.1; let p = this.bgmMusic.play(); if (p) p.catch(e => console.log("Audio bloqué.")); }, stopBGM() { this.bgmMusic.pause(); }, playSFX(src, vol = 0.2) { if(this.isMuted) return; let sfx = new Audio(src); sfx.volume = vol; sfx.play().catch(e=>e); } };
 function toggleMute() { audioManager.isMuted = !audioManager.isMuted; document.getElementById('mute-btn').innerText = audioManager.isMuted ? "🔇 AUDIO OFF" : "🔊 AUDIO ON"; if (!audioManager.isMuted) audioManager.playBGM('tavern'); else audioManager.stopBGM(); }
+
+// ==========================================
+// 1. DICTIONNAIRE & TRADUCTIONS
+// ==========================================
+let currentLang = 'fr';
+const i18n = {
+    fr: {
+        ui_tavern_title: "L'AUBERGE DU PONT-AUX-PIERRES", ui_tavern_sub: "Dirhael, les ombres s'allongent. Choisissez votre table.",
+        ui_btn_rules: "Lire le Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_etranger: "L'ÉTRANGER",
+        diff_easy: "FACILE", diff_normal: "NORMAL", diff_hard: "DIFFICILE", diff_random: "ALÉATOIRE",
+        ui_res_lives: "Vies (Déroute = -1)", ui_res_hope: "Espoir (Défense)", ui_res_shadow: "Ombre (Risque mortel > 3)", ui_res_hate: "Haine (Attaque)",
+        ui_rounds_won: "MANCHES REMPORTÉES :", ui_100_leagues: "100 LIEUES",
+        ui_btn_roll: "Forcer l'allure", ui_btn_stop: "Établir le camp", ui_btn_leave: "Quitter la table", ui_btn_continue: "CONTINUER", 
+        rules_title: "LE GRIMOIRE DU RÔDEUR", rules_close: "Fermer", ui_leagues: "LIEUES",
+        rules_text: `<p><strong>LE BUT</strong> Gagner 2 manches de 100 Lieues, OU tuer l'adversaire (0 Vie = Mort définitive).</p><p><strong>LA DÉROUTE</strong> Le "1" est une Embuscade (Rouge). Deux "1" en un lancer (ou un "1" sans marquer de points) déclenchent la Déroute : perte d'1 Vie.</p><p><strong>L'ESPOIR ET LA SURVIE</strong> Dépensez 1 Espoir pour relancer un dé maudit. <em>Attention : vos Vies ne se régénèrent pas entre les manches. Au Campement, sacrifiez un Triomphe (10) pour regagner 1 Espoir.</em></p><p><strong>L'OMBRE (Attaque)</strong> Quand l'ennemi fait un 5 ou un 6, prenez +1 Ombre pour le détruire. <em>⚠️ Plus vous avez d'Ombre, plus vos dés sont pipés. Au-delà de 3 Ombres, la 4ème a 25% de chances de vous tuer, la 5ème 50%, etc.</em></p><p><strong>LA HAINE</strong> L'ennemi dépense sa Haine pour voler vos dés. S'il n'a plus de Haine <span style="color: var(--gold); font-weight: bold;">et qu'il est en retard</span>, il peut s'Acharner avec un risque de mourir sur le coup.</p>`,
+        status_turn_hero: "À vous de jouer.", status_turn_enemy: "L'adversaire réfléchit...", status_rolling: "Les dés roulent...",
+        status_sabotage_kael: "SABOTAGE ! L'ennemi cible votre Triomphe...", status_sabotage_kael_res: "Votre dé est corrompu en Embuscade !",
+        status_sabotage_brag: "VOL ! L'ennemi s'intéresse à votre butin...", status_sabotage_brag_res: "L'ennemi vous dérobe votre dé !",
+        status_sabotage_zamin: "USURE ! L'ennemi évalue vos actifs...", status_sabotage_zamin_res: "L'ennemi a gelé l'un de vos dés neutres !",
+        status_deroute_imminent: "DÉROUTE IMMINENTE ! Que décidez-vous ?", status_impasse_ask: "IMPASSE ! Relancer avec la Boussole ?",
+        status_impasse_lost: "IMPASSE ! Terrain hostile. Tour perdu.", status_action_purify: "ACTION REQUISE : CLIQUEZ sur le DÉ ROUGE !",
+        status_urgency: "URGENCE : Défendez-vous d'abord !", status_purify_success: "Sacrifice héroïque : Embuscade purifiée !",
+        status_hope_used: "ESPOIR ! Vous relancez le dé maudit...", status_deroute_forced: "VOUS NE POUVEZ PLUS VOUS DÉFENDRE.",
+        status_cannot_purify: "Impossible de purifier : aucun Triomphe ni Espoir.", status_compass_used: "La Boussole vous guide ! Relance...", status_impasse_accepted: "Impasse acceptée. Tour perdu.",
+        status_shadow_6: "L'adversaire a tiré un 6 ! Le corrompre ?", status_shadow_other: "L'adversaire a tiré un {val} ! L'Ombre a soif...",
+        status_shadow_corrupt: "Vous corrompez son Triomphe !", status_shadow_devour: "L'Ombre a dévoré son {val} !",
+        status_shadow_survive: "Miracle ! Vous survivez (Risque : {chance}%) !",
+        status_enemy_purify_6: "L'adversaire sacrifie un 6 pour survivre !", status_enemy_impasse: "IMPASSE pour l'adversaire.",
+        status_deroute_hero: "DÉROUTE ! Perte d'1 Vie.", status_deroute_enemy: "DÉROUTE ! L'adversaire perd 1 Vie.",
+        status_camp_hero: "Vous avez établi le camp.", status_camp_enemy: "L'adversaire a établi le camp.", status_select_dice: "Sélectionnez vos dés bleus/or.",
+        status_acharnement: "L'ennemi s'acharne sur votre Triomphe ! (Risque : {chance}%)", status_acharnement_fail_score: "L'effort l'épuise ! Il recule de 15 Lieues.",
+        status_acharnement_fail_life: "L'effort le brise ! Il perd 1 Vie.", status_acharnement_success: "C'est passé ! L'ennemi survit !",
+        status_camp_choice: "Sacrifier un Triomphe pour +1 Espoir ?",
+        btn_defend: "Se Défendre", btn_suffer: "Subir la Déroute", btn_compass: "La Boussole", btn_accept_defeat: "Accepter l'Impasse",
+        btn_corrupt: "Corrompre (+1 Ombre)", btn_devour: "Dévorer (+1 Ombre)", btn_ignore: "Ignorer", btn_camp_sacrifice: "Sacrifier (+1 Espoir)", btn_camp_normal: "Garder les points",
+        ev_pas_title: "LE PAS DU RÔDEUR", ev_pas_msg: "Succès Magistral ! Vous rejouez !", ev_pas_btn: "Continuer",
+        ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Espoir détruit...", ev_gouffre_btn: "Subir la Déroute",
+        ev_elan_title: "ÉLAN TÉNÉBREUX", ev_elan_msg: "L'Ennemi fait une percée de {val} Lieues !", ev_elan_btn: "Subir",
+        ev_malediction_title: "MALÉDICTION", ev_malediction_msg: "Échec Magistral de l'Ennemi !", ev_malediction_btn: "Déroute",
+        end_vic_title: "VICTOIRE TOTALE", end_vic_msg: "Vous remportez ce duel mortel !", end_vic_btn: "Quitter",
+        end_def_title: "DÉFAITE FATALE", end_def_msg: "Votre voyage s'arrête ici.", end_def_btn: "Fuir",
+        end_manche_lose_title: "MANCHE PERDUE", end_manche_lose_msg: "L'ennemi gagne cette course.", end_manche_lose_btn: "Continuer",
+        end_shadow_title: "CONSUMÉ", end_shadow_msg: "Votre avidité vous a tué.", end_shadow_btn: "Quitter",
+        ui_reward_title: "COURSE GAGNÉE", ui_reward_msg: "Choisissez votre avantage :",
+        ui_reward_init: "L'Initiative (Jouer en premier)", ui_reward_heal: "Le Repos (+1 Vie, l'ennemi commence)",
+        
+        ui_level: "Niv.", ui_shards: "Éclats d'Ombre", ui_shards_short: "Éclats", ui_btn_arsenal: "L'Arsenal",
+        ui_arsenal_title: "L'ARSENAL", ui_btn_close: "Fermer",
+        ui_tab_vestiaire: "Le Vestiaire", ui_tab_market: "Le Marché Noir", ui_tab_achiev: "Les Hauts Faits", ui_tab_stats: "Le Registre", ui_tab_save: "Sauvegarde",
+        ui_ars_boards: "Fonds de Table", ui_ars_dice: "Skins de Dés", ui_ars_frames: "Cadres de Portrait", ui_ars_titles: "Titres Honorifiques",
+        ui_ars_ex_boards: "Fonds Exclusifs", ui_ars_ex_dice: "Dés Maudits", ui_ars_ex_frames: "Cadres Corrompus", ui_ars_ex_titles: "Titres Prestigieux",
+        ui_btn_equip: "Équiper", ui_btn_equipped: "ÉQUIPÉ", ui_btn_buy: "ACHETER", ui_locked_lvl: "Verrouillé (Niveau Requis)",
+        ui_market_desc: "Dépensez vos Éclats d'Ombre. Zâmin ne fait pas crédit.",
+        stat_lvl: "Niveau :", stat_xp: "XP Totale :", stat_leagues: "Lieues parcourues :", stat_played: "Parties jouées :", stat_won: "Victoires :",
+        stat_shadows: "Ombres dévorées :", stat_purif: "Embuscades purifiées :", stat_routs: "Déroutes subies :", stat_streak: "Série de victoires actuelle :",
+        stat_1life: "Victoires in extremis (1 Vie) :",
+        save_title: "Sauvegarder et Transférer", save_desc1: "Copiez ce code pour sauvegarder votre progression ou la transférer sur un autre appareil.",
+        save_btn_gen: "Générer le Code", save_desc2: "Collez un code de sauvegarde ci-dessous pour restaurer votre progression. ⚠️ Attention, cela effacera votre partie actuelle !",
+        save_btn_import: "Restaurer la Sauvegarde",
+        toast_lvl_up: "Niveau Supérieur ! Niveau {lvl} atteint !", toast_buy_ok: "Achat réussi !", toast_buy_fail: "Vous n'avez pas assez d'Éclats d'Ombre !",
+        toast_copy_ok: "Code copié dans le presse-papier !", toast_import_ok: "Progression restaurée avec succès !", toast_import_fail: "Code invalide ou corrompu.",
+        title_ranger: "Le Rôdeur", title_walker: "Le Marcheur", title_deathcheater: "Trompe-la-Mort", title_dunedain: "Dúnadan", title_lordchance: "Seigneur du Hasard",
+        title_reckless: "Le Téméraire", title_orcblight: "Fléau des Orques", title_kingnocrown: "Roi sans Couronne", title_eternal: "L'Éternel", title_lightbearer: "Porteur de Lumière",
+        title_bearer: "Le Porteur", title_bloodwest: "Sang de l'Ouest", title_thiefshadow: "Voleur dans l'Ombre", title_hobbit: "Hobbit Égaré",
+        dialogues: {
+            dirhael: { greetings: ["Chaque pas compte."], success: ["La piste est bonne."], failure: ["Le fardeau devient lourd..."], purify: ["Un mal pour un bien."], hope_hate: ["L'espoir est ma boussole."], impasse: ["Maudites broussailles..."], camp: ["Prenons un instant."], shadow: ["Pardonnez-moi, ancêtres..."] },
+            brag: { greetings: ["Amène tes pièces !"], success: ["Je t'ai plumé !"], failure: ["Mes os !"], purify: ["Lâcher mon butin..."], hope_hate: ["Mes os, mes règles !"], impasse: ["On s'égare ?"], camp: ["Moi j'empoche !"] },
+            zamin: { greetings: ["La Maison gagne toujours."], success: ["Le profit avant tout."], failure: ["Anomalie statistique."], purify: ["Déficit tactique."], hope_hate: ["Je gèle ces actifs."], impasse: ["Le marché stagne."], camp: ["Investissement sécurisé."] },
+            kael: { greetings: ["Le Gondor est mort."], success: ["Succombe au désespoir."], failure: ["Flamme vacillante !"], purify: ["Sacrifice pour la survie."], hope_hate: ["Illusion, Dúnadan !"], impasse: ["Nous tournons en rond."], camp: ["Le filet se resserre."] },
+            letranger: { greetings: ["Donne-moi les dés."], success: ["Tu glisses..."], failure: ["Trop de lumière..."], purify: ["*Sifflement*"], hope_hate: ["L'ombre s'étend..."], impasse: ["*Silence oppressant*"], camp: ["*Il vous observe*"] }
+        }
+    },
+    en: {
+        ui_tavern_title: "THE STONEBRIDGE TAVERN", ui_tavern_sub: "Dirhael, the shadows lengthen. Choose your table.",
+        ui_btn_rules: "Read Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_etranger: "THE STRANGER",
+        diff_easy: "EASY", diff_normal: "NORMAL", diff_hard: "HARD", diff_random: "RANDOM",
+        ui_res_lives: "Lives (Rout = -1)", ui_res_hope: "Hope (Defense)", ui_res_shadow: "Shadow (Death Risk > 3)", ui_res_hate: "Hate (Attack)",
+        ui_rounds_won: "ROUNDS WON :", ui_100_leagues: "100 LEAGUES",
+        ui_btn_roll: "Push the pace", ui_btn_stop: "Set up camp", ui_btn_leave: "Leave table", ui_btn_continue: "CONTINUE", 
+        rules_title: "THE RANGER'S GRIMOIRE", rules_close: "Close Grimoire", ui_leagues: "LEAGUES",
+        rules_text: `<p><strong>THE GOAL</strong> Win 2 rounds of 100 Leagues, OR kill the opponent.</p><p><strong>THE ROUT</strong> The "1" is an Ambush. Two "1"s trigger a Rout: lose 1 Life.</p><p><strong>HOPE & SURVIVAL</strong> Spend 1 Hope to reroll a cursed die. <em>Sacrifice a Triumph (6) while camping to regain 1 Hope.</em></p><p><strong>SHADOW (Attack)</strong> When the enemy rolls a 5 or 6, take +1 Shadow to destroy it. <em>⚠️ Risk of instant death increases past 3 Shadows.</em></p><p><strong>HATE</strong> The enemy spends Hate to steal your dice. If they have none <span style="color: var(--gold); font-weight: bold;">and are trailing behind</span>, they can use Desperation with a risk of instant death.</p>`,
+        status_turn_hero: "It's your turn.", status_turn_enemy: "The opponent is thinking...", status_rolling: "Rolling...",
+        status_sabotage_kael: "SABOTAGE! Enemy targets your Triumph...", status_sabotage_kael_res: "Die corrupted into Ambush!",
+        status_sabotage_brag: "THEFT! Enemy eyes your loot...", status_sabotage_brag_res: "Enemy steals your die!",
+        status_sabotage_zamin: "ATTRITION! Enemy evaluates assets...", status_sabotage_zamin_res: "Enemy froze a neutral die!",
+        status_deroute_imminent: "IMMINENT ROUT! What do you decide?", status_impasse_ask: "DEAD END! Reroll with Compass?",
+        status_impasse_lost: "DEAD END! Hostile terrain. Turn lost.", status_action_purify: "ACTION REQUIRED: CLICK the RED DIE!",
+        status_urgency: "URGENCY: Defend yourself first!", status_purify_success: "Heroic sacrifice: Ambush purified!",
+        status_hope_used: "HOPE! Rerolling cursed die...", status_deroute_forced: "YOU CAN NO LONGER DEFEND YOURSELF.",
+        status_cannot_purify: "Cannot purify: no Triumph or Hope.", status_compass_used: "The Compass guides you! Rerolling...", status_impasse_accepted: "Dead End accepted. Turn lost.",
+        status_shadow_6: "Opponent rolled a 6! Corrupt it?", status_shadow_other: "Opponent rolled a {val}! Shadow thirsts...",
+        status_shadow_corrupt: "You corrupted their Triumph!", status_shadow_devour: "The Shadow devoured their {val}!",
+        status_shadow_survive: "Miracle! You survived (Risk: {chance}%)!",
+        status_enemy_purify_6: "Opponent sacrifices a 6 to survive!", status_enemy_impasse: "DEAD END for the opponent.",
+        status_deroute_hero: "ROUT! You lose 1 Life.", status_deroute_enemy: "ROUT! Opponent loses 1 Life.",
+        status_camp_hero: "You have set up camp.", status_camp_enemy: "Opponent set up camp.", status_select_dice: "Select your dice.",
+        status_acharnement: "Enemy is desperate for your Triumph! (Risk: {chance}%)", status_acharnement_fail_score: "Effort exhausts them! They lose 15 Leagues.",
+        status_acharnement_fail_life: "Effort breaks them! They lose 1 Life.", status_acharnement_success: "It worked! Enemy survives!",
+        status_camp_choice: "Sacrifice a Triumph for +1 Hope?",
+        btn_defend: "Defend", btn_suffer: "Suffer Rout", btn_compass: "Compass", btn_accept_defeat: "Accept Dead End",
+        btn_corrupt: "Corrupt (+1 Shadow)", btn_devour: "Devour (+1 Shadow)", btn_ignore: "Ignore", btn_camp_sacrifice: "Sacrifice (+1 Hope)", btn_camp_normal: "Keep points",
+        ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! You replay!", ev_pas_btn: "Continue",
+        ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope destroyed...", ev_gouffre_btn: "Suffer Rout",
+        ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure",
+        ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy Masterful Failure!", ev_malediction_btn: "Rout",
+        end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table",
+        end_def_title: "FATAL DEFEAT", end_def_msg: "Your journey ends here.", end_def_btn: "Flee tavern",
+        end_manche_lose_title: "ROUND LOST", end_manche_lose_msg: "Enemy wins this race.", end_manche_lose_btn: "Continue",
+        end_shadow_title: "CONSUMED", end_shadow_msg: "Your greed killed you.", end_shadow_btn: "Quit",
+        ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage:",
+        ui_reward_init: "Initiative (Play first)", ui_reward_heal: "Rest (+1 Life, Enemy plays first)",
+        ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal",
+        ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close",
+        ui_tab_vestiaire: "The Wardrobe", ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game",
+        ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles",
+        ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles",
+        ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked (Level Required)",
+        ui_market_desc: "Spend your Shadow Shards. Zâmin doesn't do credit.",
+        stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:",
+        stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:",
+        stat_1life: "Close calls (1 Life wins):",
+        save_title: "Save and Transfer", save_desc1: "Copy this code to save your progress or transfer it to another device.",
+        save_btn_gen: "Generate Code", save_desc2: "Paste a save code below to restore your progress. ⚠️ Warning: this overwrites current progress!",
+        save_btn_import: "Restore Save",
+        toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shadow Shards!",
+        toast_copy_ok: "Code copied to clipboard!", toast_import_ok: "Progress successfully restored!", toast_import_fail: "Invalid or corrupted code.",
+        title_ranger: "The Ranger", title_walker: "The Walker", title_deathcheater: "Death-Cheater", title_dunedain: "Dúnadan", title_lordchance: "Lord of Chance",
+        title_reckless: "The Reckless", title_orcblight: "Orc Bane", title_kingnocrown: "King Without a Crown", title_eternal: "The Eternal", title_lightbearer: "Light Bearer",
+        title_bearer: "The Bearer", title_bloodwest: "Blood of the West", title_thiefshadow: "Thief in the Shadow", title_hobbit: "Lost Hobbit",
+        dialogues: {
+            dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope is my compass."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
+            brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["My bones, my rules!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
+            zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Freezing assets."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
+            kael: { greetings: ["Gondor is dead."], success: ["Succumb to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Illusion, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
+            letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
+        }
+    }
+};
+
+function t(key, params = {}) {
+    let text = i18n[currentLang][key] || i18n['fr'][key]; if (!text) return key; 
+    for (let p in params) { text = text.replace(`{${p}}`, params[p]); } return text;
+}
+
+function toggleLanguage() { 
+    currentLang = (currentLang === 'fr') ? 'en' : 'fr'; 
+    document.getElementById('lang-btn').innerText = (currentLang === 'fr') ? "🇬🇧 EN" : "🇫🇷 FR";
+    updateStaticUI(); 
+    let turnScoreEl = document.getElementById('current-turn-score');
+    if (turnScoreEl) turnScoreEl.innerHTML = `${gameState.turnScore} <span>${t('ui_leagues')}</span>`;
+    let btnRoll = document.getElementById('btn-roll'); if(btnRoll) btnRoll.innerText = t('ui_btn_roll');
+    let btnStop = document.getElementById('btn-stop'); if(btnStop) btnStop.innerText = t('ui_btn_stop');
+    let btnLeave = document.querySelector('.back-btn'); if(btnLeave) btnLeave.innerText = t('ui_btn_leave');
+    applyCosmetics();
+    if(document.getElementById('arsenal-modal').style.display === 'flex') { switchArsenalTab(document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'(.*?)'/)[1]); }
+}
+
+function updateStaticUI() {
+    document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (i18n[currentLang] && i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key]; });
+    const rulesContainer = document.getElementById('rules-container');
+    if (rulesContainer && i18n[currentLang].rules_text) rulesContainer.innerHTML = i18n[currentLang].rules_text;
+}
 
 // ==========================================
 // 1.5 FONCTIONS D'INTERFACE (UI)
@@ -430,7 +405,11 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
     resetTurnControls(); updateStatus(t('status_select_dice'), "var(--bone)");
 }
 
-function acceptDeroute() { gameState.pendingDeroute = false; resetTurnControls(); handleDeroute('hero'); }
+function acceptDeroute() { 
+    gameState.pendingDeroute = false; 
+    document.getElementById('turn-controls').innerHTML = ''; // Correction Exploit
+    handleDeroute('hero'); 
+}
 function hintPurify() { updateStatus(t('status_action_purify'), "var(--gold)"); }
 
 async function toggleKeepDie(index) {
@@ -461,7 +440,12 @@ async function toggleKeepDie(index) {
 }
 
 function resetTurnControls() { document.getElementById('turn-controls').innerHTML = `<button id="btn-roll" onclick="playHeroTurn()">${t('ui_btn_roll')}</button><button id="btn-stop" onclick="initiateCamp()" disabled>${t('ui_btn_stop')}</button>`; recalculateScore(); }
-function declineBoussole() { resetTurnControls(); document.getElementById('btn-roll').disabled = true; document.getElementById('btn-stop').disabled = true; updateStatus(t('status_impasse_accepted'), "var(--blood)"); updateDialogue('dirhael', 'failure', 'ui-hero-dialogue'); setTimeout(switchTurn, 2500); }
+function declineBoussole() { 
+    document.getElementById('turn-controls').innerHTML = ''; // Correction Exploit
+    updateStatus(t('status_impasse_accepted'), "var(--blood)"); 
+    updateDialogue('dirhael', 'failure', 'ui-hero-dialogue'); 
+    setTimeout(switchTurn, 2500); 
+}
 function useBoussole() { gameState.playerEspoir--; updateEspoirUI(); gameState.matchStats.compassUsedThisMatch++; resetTurnControls(); updateDialogue('dirhael', 'hope_hate', 'ui-hero-dialogue'); updateStatus(t('status_compass_used'), "var(--gold)"); setTimeout(() => { playHeroTurn(); }, 1000); }
 function initiateCamp() {
     if (gameState.activePlayer !== 'hero') return; let keptSixes = gameState.diceStates.reduce((acc, state, idx) => { if (state === 'kept' && gameState.diceValues[idx] === 6) acc.push(idx); return acc; }, []);
@@ -530,90 +514,54 @@ function handleDeroute(player) {
 
 function bankScore() {
     if (gameState.activePlayer === 'hero') { 
-        gameState.playerScore += gameState.turnScore; 
-        updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); 
-        updateStatus(t('status_camp_hero'), "var(--gold)"); 
+        gameState.playerScore += gameState.turnScore; updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); updateStatus(t('status_camp_hero'), "var(--gold)"); 
         playerProfile.stats.totalLeagues += gameState.turnScore; 
-        
-        // CORRECTION : XP basée sur le score réel et le multiplicateur de l'IA
         let xpGained = Math.floor(gameState.turnScore / 2);
         const diffMultiplier = { brag: 1.0, zamin: 1.5, letranger: 1.75, kael: 2.0 };
         let mult = diffMultiplier[gameState.currentEnemyId] || 1.0;
-        
         if (xpGained > 0) addXP(Math.floor(xpGained * mult));
-        
         saveProfile(); 
     } 
     else { 
-        gameState.enemyScore += gameState.turnScore; 
-        updateDialogue(gameState.currentEnemyId, 'camp', 'ui-enemy-dialogue'); 
-        updateStatus(t('status_camp_enemy'), "var(--enemy-color)"); 
+        gameState.enemyScore += gameState.turnScore; updateDialogue(gameState.currentEnemyId, 'camp', 'ui-enemy-dialogue'); updateStatus(t('status_camp_enemy'), "var(--enemy-color)"); 
     }
     
     updateGlobalUI();
-    
     if(gameState.playerScore >= gameState.targetScore) { 
-        if(!playerProfile.achievements.voieElfes && gameState.matchStats.deroutesThisMatch === 0) { 
-            playerProfile.achievements.voieElfes = true; saveProfile(); 
-        } 
+        if(!playerProfile.achievements.voieElfes && gameState.matchStats.deroutesThisMatch === 0) { playerProfile.achievements.voieElfes = true; saveProfile(); } 
         setTimeout(() => { resolveRoundWinner('hero'); }, 1500); return; 
     } 
-    else if (gameState.enemyScore >= gameState.targetScore) { 
-        setTimeout(() => { resolveRoundWinner('enemy'); }, 1500); return; 
-    } 
+    else if (gameState.enemyScore >= gameState.targetScore) { setTimeout(() => { resolveRoundWinner('enemy'); }, 1500); return; } 
     setTimeout(switchTurn, 1500);
 }
 
 function resolveRoundWinner(winner) {
-    // MULTIPLICATEURS DE DIFFICULTÉ
     const diffMultiplier = { brag: 1.0, zamin: 1.5, letranger: 1.75, kael: 2.0 };
     let mult = diffMultiplier[gameState.currentEnemyId] || 1.0;
 
     if (winner === 'hero') {
-        gameState.heroRounds++; updateGlobalUI(); 
-        
-        // XP de manche multiplié
-        addXP(Math.floor(15 * mult)); 
-        
+        gameState.heroRounds++; updateGlobalUI(); addXP(Math.floor(15 * mult)); 
         if (gameState.heroRounds >= 2) { 
             playerProfile.stats.gamesWon++; 
-            
-            // Éclats et XP de victoire finale multipliés
-            let eclatsEarned = Math.floor(10 * mult);
-            playerProfile.eclatsOmbre += eclatsEarned; 
-            addXP(Math.floor(25 * mult)); 
-            
-            playerProfile.stats.currentWinStreak++; 
-            playerProfile.stats.winsAgainst[gameState.currentEnemyId]++;
+            let eclatsEarned = Math.floor(10 * mult); playerProfile.eclatsOmbre += eclatsEarned; addXP(Math.floor(25 * mult)); 
+            playerProfile.stats.currentWinStreak++; playerProfile.stats.winsAgainst[gameState.currentEnemyId]++;
             if(gameState.playerLives === 1) playerProfile.stats.gamesWonWith1Life++;
             if(gameState.matchStats.firstRoundLost) playerProfile.achievements.sermentParjures = true;
-            
             saveProfile(); checkAchievements(); 
-            
-            // Affichage dynamique du gain d'Éclats dans la bonne langue
             let msg = currentLang === 'fr' ? `Victoire ! +${eclatsEarned} Éclats d'Ombre` : `Victory! +${eclatsEarned} Shards`;
             showToast(msg, "success");
             showEndScreen(t('end_vic_title'), t('end_vic_msg'), t('end_vic_btn'), () => { exitDuel(); }, "var(--gold)"); 
-        } else { 
-            document.getElementById('reward-modal').style.display = 'flex'; 
-        }
+        } else { document.getElementById('reward-modal').style.display = 'flex'; }
     } else {
         gameState.enemyRounds++; updateGlobalUI();
         if(gameState.heroRounds === 0 && gameState.enemyRounds === 1) gameState.matchStats.firstRoundLost = true;
-        
         if (gameState.enemyRounds >= 2) { 
-            // Éclats de consolation multipliés (ex: 6 contre Kael au lieu de 3)
-            let eclatsConsolation = Math.floor(3 * mult);
-            playerProfile.eclatsOmbre += eclatsConsolation; 
-            playerProfile.stats.currentWinStreak = 0; 
+            let eclatsConsolation = Math.floor(3 * mult); playerProfile.eclatsOmbre += eclatsConsolation; playerProfile.stats.currentWinStreak = 0; 
             saveProfile(); checkAchievements(); 
-            
             let msg = currentLang === 'fr' ? `Défaite... +${eclatsConsolation} Éclats d'Ombre` : `Defeat... +${eclatsConsolation} Shards`;
             showToast(msg, "error");
             showEndScreen(t('end_def_title'), t('end_def_msg'), t('end_def_btn'), () => { exitDuel(); }, "var(--blood)"); 
-        } else { 
-            showEndScreen(t('end_manche_lose_title'), t('end_manche_lose_msg'), t('end_manche_lose_btn'), () => { startNewRound(false, 'enemy'); }, "var(--blood)"); 
-        }
+        } else { showEndScreen(t('end_manche_lose_title'), t('end_manche_lose_msg'), t('end_manche_lose_btn'), () => { startNewRound(false, 'enemy'); }, "var(--blood)"); }
     }
 }
 
@@ -626,10 +574,11 @@ function toggleSettings() { document.getElementById('settings-menu').classList.t
 document.addEventListener('click', (e) => { const menu = document.getElementById('settings-menu'); const btn = document.getElementById('settings-btn'); if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open'); });
 
 // ==========================================
-// 8. HAUTS FAITS & ARSENAL (25+ OBJETS ET SUCCÈS)
+// 8. HAUTS FAITS & ARSENAL
 // ==========================================
 function checkAchievements() {
     let a = playerProfile.achievements; let s = playerProfile.stats; let ms = gameState.matchStats; let newlyUnlocked = false;
+    
     if(!a.fardeauAnneau && ms.consecutiveShadowMaxTurns >= 3) { a.fardeauAnneau = true; unlockItem('titles', 'title_bearer'); newlyUnlocked = true; }
     if(!a.flammeUdun && s.routsSurvived >= 1) { a.flammeUdun = true; unlockItem('dice', 'moria'); newlyUnlocked = true; }
     if(!a.heritageNumenor && ms.turnsPlayedThisRound <= 2 && gameState.playerScore >= 100) { a.heritageNumenor = true; unlockItem('titles', 'title_bloodwest'); unlockItem('dice', 'numenor'); newlyUnlocked = true; }
