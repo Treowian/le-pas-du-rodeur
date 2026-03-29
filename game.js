@@ -529,25 +529,91 @@ function handleDeroute(player) {
 }
 
 function bankScore() {
-    if (gameState.activePlayer === 'hero') { gameState.playerScore += gameState.turnScore; updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); updateStatus(t('status_camp_hero'), "var(--gold)"); playerProfile.stats.totalLeagues += gameState.turnScore; saveProfile(); addXP(25); } 
-    else { gameState.enemyScore += gameState.turnScore; updateDialogue(gameState.currentEnemyId, 'camp', 'ui-enemy-dialogue'); updateStatus(t('status_camp_enemy'), "var(--enemy-color)"); }
+    if (gameState.activePlayer === 'hero') { 
+        gameState.playerScore += gameState.turnScore; 
+        updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); 
+        updateStatus(t('status_camp_hero'), "var(--gold)"); 
+        playerProfile.stats.totalLeagues += gameState.turnScore; 
+        
+        // CORRECTION : XP basée sur le score réel et le multiplicateur de l'IA
+        let xpGained = Math.floor(gameState.turnScore / 2);
+        const diffMultiplier = { brag: 1.0, zamin: 1.5, letranger: 1.75, kael: 2.0 };
+        let mult = diffMultiplier[gameState.currentEnemyId] || 1.0;
+        
+        if (xpGained > 0) addXP(Math.floor(xpGained * mult));
+        
+        saveProfile(); 
+    } 
+    else { 
+        gameState.enemyScore += gameState.turnScore; 
+        updateDialogue(gameState.currentEnemyId, 'camp', 'ui-enemy-dialogue'); 
+        updateStatus(t('status_camp_enemy'), "var(--enemy-color)"); 
+    }
+    
     updateGlobalUI();
-    if(gameState.playerScore >= gameState.targetScore) { if(!playerProfile.achievements.voieElfes && gameState.matchStats.deroutesThisMatch === 0) { playerProfile.achievements.voieElfes = true; saveProfile(); } setTimeout(() => { resolveRoundWinner('hero'); }, 1500); return; } 
-    else if (gameState.enemyScore >= gameState.targetScore) { setTimeout(() => { resolveRoundWinner('enemy'); }, 1500); return; } setTimeout(switchTurn, 1500);
+    
+    if(gameState.playerScore >= gameState.targetScore) { 
+        if(!playerProfile.achievements.voieElfes && gameState.matchStats.deroutesThisMatch === 0) { 
+            playerProfile.achievements.voieElfes = true; saveProfile(); 
+        } 
+        setTimeout(() => { resolveRoundWinner('hero'); }, 1500); return; 
+    } 
+    else if (gameState.enemyScore >= gameState.targetScore) { 
+        setTimeout(() => { resolveRoundWinner('enemy'); }, 1500); return; 
+    } 
+    setTimeout(switchTurn, 1500);
 }
 
 function resolveRoundWinner(winner) {
+    // MULTIPLICATEURS DE DIFFICULTÉ
+    const diffMultiplier = { brag: 1.0, zamin: 1.5, letranger: 1.75, kael: 2.0 };
+    let mult = diffMultiplier[gameState.currentEnemyId] || 1.0;
+
     if (winner === 'hero') {
-        gameState.heroRounds++; updateGlobalUI(); addXP(15);
+        gameState.heroRounds++; updateGlobalUI(); 
+        
+        // XP de manche multiplié
+        addXP(Math.floor(15 * mult)); 
+        
         if (gameState.heroRounds >= 2) { 
-            playerProfile.stats.gamesWon++; playerProfile.eclatsOmbre += 10; addXP(25); playerProfile.stats.currentWinStreak++; playerProfile.stats.winsAgainst[gameState.currentEnemyId]++;
-            if(gameState.playerLives === 1) playerProfile.stats.gamesWonWith1Life++; if(gameState.matchStats.firstRoundLost) playerProfile.achievements.sermentParjures = true;
-            saveProfile(); checkAchievements(); showEndScreen(t('end_vic_title'), t('end_vic_msg'), t('end_vic_btn'), () => { exitDuel(); }, "var(--gold)"); 
-        } else { document.getElementById('reward-modal').style.display = 'flex'; }
+            playerProfile.stats.gamesWon++; 
+            
+            // Éclats et XP de victoire finale multipliés
+            let eclatsEarned = Math.floor(10 * mult);
+            playerProfile.eclatsOmbre += eclatsEarned; 
+            addXP(Math.floor(25 * mult)); 
+            
+            playerProfile.stats.currentWinStreak++; 
+            playerProfile.stats.winsAgainst[gameState.currentEnemyId]++;
+            if(gameState.playerLives === 1) playerProfile.stats.gamesWonWith1Life++;
+            if(gameState.matchStats.firstRoundLost) playerProfile.achievements.sermentParjures = true;
+            
+            saveProfile(); checkAchievements(); 
+            
+            // Affichage dynamique du gain d'Éclats dans la bonne langue
+            let msg = currentLang === 'fr' ? `Victoire ! +${eclatsEarned} Éclats d'Ombre` : `Victory! +${eclatsEarned} Shards`;
+            showToast(msg, "success");
+            showEndScreen(t('end_vic_title'), t('end_vic_msg'), t('end_vic_btn'), () => { exitDuel(); }, "var(--gold)"); 
+        } else { 
+            document.getElementById('reward-modal').style.display = 'flex'; 
+        }
     } else {
-        gameState.enemyRounds++; updateGlobalUI(); if(gameState.heroRounds === 0 && gameState.enemyRounds === 1) gameState.matchStats.firstRoundLost = true;
-        if (gameState.enemyRounds >= 2) { playerProfile.eclatsOmbre += 3; playerProfile.stats.currentWinStreak = 0; saveProfile(); checkAchievements(); showEndScreen(t('end_def_title'), t('end_def_msg'), t('end_def_btn'), () => { exitDuel(); }, "var(--blood)"); 
-        } else { showEndScreen(t('end_manche_lose_title'), t('end_manche_lose_msg'), t('end_manche_lose_btn'), () => { startNewRound(false, 'enemy'); }, "var(--blood)"); }
+        gameState.enemyRounds++; updateGlobalUI();
+        if(gameState.heroRounds === 0 && gameState.enemyRounds === 1) gameState.matchStats.firstRoundLost = true;
+        
+        if (gameState.enemyRounds >= 2) { 
+            // Éclats de consolation multipliés (ex: 6 contre Kael au lieu de 3)
+            let eclatsConsolation = Math.floor(3 * mult);
+            playerProfile.eclatsOmbre += eclatsConsolation; 
+            playerProfile.stats.currentWinStreak = 0; 
+            saveProfile(); checkAchievements(); 
+            
+            let msg = currentLang === 'fr' ? `Défaite... +${eclatsConsolation} Éclats d'Ombre` : `Defeat... +${eclatsConsolation} Shards`;
+            showToast(msg, "error");
+            showEndScreen(t('end_def_title'), t('end_def_msg'), t('end_def_btn'), () => { exitDuel(); }, "var(--blood)"); 
+        } else { 
+            showEndScreen(t('end_manche_lose_title'), t('end_manche_lose_msg'), t('end_manche_lose_btn'), () => { startNewRound(false, 'enemy'); }, "var(--blood)"); 
+        }
     }
 }
 
