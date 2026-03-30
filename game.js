@@ -72,10 +72,68 @@ function showToast(message, type = 'success') {
 }
 
 // ==========================================
-// AUDIO
+// AUDIO (Musique et Bruitages séparés)
 // ==========================================
-const audioManager = { bgmMusic: new Audio(), isMuted: true, tracks: { tavern: 'audio/tavern_theme.mp3', duel_brag: 'audio/duel_brag.mp3', duel_zamin: 'audio/duel_zamin.mp3', duel_kael: 'audio/duel_kael.mp3', duel_letranger: 'audio/duel_letranger.mp3' }, playBGM(trackName) { if (this.isMuted) return; if (this.bgmMusic.src.includes(this.tracks[trackName])) return; this.bgmMusic.src = this.tracks[trackName]; this.bgmMusic.loop = true; this.bgmMusic.volume = 0.1; let p = this.bgmMusic.play(); if (p) p.catch(e => console.log("Audio bloqué.")); }, stopBGM() { this.bgmMusic.pause(); }, playSFX(src, vol = 0.2) { if(this.isMuted) return; let sfx = new Audio(src); sfx.volume = vol; sfx.play().catch(e=>e); } };
-function toggleMute() { audioManager.isMuted = !audioManager.isMuted; document.getElementById('mute-btn').innerText = audioManager.isMuted ? "🔇 AUDIO OFF" : "🔊 AUDIO ON"; if (!audioManager.isMuted) audioManager.playBGM('tavern'); else audioManager.stopBGM(); }
+const audioManager = { 
+    bgmMusic: new Audio(), 
+    isMusicMuted: true, // Musique coupée par défaut (politique des navigateurs)
+    isSfxMuted: false,  // SFX activés par défaut
+    tracks: { 
+        tavern: 'audio/tavern_theme.mp3', 
+        duel_brag: 'audio/duel_brag.mp3', 
+        duel_zamin: 'audio/duel_zamin.mp3', 
+        duel_kael: 'audio/duel_kael.mp3', 
+        duel_letranger: 'audio/duel_letranger.mp3' 
+    }, 
+    playBGM(trackName) { 
+        if (this.isMusicMuted) return; 
+        if (this.bgmMusic.src.includes(this.tracks[trackName])) return; 
+        this.bgmMusic.src = this.tracks[trackName]; 
+        this.bgmMusic.loop = true; 
+        this.bgmMusic.volume = 0.1; 
+        let p = this.bgmMusic.play(); 
+        if (p) p.catch(e => console.log("Audio bloqué par le navigateur.")); 
+    }, 
+    stopBGM() { 
+        this.bgmMusic.pause(); 
+    }, 
+    playSFX(src, vol = 0.2) { 
+        if(this.isSfxMuted) return; // Ne joue rien si les SFX sont coupés
+        let sfx = new Audio(src); 
+        sfx.volume = vol; 
+        sfx.play().catch(e=>e); 
+    } 
+};
+
+function updateAudioButtons() {
+    const mBtn = document.getElementById('music-btn');
+    const sBtn = document.getElementById('sfx-btn');
+    if (mBtn) mBtn.innerText = audioManager.isMusicMuted ? (currentLang === 'fr' ? "🔇 MUSIQUE OFF" : "🔇 MUSIC OFF") : (currentLang === 'fr' ? "🎵 MUSIQUE ON" : "🎵 MUSIC ON");
+    if (sBtn) sBtn.innerText = audioManager.isSfxMuted ? "🔇 SFX OFF" : "🔊 SFX ON";
+}
+
+function toggleMusic() { 
+    audioManager.isMusicMuted = !audioManager.isMusicMuted; 
+    updateAudioButtons();
+    
+    if (!audioManager.isMusicMuted) { 
+        // Si on rallume la musique, on vérifie sur quel écran on est pour lancer la bonne piste
+        if (document.getElementById('tavern-screen').style.display !== 'none') {
+            audioManager.playBGM('tavern');
+        } else if (gameState.currentEnemyId) {
+            audioManager.playBGM('duel_' + gameState.currentEnemyId);
+        }
+    } else { 
+        audioManager.stopBGM(); 
+    } 
+}
+
+function toggleSFX() {
+    audioManager.isSfxMuted = !audioManager.isSfxMuted;
+    updateAudioButtons();
+    // Petit son test quand on réactive les SFX
+    if (!audioManager.isSfxMuted) audioManager.playSFX('audio/dice.mp3', 0.2);
+}
 
 // ==========================================
 // 1. DICTIONNAIRE & TRADUCTIONS
@@ -224,6 +282,7 @@ function toggleLanguage() {
     currentLang = (currentLang === 'fr') ? 'en' : 'fr'; 
     document.getElementById('lang-btn').innerText = (currentLang === 'fr') ? "🇬🇧 EN" : "🇫🇷 FR";
     updateStaticUI(); 
+    updateAudioButtons();
     
     // Mise à jour des boutons du duel
     let turnScoreEl = document.getElementById('current-turn-score');
