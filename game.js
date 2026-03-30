@@ -269,16 +269,28 @@ function updateDialogue(character, situation, elementId) {
 // 2. APPLICATION DES COSMETIQUES
 // ==========================================
 function applyCosmetics() {
-    const board = document.getElementById('center-board'); if (board) { board.className = ''; board.classList.add(`board-${playerProfile.equipped.board}`); }
-    const heroPortrait = document.querySelector('.hero-portrait'); if (heroPortrait) { heroPortrait.className = 'char-portrait hero-portrait'; heroPortrait.classList.add(`frame-${playerProfile.equipped.frame}`); }
-    const title = document.getElementById('hero-title'); if (title) title.innerText = t(playerProfile.equipped.title);
+    // Sécurité : on s'assure de lire la bonne clé d'équipement
+    const boardKey = playerProfile.equipped.board || playerProfile.equipped.boards || 'dark';
+    const frameKey = playerProfile.equipped.frame || playerProfile.equipped.frames || 'basic';
+    const titleKey = playerProfile.equipped.title || playerProfile.equipped.titles || 'title_ranger';
+    const diceKey = playerProfile.equipped.dice || 'classic';
+
+    const board = document.getElementById('center-board'); 
+    if (board) { board.className = ''; board.classList.add(`board-${boardKey}`); }
+    
+    const heroPortrait = document.querySelector('.hero-portrait'); 
+    if (heroPortrait) { heroPortrait.className = 'char-portrait hero-portrait'; heroPortrait.classList.add(`frame-${frameKey}`); }
+    
+    const title = document.getElementById('hero-title'); 
+    if (title) title.innerText = t(titleKey);
+    
     for(let i=0; i<5; i++) {
         let die = document.getElementById(`die-${i}`);
         if(die) {
             let d = die.classList.contains('die-danger'), t = die.classList.contains('die-triumph'), a = die.classList.contains('die-advance'), n = die.classList.contains('die-neutral'), s = die.classList.contains('die-sacrificed');
             die.className = 'die';
             if(d) die.classList.add('die-danger'); else if(t) die.classList.add('die-triumph'); else if(a) die.classList.add('die-advance'); else if(n) die.classList.add('die-neutral'); else if(s) die.classList.add('die-sacrificed'); else die.classList.add('die-idle');
-            if(playerProfile.equipped.dice !== 'classic') die.classList.add(`skin-${playerProfile.equipped.dice}`);
+            if(diceKey !== 'classic') die.classList.add(`skin-${diceKey}`);
         }
     }
 }
@@ -702,13 +714,18 @@ function switchArsenalTab(tabName) {
         area.innerHTML = html;
     } else if (tabName === 'vestiaire') {
         const renderEq = (title, key, dict) => {
+            // Correspondance pluriel -> singulier pour vérifier si c'est équipé
+            let equipKey = key;
+            if (key === 'boards') equipKey = 'board';
+            if (key === 'frames') equipKey = 'frame';
+
             let html = `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px;">${title}</h3><div class="arsenal-grid">`;
             for(let item in dict) {
                 let isMarketItem = dict[item].price > 0;
                 let itemName = currentLang === 'fr' ? dict[item].name_fr : dict[item].name_en;
                 if(playerProfile.inventory[key].includes(item)) {
-                    let isEq = playerProfile.equipped[key] === item;
-                    html += `<div class="arsenal-item ${isEq ? 'equipped' : ''}"><h3>${itemName}</h3><button onclick="equipItem('${key}', '${item}')">${isEq ? t('ui_btn_equipped') : t('ui_btn_equip')}</button></div>`;
+                    let isEq = playerProfile.equipped[equipKey] === item; // Vérification corrigée
+                    html += `<div class="arsenal-item ${isEq ? 'equipped' : ''}"><h3>${itemName}</h3><button onclick="equipItem('${equipKey}', '${item}')">${isEq ? t('ui_btn_equipped') : t('ui_btn_equip')}</button></div>`;
                 } else if (!isMarketItem) { 
                     html += `<div class="arsenal-item" style="opacity:0.4; border-color:#222; background: transparent;"><h3 style="color:#555;">???</h3><p style="margin-top:5px;">${t('ui_locked_lvl')}</p></div>`;
                 }
@@ -753,7 +770,18 @@ function switchArsenalTab(tabName) {
     }
 }
 
-function equipItem(category, item) { playerProfile.equipped[category] = item; saveProfile(); switchArsenalTab('vestiaire'); applyCosmetics(); }
+function equipItem(category, item) { 
+    // On force la clé au singulier pour la sauvegarde
+    let equipKey = category;
+    if (category === 'boards') equipKey = 'board';
+    if (category === 'frames') equipKey = 'frame';
+    if (category === 'titles') equipKey = 'title';
+    
+    playerProfile.equipped[equipKey] = item; 
+    saveProfile(); 
+    switchArsenalTab('vestiaire'); 
+    applyCosmetics(); 
+}
 
 function buyItem(category, item, price) {
     if (playerProfile.eclatsOmbre >= price) {
@@ -777,6 +805,46 @@ function importSave() {
             playerProfile = decoded; saveProfile(); applyCosmetics(); showToast(t('toast_import_ok'), "success"); closeArsenal();
         } else throw new Error();
     } catch(e) { showToast(t('toast_import_fail'), "error"); }
+}
+
+// ==========================================
+// 9. MODE DEBUG (TESTS QA)
+// ==========================================
+function debugAddXP() { 
+    addXP(1000); 
+    showToast("DEBUG: +1000 XP injectés", "success"); 
+}
+
+function debugAddShards() { 
+    playerProfile.eclatsOmbre += 5000; 
+    saveProfile(); 
+    showToast("DEBUG: +5000 Éclats injectés", "success"); 
+}
+
+function debugUnlockAll() {
+    for (let key in playerProfile.achievements) playerProfile.achievements[key] = true;
+    for (let cat in itemDict) { for (let item in itemDict[cat]) { if (!playerProfile.inventory[cat].includes(item)) playerProfile.inventory[cat].push(item); } }
+    for (let title in premiumTitles) { if (!playerProfile.inventory.titles.includes(title)) playerProfile.inventory.titles.push(title); }
+    playerProfile.level = 100; 
+    saveProfile(); 
+    showToast("DEBUG: Tout est débloqué ! (Niv 100)", "success");
+}
+
+function debugForceWin() {
+    if (document.getElementById('duel-screen').style.display === 'none') { 
+        showToast("DEBUG: Lancez un duel d'abord !", "error"); return; 
+    }
+    gameState.playerScore = 100; 
+    updateGlobalUI(); 
+    resolveRoundWinner('hero'); 
+    document.getElementById('settings-menu').classList.remove('open');
+}
+
+function debugReset() {
+    if(confirm("DEBUG: Êtes-vous sûr de vouloir tout effacer ?")) { 
+        localStorage.removeItem('rodeurProfile'); 
+        location.reload(); 
+    }
 }
 
 window.onload = () => { updateStaticUI(); updateProfileUI(); applyCosmetics(); };

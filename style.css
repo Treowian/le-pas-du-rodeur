@@ -124,7 +124,13 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 /* ========================================= */
 /* DESIGN DES DÉS D6                         */
 /* ========================================= */
-#dice-arena { display: flex; gap: 15px; justify-content: center; min-height: 80px; align-items: center; margin-bottom: 20px; }
+#dice-arena { 
+    display: flex; gap: 15px; justify-content: center; min-height: 80px; 
+    align-items: center; margin-bottom: 20px; 
+    /* NOUVEAU : Halo sombre pour détacher les dés du fond, très utile sur les plateaux clairs */
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 70%);
+    padding: 15px; border-radius: 50%; width: 100%; box-sizing: border-box;
+}
 .die-wrapper { width: 60px; height: 60px; cursor: pointer; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .die-wrapper.wrap-kept { transform: translateY(-20px); }
 .die-wrapper.pulse-danger { animation: pulseDanger 1s infinite alternate; }
@@ -239,27 +245,47 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 #center-board.board-helm { background: linear-gradient(to bottom, #1c2833, #0a0e12); border-color: #566573; }
 #center-board.board-bivouac { background: radial-gradient(circle, #3e2723 0%, #0a0b0c 80%); border-color: #d35400; }
 #center-board.board-abyss { background: #000; border-color: #111; box-shadow: none; }
-#center-board.board-citeblanche { background: linear-gradient(rgba(236,240,241,0.95), rgba(189,195,199,0.95)); border-color: #bdc3c7; box-shadow: inset 0 0 30px rgba(255,255,255,0.5); }
+/* CORRECTION : La Cité Blanche assombrie avec un lourd vignettage pour la lisibilité */
+#center-board.board-citeblanche { background: radial-gradient(circle, rgba(200,210,215,0.85), rgba(120,130,140,0.95)); border-color: #bdc3c7; box-shadow: inset 0 0 60px rgba(0,0,0,0.7); }
 #center-board.board-terresbrulees { background: radial-gradient(circle at bottom, #8b0000 0%, #1a0000 60%, #000 100%); border-color: #4a0e0e; box-shadow: inset 0 0 40px rgba(0,0,0,1); }
 #center-board.board-havre { background: linear-gradient(to right, #145a32, #0e6251); border-color: #2ecc71; box-shadow: inset 0 0 30px rgba(46, 204, 113, 0.2); }
 #center-board.board-moria { background: radial-gradient(circle, #2c3e50 0%, #000 100%); border-color: #1a252f; box-shadow: inset 0 0 50px #000; }
 #center-board.board-lorien { background: radial-gradient(circle, #0e2b1d 0%, #06110c 100%); border-color: #f1c40f; box-shadow: inset 0 0 40px rgba(241,196,15,0.1); }
 
 /* --- CADRES (Frames) --- */
-.char-portrait.frame-iron { border: 4px solid #7f8c8d; box-shadow: 0 0 10px rgba(127, 140, 141, 0.5); }
-.char-portrait.frame-gold { border: 4px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
-.char-portrait.frame-mist { border: 3px solid #bdc3c7; box-shadow: 0 0 25px rgba(255,255,255,0.4); filter: grayscale(20%); }
-.char-portrait.frame-star { border: 4px solid #f1c40f; box-shadow: 0 0 30px #f1c40f, inset 0 0 10px #f1c40f; }
-.char-portrait.frame-shadow { border: 3px solid var(--corruption); animation: shadowPulse 2s infinite alternate; }
-.char-portrait.frame-crown { border: 5px solid #ffdf00; border-radius: 20%; box-shadow: 0 0 40px rgba(255, 223, 0, 0.8); }
-.char-portrait.frame-eye { border: 4px solid #e74c3c; animation: eyePulse 1.5s infinite alternate; border-radius: 50% 0 50% 0; }
-.char-portrait.frame-thorns { border: 4px solid #3e2723; border-radius: 10px; box-shadow: inset 0 0 10px #1a1005, 0 0 15px rgba(0,0,0,0.8); }
+/* --- CADRES (Frames) --- */
+
+/* Classique : Rond parfait (Le CSS de base de .char-portrait a un border-radius: 50%) */
+
+/* Fer Forgé : Carré strict et robuste */
+.char-portrait.frame-iron { border-radius: 4px; border: 4px solid #7f8c8d; box-shadow: 0 0 10px rgba(127, 140, 141, 0.5); }
+
+/* Or Massif : Carré très légèrement arrondi (Prestige) */
+.char-portrait.frame-gold { border-radius: 16px; border: 4px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+
+/* Étoile du Nord : Ovale allongé verticalement */
+.char-portrait.frame-star { border-radius: 50% / 25%; border: 4px solid #f1c40f; box-shadow: 0 0 30px #f1c40f, inset 0 0 10px #f1c40f; }
+
+/* Couronne Royale : Forme de Bouclier / Écusson (Plat en haut, rond en bas) */
+.char-portrait.frame-crown { border-radius: 5px 5px 50px 50px; border: 5px solid #ffdf00; box-shadow: 0 0 40px rgba(255, 223, 0, 0.8); }
+
+/* L'Œil : Forme de feuille ou d'œil de dragon */
+.char-portrait.frame-eye { border-radius: 50% 0 50% 0; border: 4px solid #e74c3c; animation: eyePulse 1.5s infinite alternate; }
+
+/* Bois d'Ent : Forme organique, irrégulière (Blob) */
+.char-portrait.frame-ent { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; border: 4px solid #5d4037; box-shadow: 0 0 15px #3e2723; }
+
+/* Ronces Maudites : Forme de pointe asymétrique */
+.char-portrait.frame-thorns { border-radius: 25px 0 25px 0; border: 4px solid #3e2723; box-shadow: inset 0 0 10px #1a1005, 0 0 15px rgba(0,0,0,0.8); }
+
+/* Glace de Forodwaith : Carré brut avec une forte lueur cyan */
+.char-portrait.frame-ice { border-radius: 0; border: 4px solid #aed6f1; box-shadow: 0 0 15px #aed6f1, inset 0 0 10px #aed6f1; }
+
+/* Auras (Spectrale, Angélique, Flamme) : Reste rondes mais jouent sur les animations */
+.char-portrait.frame-mist { border: 3px solid transparent; box-shadow: 0 0 25px rgba(255,255,255,0.4); filter: grayscale(20%); }
 .char-portrait.frame-angelic { border: 4px solid #fdfefe; box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); animation: angelicPulse 3s infinite alternate; }
 .char-portrait.frame-darkflame { border: 4px solid #4a235a; box-shadow: 0 -10px 30px #4a235a, 0 10px 30px #000; animation: darkflamePulse 1.5s infinite alternate; }
-.char-portrait.frame-ent { border: 4px solid #5d4037; border-radius: 5px; box-shadow: 0 0 15px #3e2723; }
-.char-portrait.frame-ice { border: 4px solid #aed6f1; box-shadow: 0 0 15px #aed6f1, inset 0 0 10px #aed6f1; }
 
-@keyframes shadowPulse { 0% { box-shadow: 0 0 10px var(--corruption); } 100% { box-shadow: 0 0 30px var(--corruption); } }
 @keyframes eyePulse { 0% { box-shadow: 0 0 10px #e74c3c, inset 0 0 10px #e74c3c; } 100% { box-shadow: 0 0 40px #e74c3c, inset 0 0 20px #e74c3c; } }
 @keyframes angelicPulse { 0% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); } 100% { box-shadow: 0 0 40px rgba(255, 255, 255, 1); } }
 @keyframes darkflamePulse { 0% { box-shadow: 0 -5px 20px #4a235a, 0 5px 20px #000; } 100% { box-shadow: 0 -15px 40px #4a235a, 0 15px 40px #000; } }
