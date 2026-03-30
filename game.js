@@ -84,7 +84,7 @@ let currentLang = 'fr';
 const i18n = {
     fr: {
         ui_tavern_title: "L'AUBERGE DU PONT-AUX-PIERRES", ui_tavern_sub: "Dirhael, les ombres s'allongent. Choisissez votre table.",
-        ui_btn_rules: "Lire le Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_etranger: "L'ÉTRANGER",
+        ui_btn_rules: "Lire le Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_letranger: "L'ÉTRANGER",
         diff_easy: "FACILE", diff_normal: "NORMAL", diff_hard: "DIFFICILE", diff_random: "ALÉATOIRE",
         ui_res_lives: "Vies (Déroute = -1)", ui_res_hope: "Espoir (Défense)", ui_res_shadow: "Ombre (Risque mortel > 3)", ui_res_hate: "Haine (Attaque)",
         ui_rounds_won: "MANCHES REMPORTÉES :", ui_100_leagues: "100 LIEUES",
@@ -150,7 +150,7 @@ const i18n = {
     },
     en: {
         ui_tavern_title: "THE STONEBRIDGE TAVERN", ui_tavern_sub: "Dirhael, the shadows lengthen. Choose your table.",
-        ui_btn_rules: "Read Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_etranger: "THE STRANGER",
+        ui_btn_rules: "Read Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_letranger: "THE STRANGER",
         diff_easy: "EASY", diff_normal: "NORMAL", diff_hard: "HARD", diff_random: "RANDOM",
         ui_res_lives: "Lives (Rout = -1)", ui_res_hope: "Hope (Defense)", ui_res_shadow: "Shadow (Death Risk > 3)", ui_res_hate: "Hate (Attack)",
         ui_rounds_won: "ROUNDS WON :", ui_100_leagues: "100 LEAGUES",
@@ -224,13 +224,24 @@ function toggleLanguage() {
     currentLang = (currentLang === 'fr') ? 'en' : 'fr'; 
     document.getElementById('lang-btn').innerText = (currentLang === 'fr') ? "🇬🇧 EN" : "🇫🇷 FR";
     updateStaticUI(); 
+    
+    // Mise à jour des boutons du duel
     let turnScoreEl = document.getElementById('current-turn-score');
     if (turnScoreEl) turnScoreEl.innerHTML = `${gameState.turnScore} <span>${t('ui_leagues')}</span>`;
     let btnRoll = document.getElementById('btn-roll'); if(btnRoll) btnRoll.innerText = t('ui_btn_roll');
     let btnStop = document.getElementById('btn-stop'); if(btnStop) btnStop.innerText = t('ui_btn_stop');
     let btnLeave = document.querySelector('.back-btn'); if(btnLeave) btnLeave.innerText = t('ui_btn_leave');
+    
+    // NOUVEAU : Traduction dynamique du nom de l'adversaire en plein duel !
+    let enemyNameEl = document.getElementById('ui-enemy-name');
+    if (enemyNameEl && gameState.currentEnemyId) {
+        enemyNameEl.innerText = i18n[currentLang]["name_" + gameState.currentEnemyId];
+    }
+    
     applyCosmetics();
-    if(document.getElementById('arsenal-modal').style.display === 'flex') { switchArsenalTab(document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'(.*?)'/)[1]); }
+    if(document.getElementById('arsenal-modal').style.display === 'flex') { 
+        switchArsenalTab(document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'(.*?)'/)[1]); 
+    }
 }
 
 function updateStaticUI() {
