@@ -87,10 +87,9 @@
                 <div class="token-row" id="ui-hero-lives"></div>
             </div>
             <div class="resource-zone">
-                <div class="res-label" data-i18n="ui_res_hope">Espoir (Défense)</div>
-                <div class="token-row" id="ui-espoir-tokens">
-                    <div class="token espoir"></div><div class="token espoir"></div><div class="token espoir"></div>
-                </div>
+                <div class="res-label" data-i18n="ui_res_hope">Espoir (Défenses & Volonté)</div>
+                <div class="token-row" id="ui-espoir-tokens" style="justify-content: center; width: 100%;">
+                    </div>
             </div>
             <div class="resource-zone">
                 <div class="res-label" data-i18n="ui_res_shadow">Ombre (Risque mortel > 3)</div>
@@ -105,8 +104,8 @@
             </div>
 
             <div style="width: 90%; display: flex; justify-content: space-between; font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 5px;">
-                <span style="color: var(--gold);"><span id="score-hero-display" style="font-size: 24px; font-weight: bold;">0</span> / 100</span>
-                <span style="color: var(--enemy-color);"><span id="score-enemy-display" style="font-size: 24px; font-weight: bold;">0</span> / 100</span>
+                <span style="color: var(--gold);"><span id="score-hero-display" style="font-size: 24px; font-weight: bold;">0</span> / 80</span>
+                <span style="color: var(--enemy-color);"><span id="score-enemy-display" style="font-size: 24px; font-weight: bold;">0</span> / 80</span>
             </div>
             <div id="race-track-container">
                 <div id="race-track">
@@ -114,7 +113,7 @@
                     <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.2); z-index: 1;"></div>
                     <div id="progress-enemy"></div>
                 </div>
-                <div class="race-badge" data-i18n="ui_100_leagues">100 LIEUES</div>
+                <div class="race-badge" data-i18n="ui_80_leagues">80 LIEUES</div>
             </div>
             
             <div class="turn-info-container">
@@ -142,8 +141,9 @@
                 <div class="token-row justify-end" id="ui-enemy-lives"></div>
             </div>
             <div class="resource-zone text-right">
-                <div class="res-label" data-i18n="ui_res_hate">Haine (Attaque)</div>
-                <div class="token-row justify-end" id="ui-haine-tokens"></div>
+                <div class="res-label" data-i18n="ui_res_hate">Haine (Malice & Attaques)</div>
+                <div class="token-row justify-end" id="ui-haine-tokens" style="justify-content: center; width: 100%;">
+                    </div>
             </div>
             <div class="dialogue-box enemy-dialogue" id="ui-enemy-dialogue">"..."</div>
         </div>
@@ -151,7 +151,7 @@
 
     <div id="end-modal"><div class="end-content"><h2 class="title-oswald" id="end-title">TITRE</h2><p id="end-message">Message</p><button id="end-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
     <div id="event-modal"><div class="event-content"><h2 class="title-oswald" id="event-title">ÉVÉNEMENT</h2><p id="event-message">Message</p><button id="event-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
-    <div id="rules-modal"><div class="rules-content"><h2 class="title-oswald gold-text" style="margin-top:0; font-size: 28px; text-align: center;" data-i18n="rules_title">LE GRIMOIRE DU RÔDEUR</h2><div class="rules-text" id="rules-container"></div><div style="text-align: center; margin-top: 25px;"><button onclick="hideRules()" style="background: var(--gold); color: #000; border: none; box-shadow: 0 0 15px rgba(212,175,55,0.4); font-weight: bold; padding: 12px 25px; border-radius: 4px; cursor: pointer;" data-i18n="rules_close">Fermer le Grimoire</button></div></div></div>
+    <div id="rules-modal"><div class="rules-content" style="max-width: 600px; padding: 25px;"><h2 class="title-oswald gold-text" style="margin-top:0; font-size: 28px; text-align: center;" data-i18n="rules_title">LE GRIMOIRE DU RÔDEUR</h2><div class="rules-text" id="rules-container" style="font-size: 14px; line-height: 1.5; color: #ccc;"></div><div style="text-align: center; margin-top: 25px;"><button onclick="hideRules()" style="background: var(--gold); color: #000; border: none; box-shadow: 0 0 15px rgba(212,175,55,0.4); font-weight: bold; padding: 12px 25px; border-radius: 4px; cursor: pointer;" data-i18n="rules_close">Fermer le Grimoire</button></div></div></div>
     
     <div id="reward-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center;">
         <div class="end-content" style="border-color: var(--gold); box-shadow: 0 0 50px var(--gold);">
@@ -182,8 +182,30 @@
                 <button class="tab-btn" onclick="switchArsenalTab('save')" data-i18n="ui_tab_save">Sauvegarde</button>
             </div>
 
-            <div id="arsenal-content-area" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;">
-                </div>
+            <div id="arsenal-content-area" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;"></div>
+        </div>
+    </div>
+
+    <div id="welcome-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:25000; justify-content:center; align-items:center;">
+        <div class="end-content" style="border-color: var(--gold); box-shadow: 0 0 50px var(--gold); max-width: 400px; padding: 40px; position: relative;">
+            <div style="position: absolute; top: 15px; right: 15px; display: flex; gap: 10px;">
+                <span onclick="setLanguage('fr')" style="cursor:pointer; filter: grayscale(0.5);" title="Français">🇫🇷</span>
+                <span onclick="setLanguage('en')" style="cursor:pointer; filter: grayscale(0.5);" title="English">🇬🇧</span>
+            </div>
+            <h2 class="title-oswald gold-text" style="font-size: 32px;" data-i18n="ui_welcome_title">BIENVENUE, RÔDEUR</h2>
+            <p style="font-size:16px; margin-bottom:30px; color:#ccc; line-height: 1.5;" data-i18n="ui_welcome_msg">Souhaitez-vous activer le guide interactif ?</p>
+            <div style="display:flex; flex-direction:column; gap:15px; align-items:center;">
+                <button onclick="setTutorial(true)" data-i18n="ui_btn_tuto_yes" style="border-color:var(--gold); color:var(--gold); width:100%;">Oui, guidez-moi</button>
+                <button onclick="setTutorial(false)" data-i18n="ui_btn_tuto_no" style="border-color:#555; color:#888; width:100%; background: transparent;">Non, je connais les règles</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorial-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:20000; justify-content:center; align-items:center;">
+        <div class="end-content" id="tutorial-box" style="border-color: #5dade2; box-shadow: 0 0 30px #5dade2; background: rgba(15, 19, 25, 0.95); max-width: 450px; padding: 30px;">
+            <h2 class="title-oswald" style="color: #5dade2; font-size: 24px; margin-bottom: 15px;" data-i18n="ui_tuto_title">ASTUCE DU RÔDEUR</h2>
+            <p id="tutorial-message" style="font-size:16px; margin-bottom:25px; color:#e3dac9; line-height: 1.5;">Message</p>
+            <button id="tutorial-btn" data-i18n="ui_btn_understood" style="border-color:#5dade2; color:#5dade2; width:100%; background: #111;">J'ai compris</button>
         </div>
     </div>
 
