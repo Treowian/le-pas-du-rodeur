@@ -1,7 +1,7 @@
 // ==========================================
 // 0. PARAMÈTRES D'ÉQUILIBRAGE (Tuning Vétéran)
 // ==========================================
-const SEUIL_HAINE = 18; // Le score (Lieues) à partir duquel le joueur énerve le Boss (+1 Haine)
+const SEUIL_HAINE = 15; // Le score (Lieues) à partir duquel le joueur énerve le Boss (+1 Haine)
 
 // ==========================================
 // 1. PROFIL, PROGRESSION ET HAUTS FAITS
@@ -107,7 +107,7 @@ const i18n = {
         ui_tuto_title: "ASTUCE DU RÔDEUR", ui_btn_understood: "J'ai compris",
         tuto_intro: "Bienvenue Rôdeur !<br><br>1️⃣ Lancez vos dés avec 'Forcer l'allure'.<br>2️⃣ Vos dés gagnants (4, 5, 6) sont mis de côté.<br>3️⃣ Relancez les autres dés restants, OU arrêtez-vous (Établir le camp) pour valider votre score !",
         tuto_ambush: "Attention, le '1' est une Embuscade ! 💀<br><br>Si vous en avez deux sur la table, c'est la Déroute (vous perdez votre tour et 1 Vie).<br><br>Heureusement, la malchance vous donne de l'Espoir. <b>Cliquez sur le dé rouge</b> pour le Purifier (Coût : 2 Espoirs).",
-        tuto_hate: "L'ennemi est enragé ! 🔥<br><br>Il utilise sa Haine pour lancer une attaque de Malice contre vos dés. Si vous avez accumulé 5 Espoirs, vous pouvez utiliser votre Bouclier (A Elbereth !) pour le repousser instantanément !",
+        tuto_hate: "L'ennemi est enragé ! 🔥<br><br>Il utilise sa Haine pour lancer une attaque de Malice contre vos dés. Si vous avez accumulé au moins 3 Espoirs, vous pouvez utiliser votre Bouclier (A Elbereth !) pour le repousser instantanément ! Attention, cela videra toute votre jauge.",
         tuto_impasse: "IMPASSE ! 🛑<br><br>Vous n'avez marqué aucun point, votre tour s'arrête net. Vous pouvez utiliser votre Boussole (Coût : 3 Espoirs) pour relancer ces dés. <i>(1 seule Action d'Espoir par tour !)</i>",
         tuto_shadow: "L'Ombre vous tente... 🌑<br><br>Vous avez détruit le dé de l'ennemi. Mais attention : cela fait monter votre jauge d'Ombre.<br><br>⚠️ Si votre Ombre dépasse 3, la corruption risque de vous tuer instantanément à chaque nouvelle utilisation !",
         ui_tavern_title: "L'AUBERGE DU PONT-AUX-PIERRES", ui_tavern_sub: "Dirhael, les ombres s'allongent. Choisissez votre table.",
@@ -118,8 +118,8 @@ const i18n = {
         ui_btn_roll: "Forcer l'allure", ui_btn_stop: "Établir le camp", ui_btn_leave: "Quitter la table", ui_btn_continue: "CONTINUER",
         ui_espoir_used: "Action d'Espoir utilisée",
         ui_espoir_none: "Espoir insuffisant (Min. 2)",
-        ui_espoir_purify: "Dispo : Purifier",
-        ui_espoir_compass: "Dispo : Purifier, Boussole",
+        ui_espoir_purify: "Dispo : Purifier (-2)",
+        ui_espoir_compass: "Dispo : Purifier, Boussole, Elbereth",
         ui_espoir_all: "Dispo : Purifier, Boussole, Elbereth", 
         rules_title: "LE GRIMOIRE DU RÔDEUR", rules_close: "Fermer le Grimoire", ui_leagues: "LIEUES",
         rules_text: `
@@ -129,22 +129,22 @@ const i18n = {
                 
                 <h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🎲 LES DÉS</h3>
                 <ul style="margin-top: 0; padding-left: 20px; list-style-type: none;">
-                    <li><b style="color:var(--blood);">[ 1 ] Embuscade :</b> Danger mortel. Bloque le dé.</li>
-                    <li><b style="color:#888;">[ 2, 3 ] Neutre :</b> Aucun point.</li>
-                    <li><b style="color:#5dade2;">[ 4, 5 ] Avancée :</b> Donne 4 ou 5 points.</li>
-                    <li><b style="color:var(--gold);">[ 6 ] Triomphe :</b> Donne 10 points.</li>
+                    <li><b style="color:var(--gold);">[ 6 ] Triomphe</b> : Donne 10 points.</li>
+                    <li><b style="color:#5dade2;">[ 4, 5 ] Avancée</b> : Donne 4 ou 5 points.</li>
+                    <li><b style="color:#888;">[ 2, 3 ] Neutre</b> : Aucun point.</li>
+                    <li><b style="color:var(--blood);">[ 1 ] Embuscade</b> : Danger mortel. Bloque le dé.</li>
                 </ul>
 
                 <h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">💀 DÉROUTE & IMPASSE</h3>
-                <p style="margin-top: 0;"><b>Déroute :</b> Deux "1" sur la table. Vous perdez votre tour, vos points en cours, et <b style="color:var(--blood);">1 Vie</b>.</p>
+                <p style="margin-top: 0;"><b>Déroute :</b> Deux "1" sur la table. Vous perdez votre tour, vos points en cours, et <b style="color:var(--gold);">1 Vie</b>.</p>
                 <p><b>🛑 IMPASSE :</b> Si votre lancer ne contient aucun dé gagnant, le tour s'arrête net (0 point).</p>
 
                 <h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⭐ L'ESPOIR (Le Joueur)</h3>
                 <p style="margin-top: 0;">Gagnez +1 Espoir par "1" tiré, ou +2 en sacrifiant un "6" au campement. Dépensez-les pour survivre :</p>
                 <ul style="margin-top: 0; padding-left: 20px;">
-                    <li><b>Purifier (-2) :</b> Cliquez sur un "1" pour l'annuler et le relancer.</li>
-                    <li><b>Boussole (-3) :</b> Relance une Impasse.</li>
-                    <li><b>A Elbereth (-5) :</b> Bloque instantanément une attaque ennemie.</li>
+                    <li><b>Purifier (-2)</b> : Cliquez sur un "1" pour l'annuler et le relancer.</li>
+                    <li><b>Boussole (-3)</b> : Relance une Impasse.</li>
+                    <li><b>A Elbereth (Vide l'Espoir)</b> : Bloque instantanément une attaque ennemie (Min. 3 Espoirs).</li>
                 </ul>
                 <p style="color: #5dade2; font-style: italic;">⚠️ 1 seule Action d'Espoir autorisée par tour !</p>
 
@@ -160,7 +160,7 @@ const i18n = {
         status_urgency: "URGENCE : Défendez-vous d'abord !", status_purify_success: "Sacrifice héroïque : Embuscade purifiée !",
         status_hope_used: "ESPOIR ! Vous purifiez le dé maudit...", status_deroute_forced: "VOUS NE POUVEZ PLUS VOUS DÉFENDRE.",
         status_cannot_purify: "Impossible : Action d'Espoir déjà utilisée ou ressources insuffisantes.", status_compass_used: "La Boussole vous guide ! Relance...", status_impasse_accepted: "Impasse acceptée. Tour perdu.",
-        status_elbereth_ask: "MALICE ! L'ennemi attaque !", status_elbereth_success: "A Elbereth ! La lumière repousse l'Ombre !", btn_elbereth: "A Elbereth ! (-5 Espoir)",
+        status_elbereth_ask: "MALICE ! L'ennemi attaque !", status_elbereth_success: "A Elbereth ! La lumière repousse l'Ombre !", btn_elbereth: "A Elbereth ! (Vide l'Espoir)",
         status_shadow_6: "L'adversaire a tiré un 6 ! Le corrompre ?", status_shadow_other: "L'adversaire a tiré un {val} ! L'Ombre a soif...",
         status_shadow_corrupt: "Vous corrompez son Triomphe !", status_shadow_devour: "L'Ombre a dévoré son {val} !",
         status_shadow_survive: "Miracle ! Vous survivez (Risque : {chance}%) !",
@@ -171,7 +171,7 @@ const i18n = {
         btn_defend: "Se Défendre (-2)", btn_suffer: "Subir la Déroute", btn_compass: "La Boussole (-3)", btn_accept_defeat: "Accepter l'Impasse",
         btn_corrupt: "Corrompre (+1 Ombre)", btn_devour: "Dévorer (+1 Ombre)", btn_ignore: "Ignorer", btn_camp_sacrifice: "Sacrifier (+2 Espoir)", btn_camp_normal: "Garder les points",
         ev_pas_title: "LE PAS DU RÔDEUR", ev_pas_msg: "Succès Magistral ! Vous rejouez !", ev_pas_btn: "Continuer",
-        ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Espoir brisé...", ev_gouffre_btn: "Subir la Déroute",
+        ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Volonté brisée...", ev_gouffre_btn: "Subir la Déroute",
         ev_elan_title: "ÉLAN TÉNÉBREUX", ev_elan_msg: "L'Ennemi fait une percée de {val} Lieues !", ev_elan_btn: "Subir",
         ev_malediction_title: "MALÉDICTION", ev_malediction_msg: "L'Ennemi s'effondre sous sa propre Haine !", ev_malediction_btn: "Déroute",
         end_vic_title: "VICTOIRE TOTALE", end_vic_msg: "Vous remportez ce duel mortel !", end_vic_btn: "Quitter",
@@ -212,7 +212,7 @@ const i18n = {
         ui_tuto_title: "RANGER'S TIP", ui_btn_understood: "Understood",
         tuto_intro: "Welcome Ranger!<br><br>1️⃣ Roll your dice with 'Push the pace'.<br>2️⃣ Winning dice (4, 5, 6) are kept automatically.<br>3️⃣ Reroll the rest, OR stop (Set up camp) to bank your points!",
         tuto_ambush: "Beware, the '1' is a deadly Ambush! 💀<br><br>If you get two on the table, it's a Rout (you lose your turn and 1 Life).<br><br>Fortunately, bad luck gives you Hope. <b>Click on the red die</b> to Purify it (Cost: 2 Hope).",
-        tuto_hate: "The enemy is enraged! 🔥<br><br>They use Hate to launch a Malice attack against your dice. If you have 5 Hope, you can use your Shield (A Elbereth!) to repel it instantly!",
+        tuto_hate: "The enemy is enraged! 🔥<br><br>They use Hate to launch a Malice attack against your dice. If you have at least 3 Hope, you can use your Shield (A Elbereth!) to repel it instantly! Beware, this will empty your gauge.",
         tuto_impasse: "DEAD END! 🛑<br><br>You scored 0 points, your turn stops here. But all is not lost: you can use your Compass (Cost: 3 Hope) to reroll these useless dice. <i>(Reminder: Only 1 Hope Action per turn!)</i>",
         tuto_shadow: "The Shadow tempts you... 🌑<br><br>You have destroyed an enemy die. But beware: this increases your Shadow gauge.<br><br>⚠️ If your Shadow exceeds 3, the corruption has a chance to kill you instantly upon each new use!",
         ui_tavern_title: "THE STONEBRIDGE TAVERN", ui_tavern_sub: "Dirhael, the shadows lengthen. Choose your table.",
@@ -223,8 +223,8 @@ const i18n = {
         ui_btn_roll: "Push the pace", ui_btn_stop: "Set up camp", ui_btn_leave: "Leave table", ui_btn_continue: "CONTINUE",
         ui_espoir_used: "Hope Action used",
         ui_espoir_none: "Not enough Hope (Min. 2)",
-        ui_espoir_purify: "Ready: Purify",
-        ui_espoir_compass: "Ready: Purify, Compass",
+        ui_espoir_purify: "Ready: Purify (-2)",
+        ui_espoir_compass: "Ready: Purify, Compass, Elbereth",
         ui_espoir_all: "Ready: Purify, Compass, Elbereth", 
         rules_title: "THE RANGER'S GRIMOIRE", rules_close: "Close", ui_leagues: "LEAGUES",
         rules_text: `
@@ -234,22 +234,22 @@ const i18n = {
                 
                 <h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🎲 THE DICE</h3>
                 <ul style="margin-top: 0; padding-left: 20px; list-style-type: none;">
-                    <li><b style="color:var(--blood);">[ 1 ] Ambush:</b> Deadly threat. Locks the die.</li>
-                    <li><b style="color:#888;">[ 2, 3 ] Neutral:</b> No points.</li>
-                    <li><b style="color:#5dade2;">[ 4, 5 ] Advance:</b> Gives 4 or 5 points.</li>
-                    <li><b style="color:var(--gold);">[ 6 ] Triumph:</b> Gives 10 points.</li>
+                    <li><b style="color:var(--gold);">[ 6 ] Triumph</b>: Gives 10 points.</li>
+                    <li><b style="color:#5dade2;">[ 4, 5 ] Advance</b>: Gives 4 or 5 points.</li>
+                    <li><b style="color:#888;">[ 2, 3 ] Neutral</b>: No points.</li>
+                    <li><b style="color:var(--blood);">[ 1 ] Ambush</b>: Deadly threat. Locks the die.</li>
                 </ul>
 
                 <h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">💀 ROUT & DEAD END</h3>
-                <p style="margin-top: 0;"><b>Rout:</b> Two "1"s on the table. You lose your turn, your current points, and <b style="color:var(--blood);">1 Life</b>.</p>
+                <p style="margin-top: 0;"><b>Rout:</b> Two "1"s on the table. You lose your turn, your current points, and <b style="color:var(--gold);">1 Life</b>.</p>
                 <p><b>🛑 DEAD END:</b> If a roll has no winning dice, your turn ends immediately (0 points).</p>
 
                 <h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⭐ HOPE (You)</h3>
                 <p style="margin-top: 0;">Gain +1 Hope per "1" rolled, or +2 by sacrificing a "6" at camp. Spend it to survive:</p>
                 <ul style="margin-top: 0; padding-left: 20px;">
-                    <li><b>Purify (-2):</b> Click a "1" to cancel it and reroll.</li>
-                    <li><b>Compass (-3):</b> Reroll a Dead End.</li>
-                    <li><b>A Elbereth (-5):</b> Instantly blocks an enemy attack.</li>
+                    <li><b>Purify (-2)</b>: Click a "1" to cancel it and reroll.</li>
+                    <li><b>Compass (-3)</b>: Reroll a Dead End.</li>
+                    <li><b>A Elbereth (Empties Hope)</b>: Instantly blocks an enemy attack (Min. 3 Hope).</li>
                 </ul>
                 <p style="color: #5dade2; font-style: italic;">⚠️ Only 1 Hope Action allowed per turn!</p>
 
@@ -265,7 +265,7 @@ const i18n = {
         status_urgency: "URGENCY: Defend yourself first!", status_purify_success: "Heroic sacrifice: Ambush purified!",
         status_hope_used: "HOPE! You purified the cursed die...", status_deroute_forced: "YOU CAN NO LONGER DEFEND YOURSELF.",
         status_cannot_purify: "Cannot purify: Hope Action already used or not enough Hope.", status_compass_used: "The Compass guides you! Rerolling...", status_impasse_accepted: "Dead End accepted. Turn lost.",
-        status_elbereth_ask: "MALICE! Enemy attacks!", status_elbereth_success: "A Elbereth! The light drives back the Shadow!", btn_elbereth: "A Elbereth! (-5 Hope)",
+        status_elbereth_ask: "MALICE! Enemy attacks!", status_elbereth_success: "A Elbereth! The light drives back the Shadow!", btn_elbereth: "A Elbereth! (Empties Hope)",
         status_shadow_6: "Opponent rolled a 6! Corrupt it?", status_shadow_other: "Opponent rolled a {val}! Shadow thirsts...",
         status_shadow_corrupt: "You corrupted their Triumph!", status_shadow_devour: "The Shadow devoured their {val}!",
         status_shadow_survive: "Miracle! You survived (Risk: {chance}%)!",
@@ -276,7 +276,7 @@ const i18n = {
         btn_defend: "Defend (-2)", btn_suffer: "Suffer Rout", btn_compass: "Compass (-3)", btn_accept_defeat: "Accept Dead End",
         btn_corrupt: "Corrupt (+1 Shadow)", btn_devour: "Devour (+1 Shadow)", btn_ignore: "Ignore", btn_camp_sacrifice: "Sacrifice (+2 Hope)", btn_camp_normal: "Keep points",
         ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! You replay!", ev_pas_btn: "Continue",
-        ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Resolve broken...", ev_gouffre_btn: "Suffer Rout",
+        ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope collapses...", ev_gouffre_btn: "Suffer Rout",
         ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure",
         ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy collapses under their own Hate!", ev_malediction_btn: "Rout",
         end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table",
@@ -307,8 +307,8 @@ const i18n = {
             dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope guides me."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
             brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["Give that back!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
             zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Foreclosure."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
-            kael: { greetings: ["Le Gondor est mort."], success: ["Succombe au désespoir."], failure: ["Flamme vacillante !"], purify: ["Sacrifice pour la survie."], hope_hate: ["Souffre, Dúnadan !"], impasse: ["Nous tournons en rond."], camp: ["Le filet se resserre."] },
-            letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Trop de lumière..."], purify: ["*Sifflement*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
+            kael: { greetings: ["Gondor is dead."], success: ["Succombe to despair."], failure: ["Flamme vacillante !"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
+            letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
         }
     }
 };
@@ -356,7 +356,7 @@ function updateEspoirUI() {
     const c = document.getElementById('ui-espoir-tokens'); 
     if (!c) return; 
 
-    // Moteur UX dynamique qui pioche dans le dictionnaire propre
+    // Moteur UX dynamique qui pioche dans le dictionnaire propre (seuils à 2 et 3)
     let statusText = "";
     if (gameState.hasUsedEspoirThisTurn) {
         statusText = `<span style="color:#888; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⌛ ${t('ui_espoir_used')}</span>`;
@@ -364,10 +364,8 @@ function updateEspoirUI() {
         statusText = `<span style="color:#888; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">❌ ${t('ui_espoir_none')}</span>`;
     } else if (gameState.playerEspoir === 2) {
         statusText = `<span style="color:#5dade2; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_purify')}</span>`;
-    } else if (gameState.playerEspoir >= 3 && gameState.playerEspoir < 5) {
+    } else if (gameState.playerEspoir >= 3) {
         statusText = `<span style="color:#5dade2; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_compass')}</span>`;
-    } else if (gameState.playerEspoir >= 5) {
-        statusText = `<span style="color:#5dade2; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_all')}</span>`;
     }
 
     c.innerHTML = `
@@ -459,6 +457,7 @@ function enterDuel(id, fullName) {
 }
 
 function startNewRound(isFirstRound = false, roundWinner = 'hero') {
+    // FIX : Remise à zéro totale de la table
     gameState.playerScore = 0; 
     gameState.enemyScore = 0; 
     gameState.playerLives = 3; 
@@ -630,9 +629,9 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
                 // L'IA décide d'attaquer et vide sa Haine
                 gameState.enemyHate -= sabotageCost; updateHaineUI();
                 
-                // --- INTERRUPT DU JOUEUR : "A ELBERETH" (Bouclier Ultime 5 Espoirs) ---
+                // --- INTERRUPT DU JOUEUR : "A ELBERETH" (Min 3 Espoirs + Burn Total) ---
                 let countered = false;
-                if (gameState.playerEspoir >= 5 && !gameState.hasUsedEspoirThisTurn) {
+                if (gameState.playerEspoir >= 3 && !gameState.hasUsedEspoirThisTurn) {
                     updateStatus(t('status_elbereth_ask'), "var(--blood)");
                     document.getElementById(`wrap-${targetIdx}`).classList.add('pulse-danger');
                     audioManager.playSFX('audio/shadow.mp3', 0.1);
@@ -654,8 +653,10 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
                 }
 
                 if (countered) {
-                    // SUCCÈS : Le joueur repousse l'attaque
-                    gameState.playerEspoir -= 5; gameState.hasUsedEspoirThisTurn = true; updateEspoirUI();
+                    // SUCCÈS : Le joueur repousse l'attaque MAIS BRÛLE SA JAUGE D'ESPOIR
+                    gameState.playerEspoir = 0; 
+                    gameState.hasUsedEspoirThisTurn = true; 
+                    updateEspoirUI();
                     audioManager.playSFX('audio/dice.mp3', 0.2);
                     updateStatus(t('status_elbereth_success'), "var(--gold)");
                     await new Promise(r => setTimeout(r, 1500));
@@ -1271,6 +1272,7 @@ function triggerTutorial(tutoKey, textKey) {
 function setTutorial(wantsGuide) {
     playerProfile.tutorial.enabled = wantsGuide; playerProfile.tutorial.asked = true; saveProfile();
     document.getElementById('welcome-modal').style.display = 'none';
+    audioManager.isMusicMuted = false; updateAudioButtons(); audioManager.playBGM('tavern');
 }
 
 // Lancement global
