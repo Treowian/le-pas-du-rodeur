@@ -171,7 +171,7 @@ const i18n = {
         btn_defend: "Se Défendre (-2)", btn_suffer: "Subir la Déroute", btn_compass: "La Boussole (-3)", btn_accept_defeat: "Accepter l'Impasse",
         btn_corrupt: "Corrompre (+1 Ombre)", btn_devour: "Dévorer (+1 Ombre)", btn_ignore: "Ignorer", btn_camp_sacrifice: "Sacrifier (+2 Espoir)", btn_camp_normal: "Garder les points",
         ev_pas_title: "LE PAS DU RÔDEUR", ev_pas_msg: "Succès Magistral ! Vous rejouez !", ev_pas_btn: "Continuer",
-        ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Volonté brisée...", ev_gouffre_btn: "Subir la Déroute",
+        ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Espoir brisé...", ev_gouffre_btn: "Subir la Déroute",
         ev_elan_title: "ÉLAN TÉNÉBREUX", ev_elan_msg: "L'Ennemi fait une percée de {val} Lieues !", ev_elan_btn: "Subir",
         ev_malediction_title: "MALÉDICTION", ev_malediction_msg: "L'Ennemi s'effondre sous sa propre Haine !", ev_malediction_btn: "Déroute",
         end_vic_title: "VICTOIRE TOTALE", end_vic_msg: "Vous remportez ce duel mortel !", end_vic_btn: "Quitter",
@@ -1271,7 +1271,6 @@ function triggerTutorial(tutoKey, textKey) {
 function setTutorial(wantsGuide) {
     playerProfile.tutorial.enabled = wantsGuide; playerProfile.tutorial.asked = true; saveProfile();
     document.getElementById('welcome-modal').style.display = 'none';
-    audioManager.isMusicMuted = false; updateAudioButtons(); audioManager.playBGM('tavern');
 }
 
 // Lancement global
