@@ -378,9 +378,9 @@ function updateEspoirUI() {
     }
 
     c.innerHTML = `
-        <div style="text-align: center;">
-            <div style="color:var(--gold); font-family:'Oswald'; font-size:24px; text-shadow: 0 0 10px rgba(212,175,55,0.5); position: relative; display: inline-block;">
-                <span style="position: absolute; right: 100%; margin-right: 8px;">⭐</span>${gameState.playerEspoir} / 10
+        <div style="text-align: center; width: 100%;">
+            <div style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: clamp(18px, 4vw, 22px); text-shadow: 0 0 10px rgba(212,175,55,0.5); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span style="font-size: 0.85em;">⭐</span> <span>${gameState.playerEspoir} / 10</span>
             </div>
             ${statusText}
         </div>`; 
@@ -390,8 +390,10 @@ function updateHaineUI() {
     const c = document.getElementById('ui-haine-tokens'); 
     if (!c) return; 
     c.innerHTML = `
-        <div style="color:var(--blood); font-family:'Oswald'; font-size:24px; text-shadow: 0 0 10px rgba(220,20,60,0.5); position: relative; display: inline-block;">
-            <span style="position: absolute; right: 100%; margin-right: 8px;">🔥</span>${gameState.enemyHate} / 10
+        <div style="width: 100%; text-align: center;">
+            <div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(18px, 4vw, 22px); text-shadow: 0 0 10px rgba(220,20,60,0.5); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span style="font-size: 0.85em;">🔥</span> <span>${gameState.enemyHate} / 10</span>
+            </div>
         </div>`; 
 }
 
