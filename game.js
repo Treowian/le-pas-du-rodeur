@@ -365,16 +365,16 @@ function updateEspoirUI() {
     const c = document.getElementById('ui-espoir-tokens'); 
     if (!c) return; 
 
-    // Moteur UX dynamique qui pioche dans le dictionnaire propre (seuils à 2 et 3)
+    // Moteur UX dynamique : Textes plus discrets (10px et margin 2px)
     let statusText = "";
     if (gameState.hasUsedEspoirThisTurn) {
-        statusText = `<span style="color:#888; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⌛ ${t('ui_espoir_used')}</span>`;
+        statusText = `<span style="color:#888; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">⌛ ${t('ui_espoir_used')}</span>`;
     } else if (gameState.playerEspoir < 2) {
-        statusText = `<span style="color:#888; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">❌ ${t('ui_espoir_none')}</span>`;
+        statusText = `<span style="color:#888; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">❌ ${t('ui_espoir_none')}</span>`;
     } else if (gameState.playerEspoir === 2) {
-        statusText = `<span style="color:#5dade2; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_purify')}</span>`;
+        statusText = `<span style="color:#5dade2; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_purify')}</span>`;
     } else if (gameState.playerEspoir >= 3) {
-        statusText = `<span style="color:#5dade2; font-size:12px; display:block; margin-top:5px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_compass')}</span>`;
+        statusText = `<span style="color:#5dade2; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_compass')}</span>`;
     }
 
     c.innerHTML = `
