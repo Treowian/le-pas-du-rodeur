@@ -813,8 +813,21 @@ function resetTurnControls() { document.getElementById('turn-controls').innerHTM
 function declineBoussole() { document.getElementById('turn-controls').innerHTML = ''; updateStatus(t('status_impasse_accepted'), "var(--blood)"); updateDialogue('dirhael', 'failure', 'ui-hero-dialogue'); setTimeout(switchTurn, 2500); }
 function useBoussole() { gameState.playerEspoir -= 3; gameState.hasUsedEspoirThisTurn = true; updateEspoirUI(); gameState.matchStats.compassUsedThisMatch++; resetTurnControls(); updateDialogue('dirhael', 'hope_hate', 'ui-hero-dialogue'); updateStatus(t('status_compass_used'), "var(--gold)"); setTimeout(() => { playHeroTurn(); }, 1000); }
 function initiateCamp() {
-    if (gameState.activePlayer !== 'hero') return; let keptSixes = gameState.diceStates.reduce((acc, state, idx) => { if (state === 'kept' && gameState.diceValues[idx] === 6) acc.push(idx); return acc; }, []);
-    if (keptSixes.length > 0 && gameState.playerEspoir <= 8) { updateStatus(t('status_camp_choice'), "var(--gold)"); document.getElementById('turn-controls').innerHTML = `<button onclick="executeCampSacrifice(${keptSixes[0]})" style="border-color: var(--gold); color: var(--gold);">${t('btn_camp_sacrifice')}</button><button onclick="executeCampNormal()">${t('btn_camp_normal')}</button>`; } else { bankScore(); }
+    if (gameState.activePlayer !== 'hero') return; 
+    
+    const btnRoll = document.getElementById('btn-roll'); 
+    const btnStop = document.getElementById('btn-stop');
+    if (btnRoll) btnRoll.disabled = true; 
+    if (btnStop) btnStop.disabled = true;
+
+    let keptSixes = gameState.diceStates.reduce((acc, state, idx) => { if (state === 'kept' && gameState.diceValues[idx] === 6) acc.push(idx); return acc; }, []);
+    
+    if (keptSixes.length > 0 && gameState.playerEspoir <= 8) { 
+        updateStatus(t('status_camp_choice'), "var(--gold)"); 
+        document.getElementById('turn-controls').innerHTML = `<button onclick="executeCampSacrifice(${keptSixes[0]})" style="border-color: var(--gold); color: var(--gold);">${t('btn_camp_sacrifice')}</button><button onclick="executeCampNormal()">${t('btn_camp_normal')}</button>`; 
+    } else { 
+        bankScore(); 
+    }
 }
 function executeCampNormal() { document.getElementById('turn-controls').innerHTML = ''; bankScore(); }
 function executeCampSacrifice(idx) {
@@ -959,8 +972,13 @@ function handleDeroute(player) {
 }
 
 function bankScore() {
+    // FIX ANTI-SPAM ABSOLU : On fait disparaître les boutons instantanément
+    document.getElementById('turn-controls').innerHTML = ''; 
+
     if (gameState.activePlayer === 'hero') { 
-        gameState.playerScore += gameState.turnScore; updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); updateStatus(t('status_camp_hero'), "var(--gold)"); 
+        gameState.playerScore += gameState.turnScore; 
+        updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); 
+        updateStatus(t('status_camp_hero'), "var(--gold)"); 
         playerProfile.stats.totalLeagues += gameState.turnScore; 
         gameState.heroRoutLastTurn = false; 
         
