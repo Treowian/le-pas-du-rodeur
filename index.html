@@ -92,7 +92,7 @@
                 <div class="token-row" id="ui-ombre-tokens"></div>
             </div>
             
-            <div class="resource-zone">
+            <div class="resource-zone" style="margin-top: 15px;">
                 <div class="res-label" data-i18n="ui_res_hope">Espoir (Défenses & Actions)</div>
                 <div class="token-row" id="ui-espoir-tokens" style="justify-content: center; width: 100%;">
                     </div>
@@ -123,7 +123,12 @@
                 <div id="current-turn-score">0 <span>LIEUES</span></div>
             </div>
 
-            <div id="dice-arena"></div>
+            <div id="ui-modifier-banner" style="display: none; position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 100; width: 85%; max-width: 350px; padding: 15px; background: rgba(15, 15, 15, 0.95); border: 2px solid #444; border-radius: 10px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8); pointer-events: none;">
+                <h4 id="ui-mod-title" style="margin: 0; font-family: 'Oswald', sans-serif; font-size: clamp(16px, 4vw, 20px); text-transform: uppercase; letter-spacing: 1px;">Titre</h4>
+                <p id="ui-mod-desc" style="margin: 8px 0 0 0; color: #ddd; font-size: clamp(12px, 3.5vw, 14px); font-style: italic; line-height: 1.4;">Description</p>
+            </div>
+
+            <div class="dice-arena" id="dice-arena"></div>
 
             <div id="turn-controls">
                 <button id="btn-roll" onclick="playHeroTurn()" data-i18n="ui_btn_roll">Forcer l'allure</button>
@@ -142,7 +147,7 @@
                 <div class="res-label" data-i18n="ui_res_lives">Vies (Déroute = -1)</div>
                 <div class="token-row justify-end" id="ui-enemy-lives"></div>
             </div>
-            <div class="resource-zone text-right">
+            <div class="resource-zone text-right" style="margin-top: 15px;">
                 <div class="res-label" data-i18n="ui_res_hate">Haine (Malice & Attaques)</div>
                 <div class="token-row justify-end" id="ui-haine-tokens" style="justify-content: center; width: 100%;">
                     </div>
