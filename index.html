@@ -159,7 +159,7 @@
         </div>
     </div>
 
-    <div id="end-modal"><div class="end-content"><h2 class="title-oswald" id="end-title">TITRE</h2><p id="end-message">Message</p><button id="end-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
+    <div id="end-modal"><div class="end-content" style="max-height: 90vh; overflow-y: auto;"><h2 class="title-oswald" id="end-title">TITRE</h2><p id="end-message">Message</p><button id="end-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
     <div id="event-modal"><div class="event-content"><h2 class="title-oswald" id="event-title">ÉVÉNEMENT</h2><p id="event-message">Message</p><button id="event-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
     <div id="rules-modal"><div class="rules-content" style="max-width: 600px; padding: 25px;"><h2 class="title-oswald gold-text" style="margin-top:0; font-size: 28px; text-align: center;" data-i18n="rules_title">LE GRIMOIRE DU RÔDEUR</h2><div class="rules-text" id="rules-container" style="font-size: 14px; line-height: 1.5; color: #ccc;"></div><div style="text-align: center; margin-top: 25px;"><button onclick="hideRules()" style="background: var(--gold); color: #000; border: none; box-shadow: 0 0 15px rgba(212,175,55,0.4); font-weight: bold; padding: 12px 25px; border-radius: 4px; cursor: pointer;" data-i18n="rules_close">Fermer le Grimoire</button></div></div></div>
     
@@ -186,6 +186,7 @@
             
             <div class="arsenal-tabs">
                 <button class="tab-btn active" onclick="switchArsenalTab('vestiaire')" data-i18n="ui_tab_vestiaire">Le Vestiaire</button>
+                <button class="tab-btn" onclick="switchArsenalTab('contrats')" data-i18n="ui_tab_contracts">Les Contrats</button>
                 <button class="tab-btn" onclick="switchArsenalTab('marche')" data-i18n="ui_tab_market">Le Marché Noir</button>
                 <button class="tab-btn" onclick="switchArsenalTab('achievements')" data-i18n="ui_tab_achiev">Les Hauts Faits</button>
                 <button class="tab-btn" onclick="switchArsenalTab('stats')" data-i18n="ui_tab_stats">Le Registre</button>
