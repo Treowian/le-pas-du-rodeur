@@ -371,11 +371,12 @@ function toggleLanguage() {
     applyCosmetics();
     if(document.getElementById('arsenal-modal').style.display === 'flex') { switchArsenalTab(document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'(.*?)'/)[1]); }
     
-    // MAJ de la bannière si visible
     if(document.getElementById('ui-modifier-banner').style.display !== 'none') {
         document.getElementById('ui-mod-title').innerText = t('mod_' + gameState.currentModifier + '_title');
         document.getElementById('ui-mod-desc').innerText = t('mod_' + gameState.currentModifier + '_desc');
     }
+    const smallIcon = document.getElementById('persistent-mod-icon');
+    if (smallIcon) smallIcon.title = t('mod_' + gameState.currentModifier + '_desc');
 }
 
 function setLanguage(lang) {
@@ -502,6 +503,11 @@ function enterDuel(id, fullName) {
     
     gameState.enemyStartLives = 3; gameState.enemyMaxHate = 10; audioManager.playBGM('duel_' + id); 
     gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0 };
+    
+    // NOUVEAU : Tirage unique du modificateur pour toute la partie
+    const modifiers = ['normal', 'brouillard', 'nuit', 'aube', 'froid', 'clairiere'];
+    gameState.currentModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
+    
     playerProfile.stats.gamesPlayed++; saveProfile(); applyCosmetics(); startNewRound(true, 'hero'); 
 }
 
@@ -510,13 +516,11 @@ function startNewRound(isFirstRound = false, roundWinner = 'hero') {
     gameState.enemyScore = 0; 
     gameState.playerLives = 3; 
     gameState.enemyLives = gameState.enemyStartLives; 
-
-    // --- TIRAGE DU MODIFICATEUR DE MANCHE ---
-    const modifiers = ['normal', 'brouillard', 'nuit', 'aube', 'froid', 'clairiere'];
-    gameState.currentModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
     
-    // Affichage UI de la Bannière
+    // Affichage UI de la Bannière au début de chaque manche
     const modBanner = document.getElementById('ui-modifier-banner');
+    const smallIcon = document.getElementById('persistent-mod-icon');
+
     if (modBanner) {
         if (gameState.currentModifier === 'normal') {
             modBanner.style.borderColor = '#444';
@@ -530,10 +534,17 @@ function startNewRound(isFirstRound = false, roundWinner = 'hero') {
         document.getElementById('ui-mod-desc').innerText = t('mod_' + gameState.currentModifier + '_desc');
     }
 
+    // On s'assure que la petite icône est cachée et configurée
+    if (smallIcon) {
+        smallIcon.style.display = 'none';
+        const modIcons = { normal: '☀️', brouillard: '🌫️', nuit: '🌑', aube: '🌅', froid: '❄️', clairiere: '🌿' };
+        smallIcon.innerText = modIcons[gameState.currentModifier];
+        smallIcon.title = t('mod_' + gameState.currentModifier + '_desc');
+    }
+
     let baseEspoir = 1;
     let baseHate = 1;
 
-    // MODIFICATEURS : Froid (+2 Haine) et Clairière (+2 Espoir)
     if (gameState.currentModifier === 'clairiere') baseEspoir += 2;
     if (gameState.currentModifier === 'froid') baseHate += 2;
 
@@ -549,7 +560,6 @@ function startNewRound(isFirstRound = false, roundWinner = 'hero') {
         }
     }
     
-    // MODIFICATEUR NUIT : Limite de baseEspoir à 8
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
     
     gameState.playerShadow = 0; 
@@ -572,15 +582,11 @@ function switchTurn(isInit = false) {
     gameState.hasUsedEspoirThisTurn = false;
     updateEspoirUI();
 
-    // Génération Haine Passive de début de tour (La menace constante)
     if (gameState.activePlayer === 'enemy') {
         let hateGain = 1; 
-        
-        // LE CHAOS DE L'ÉTRANGER : Gain aléatoire entre 1 et 3 !
         if (gameState.currentEnemyId === 'letranger') {
             hateGain = Math.floor(Math.random() * 3) + 1; 
         }
-        
         gameState.enemyHate = Math.min(10, gameState.enemyHate + hateGain); 
         updateHaineUI();
     }
@@ -653,9 +659,13 @@ async function rollAnimation(diceToRoll) {
 async function playHeroTurn() {
     if (gameState.isRolling || gameState.activePlayer !== 'hero') return; 
     
-    // NOUVEAU : Efface la bannière de Météo au 1er lancer
+    // BASCULE UI : Efface la bannière et affiche la petite icône
     const modBanner = document.getElementById('ui-modifier-banner');
-    if (modBanner) modBanner.style.display = 'none';
+    const smallIcon = document.getElementById('persistent-mod-icon');
+    if (modBanner && modBanner.style.display !== 'none') {
+        modBanner.style.display = 'none';
+        if (smallIcon) smallIcon.style.display = 'block';
+    }
 
     gameState.isRolling = true; gameState.hasKeptDieThisRoll = false; 
     let btnRoll = document.getElementById('btn-roll'); let btnStop = document.getElementById('btn-stop'); if (btnRoll) btnRoll.disabled = true; if (btnStop) btnStop.disabled = true; updateStatus(t('status_rolling'), "#aaa");
@@ -683,7 +693,6 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
             rolledIndices.forEach(idx => { if(gameState.diceValues[idx] >= 4) { gameState.diceStates[idx] = 'kept'; document.getElementById(`wrap-${idx}`).classList.add('wrap-kept'); } });
             recalculateScore(); let gained = gameState.turnScore; gameState.playerScore += gained; updateGlobalUI(); playerProfile.stats.totalLeagues += gained; saveProfile(); addXP(10);
             
-            // MODIFICATEUR : BROUILLARD DES GALGALS
             let currentSeuil = (gameState.currentModifier === 'brouillard') ? 8 : SEUIL_HAINE;
             if (gained >= currentSeuil) { 
                 gameState.enemyHate = Math.min(10, gameState.enemyHate + 1); 
@@ -879,7 +888,6 @@ function useBoussole() { gameState.playerEspoir -= 3; gameState.hasUsedEspoirThi
 function initiateCamp() {
     if (gameState.activePlayer !== 'hero') return; 
     
-    // FIX ANTI-SPAM
     const btnRoll = document.getElementById('btn-roll'); 
     const btnStop = document.getElementById('btn-stop');
     if (btnRoll) btnRoll.disabled = true; 
@@ -902,7 +910,6 @@ function executeCampSacrifice(idx) {
     let skin = playerProfile.equipped.dice !== 'classic' ? `skin-${playerProfile.equipped.dice}` : ''; 
     document.getElementById(`die-${idx}`).className = `die die-sacrificed ${skin}`;
     
-    // MODIFICATEURS : AUBE (+3 Espoir) et NUIT (Max 8)
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
     let gainEspoir = (gameState.currentModifier === 'aube') ? 3 : 2;
 
@@ -917,9 +924,13 @@ function executeCampSacrifice(idx) {
 async function playEnemyTurn() { 
     if (gameState.activePlayer !== 'enemy') return; 
 
-    // NOUVEAU : Efface la bannière si le Boss joue en premier
+    // BASCULE UI : Efface la bannière et affiche la petite icône
     const modBanner = document.getElementById('ui-modifier-banner');
-    if (modBanner) modBanner.style.display = 'none';
+    const smallIcon = document.getElementById('persistent-mod-icon');
+    if (modBanner && modBanner.style.display !== 'none') {
+        modBanner.style.display = 'none';
+        if (smallIcon) smallIcon.style.display = 'block';
+    }
 
     gameState.isRolling = true; gameState.hasKeptDieThisRoll = false; 
     updateStatus(t('status_rolling'), "var(--enemy-color)"); 
@@ -1070,7 +1081,6 @@ function bankScore() {
         playerProfile.stats.totalLeagues += gameState.turnScore; 
         gameState.heroRoutLastTurn = false; 
         
-        // MODIFICATEUR : BROUILLARD DES GALGALS (Seuil à 8 au lieu de 10)
         let currentSeuil = (gameState.currentModifier === 'brouillard') ? 8 : SEUIL_HAINE;
         if (gameState.turnScore >= currentSeuil) { 
             gameState.enemyHate = Math.min(10, gameState.enemyHate + 1); 
