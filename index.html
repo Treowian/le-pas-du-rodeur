@@ -102,9 +102,9 @@
 
         <div id="center-board" style="position: relative;">
             
-            <div id="persistent-mod-icon" style="display: none; position: absolute; top: 10px; left: 10px; font-size: clamp(16px, 4vw, 24px); opacity: 0.7; text-shadow: 0 0 10px rgba(255,255,255,0.2); cursor: help; z-index: 50;" title="Météo">☀️</div>
-
-            <div id="rounds-tracker" style="text-align: center; margin-bottom: 20px; font-family: 'Oswald', sans-serif; color: #888; font-size: 18px; letter-spacing: 2px;">
+            <div id="rounds-tracker" style="position: relative; text-align: center; margin-bottom: 20px; font-family: 'Oswald', sans-serif; color: #888; font-size: 18px; letter-spacing: 2px;">
+                <div id="persistent-mod-icon" style="display: none; position: absolute; left: 0; top: 50%; transform: translateY(-50%); font-size: clamp(20px, 6vw, 24px); opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.3); cursor: help; z-index: 50;" title="Météo">☀️</div>
+                
                 <span data-i18n="ui_rounds_won">MANCHES REMPORTÉES :</span> <span id="rounds-hero" style="color: var(--gold); font-size: 24px;">0</span> - <span id="rounds-enemy" style="color: var(--enemy-color); font-size: 24px;">0</span>
             </div>
 
