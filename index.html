@@ -16,7 +16,7 @@
 <body>
 
     <div id="settings-btn" onclick="toggleSettings()" style="z-index: 20000; position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer;">⚙️</div>
-    <div id="settings-menu" style="z-index: 20000; position: fixed; top: 50px; right: 15px; background: rgba(0,0,0,0.9); border: 1px solid #444; padding: 15px; display: none; flex-direction: column; gap: 10px;">
+    <div id="settings-menu" style="z-index: 20000; position: fixed; top: 50px; right: 15px; background: rgba(0,0,0,0.9); border: 1px solid #444; padding: 15px; display: none; flex-direction: column; gap: 10px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.9);">
         <button id="lang-btn" onclick="toggleLanguage()">🇬🇧 EN</button>
         <button id="music-btn" onclick="toggleMusic()">🔇 MUSIQUE OFF</button>
         <button id="sfx-btn" onclick="toggleSFX()">🔊 SFX ON</button>
@@ -41,7 +41,7 @@
                 <div class="xp-text"><span id="ui-xp-current">0</span> / <span id="ui-xp-needed">100</span> XP</div>
             </div>
             <div class="currency-box">
-                <span id="ui-eclats" class="gold-text" style="font-weight: bold; font-size: 18px;">0</span> ✦ <span data-i18n="ui_shards">Éclats d'Ombre</span>
+                <span id="ui-eclats" class="gold-text" style="font-weight: bold;">0</span> ✦ <span data-i18n="ui_shards">Éclats d'Ombre</span>
             </div>
             <button class="arsenal-btn" onclick="openArsenal()" data-i18n="ui_btn_arsenal">L'Arsenal</button>
         </div>
@@ -110,10 +110,11 @@
                 </div>
             </div>
 
-            <div style="width: 90%; display: flex; justify-content: space-between; font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 5px;">
+            <div id="score-row" style="width: 90%; display: flex; justify-content: space-between; font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 5px;">
                 <span style="color: var(--gold);"><span id="score-hero-display" style="font-size: 24px; font-weight: bold;">0</span> / 80</span>
                 <span style="color: var(--enemy-color);"><span id="score-enemy-display" style="font-size: 24px; font-weight: bold;">0</span> / 80</span>
             </div>
+            
             <div id="race-track-container">
                 <div id="race-track">
                     <div id="progress-hero"></div>
@@ -145,16 +146,15 @@
 
         <div class="character-panel">
             <div class="char-name enemy-name" id="ui-enemy-name">Adversaire</div>
-            <div class="hero-title" style="visibility: hidden;">-</div>
             <img src="" id="enemy-portrait-img" class="char-portrait enemy-portrait" alt="Portrait de l'adversaire">
             
-            <div class="resource-zone text-right">
+            <div class="resource-zone">
                 <div class="res-label" data-i18n="ui_res_lives">Vies (Déroute = -1)</div>
-                <div class="token-row justify-end" id="ui-enemy-lives"></div>
+                <div class="token-row" id="ui-enemy-lives"></div>
             </div>
-            <div class="resource-zone text-right" style="margin-top: 15px;">
+            <div class="resource-zone">
                 <div class="res-label" data-i18n="ui_res_hate">Haine (Malice & Attaques)</div>
-                <div class="token-row justify-end" id="ui-haine-tokens"></div>
+                <div class="token-row" id="ui-haine-tokens"></div>
             </div>
             <div class="dialogue-box enemy-dialogue" id="ui-enemy-dialogue">"..."</div>
         </div>

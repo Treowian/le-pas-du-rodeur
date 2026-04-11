@@ -36,8 +36,6 @@ body {
 /* ========================================= */
 #settings-btn { position: fixed; top: 15px; right: 15px; z-index: 6000; background: #111; border: 1px solid var(--gold); color: var(--gold); width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
 #settings-btn:hover { background: var(--gold); color: #000; }
-#settings-menu { position: fixed; top: 70px; right: 15px; z-index: 6000; background: rgba(10, 11, 12, 0.95); border: 1px solid var(--gold); padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; transform: translateY(-20px); opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.9); }
-#settings-menu.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
 #settings-menu button { background: #222; border: 1px solid var(--gold); color: var(--gold); padding: 10px 15px; border-radius: 4px; cursor: pointer; font-family: 'Oswald', sans-serif; text-transform: uppercase; font-weight: bold; transition: 0.3s; width: 120px; }
 #settings-menu button:hover { background: var(--gold); color: #000; }
 
@@ -51,7 +49,8 @@ body {
 .xp-container { flex-grow: 1; min-width: 150px; position: relative; height: 16px; background: #000; border: 1px solid #444; border-radius: 8px; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); }
 .xp-fill { position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, #b8860b, var(--gold)); width: 0%; transition: width 0.5s ease-out; }
 .xp-text { position: absolute; width: 100%; text-align: center; font-size: 11px; line-height: 16px; color: #fff; font-family: 'Oswald', sans-serif; z-index: 2; text-shadow: 0 0 3px #000; }
-.currency-box { font-family: 'Oswald', sans-serif; font-size: 14px; color: #ccc; background: #1a1a1a; padding: 5px 10px; border-radius: 4px; border: 1px solid #333; }
+.currency-box { font-family: 'Oswald', sans-serif; font-size: 16px; color: #ccc; background: #1a1a1a; padding: 5px 10px; border-radius: 4px; border: 1px solid #333; }
+#ui-eclats { font-size: 1.2em; }
 .arsenal-btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; border-radius: 4px; font-family: 'Oswald', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-weight: bold; }
 .arsenal-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
 
@@ -309,9 +308,11 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 #end-btn, #event-btn { font-size: 18px; padding: 15px 30px; background: transparent; border-width: 2px; }
 #end-btn:hover, #event-btn:hover { background: rgba(255, 255, 255, 0.15) !important; color: inherit !important; }
 
-
 /* ========================================= */
 /* RESPONSIVE MOBILE (Compression Avancée)   */
+/* ========================================= */
+/* ========================================= */
+/* RESPONSIVE MOBILE (Compression Absolue)   */
 /* ========================================= */
 @media (max-width: 850px) {
     body { padding: 2px; padding-top: 40px; justify-content: flex-start; }
@@ -320,10 +321,9 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     .player-profile-bar { flex-direction: column; align-items: stretch; padding: 10px; margin-bottom: 10px; gap: 8px; border-radius: 4px; border-color: #444; }
     .xp-container { max-width: none; }
     .profile-name { font-size: 16px; }
-    .currency-box { font-size: 12px; padding: 2px 5px; }
+    .currency-box { font-size: 12px; padding: 4px 8px; }
     .arsenal-btn { padding: 5px 10px; font-size: 12px; }
     
-    /* Compression Titre Auberge */
     .large-title { font-size: 22px; line-height: 1.1; }
     .subtitle-merriweather { font-size: 11px; margin-top: 4px; }
     .rules-btn { font-size: 11px; padding: 6px 12px; margin-top: 10px; }
@@ -337,33 +337,40 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     .table-card:nth-child(4) { grid-column: 1 / -1; }
     .table-card:nth-child(4) img { height: 100px; }
     
-    /* Verrouillage absolu de l'écran de duel */
+    /* 1. L'Écran de Duel plaque les joueurs aux extrémités */
     #duel-screen { 
-        height: calc(100dvh - 50px); 
-        gap: 5px; margin-top: 0; flex-direction: column; align-items: center; 
-        width: 100%; justify-content: space-between; overflow: hidden; 
+        height: calc(100dvh - 45px); 
+        gap: 5px; 
+        margin-top: 0; 
+        flex-direction: column; 
+        align-items: center; 
+        width: 100%; 
+        justify-content: space-between; /* LE FIX : Ramène Dirhael en haut, l'Ennemi en bas */
+        overflow: hidden; 
     }
     
-    .character-panel { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; padding: 4px; gap: 4px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; }
-    .char-portrait { width: 40px; height: 40px; margin: 0; border-width: 2px !important; }
-    .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0; }
+    /* 2. Les Joueurs : on leur interdit formellement de disparaître */
+    .character-panel { 
+        display: flex; flex-direction: row; flex-wrap: wrap; 
+        justify-content: center; 
+        align-items: flex-start; 
+        padding: 8px 10px; gap: 8px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; 
+        flex-shrink: 0; /* LE FIX : Interdiction de rétrécir ou de se faire écraser */
+        z-index: 10;
+    }
+    .char-portrait { width: 45px; height: 45px; margin: 0; border-width: 2px !important; }
+    .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0 0 5px 0; }
     .hero-title { display: none; } 
     
-    .resource-zone { 
-        width: auto; min-width: 80px; margin: 0; text-align: center; 
-        display: flex; flex-direction: column; justify-content: flex-start; 
-    }
-    .res-label { font-size: 8px; margin-bottom: 4px; letter-spacing: 0; line-height: 1; } 
-    .token-row { 
-        display: flex; gap: 4px; justify-content: center !important; 
-        align-items: center; min-height: 16px; margin: 0; 
-    }
-    .token { width: 10px; height: 10px; }
+    .resource-zone { width: auto; min-width: 85px; margin: 0; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; }
+    .res-label { font-size: 9px; margin-bottom: 4px; letter-spacing: 0; height: 12px; display: flex; align-items: flex-end; justify-content: center; line-height: 1; } 
+    .token-row { display: flex; gap: 4px; justify-content: center !important; align-items: center; height: 20px; margin: 0; }
+    .token { width: 12px; height: 12px; }
 
     #duel-screen > .character-panel:first-child .char-name { order: -2; }
-    #duel-screen > .character-panel:first-child .char-portrait { order: -1; margin-right: 6px; }
+    #duel-screen > .character-panel:first-child .char-portrait { order: -1; margin-right: 6px; margin-top: 5px; }
     #duel-screen > .character-panel:last-child .char-name { order: -2; }
-    #duel-screen > .character-panel:last-child .char-portrait { order: -1; margin-left: 6px; }
+    #duel-screen > .character-panel:last-child .char-portrait { order: -1; margin-left: 6px; margin-top: 5px; }
 
     #ui-modifier-banner { width: 90%; padding: 10px; top: 45%; }
     #ui-mod-title { font-size: 14px !important; }
@@ -373,48 +380,44 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     .hero-dialogue { top: 90%; left: 15px; border-color: var(--gold); border-top-left-radius: 2px; }
     .enemy-dialogue { bottom: 90%; top: auto; right: 15px; border-color: var(--enemy-color); border-bottom-right-radius: 2px; text-align: right; }
 
-    /* Plateau Central : Épuré et Aéré pour le Mobile */
+    /* 3. Le Plateau Central : devient une "éponge" qui s'écrase pour faire la place */
     #center-board { 
-        padding: 5px 15px; 
+        padding: 5px 10px; 
         border-radius: 8px; 
         width: 100%; 
         max-width: 450px; 
         box-sizing: border-box; 
         margin: 0; 
-        flex-grow: 1; 
+        flex: 1 1 auto; /* LE FIX : Absorbe l'espace dispo mais autorise la compression */
+        min-height: 0; /* LE FIX : Autorise le plateau à se tasser au max */
         display: flex;
         flex-direction: column;
-        justify-content: center; /* On centre le tout verticalement */
-        gap: 12px; /* On redonne de l'air entre chaque gros bloc */
+        justify-content: space-evenly; /* Répartit proprement à l'intérieur */
+        gap: 4px;
     }
     
-    /* 1. Bloc des Manches */
     #rounds-tracker { margin-bottom: 0 !important; font-size: 12px !important; gap: 8px !important; }
     #persistent-mod-icon { font-size: 18px !important; }
     
-    /* 2. Bloc de la Course */
     #score-row { margin-bottom: 0 !important; font-size: 13px !important; }
     #score-row span span { font-size: 20px !important; }
-    #race-track-container { margin-bottom: 0 !important; height: 8px !important; width: 100%; }
-    #race-track { height: 8px !important; }
-    .race-badge { display: none; } /* ON CACHE LE BADGE SUR MOBILE : Gain de place énorme */
+    #race-track-container { margin-bottom: 0 !important; height: 6px !important; width: 100%; }
+    #race-track { height: 6px !important; }
+    .race-badge { display: none; } 
     
-    /* 3. Bloc du Tour (Score en cours) */
     .turn-info-container { margin-bottom: 0; }
-    .turn-info-label { display: none; } /* ON CACHE "Avancée du tour" SUR MOBILE */
-    #current-turn-score { font-size: 36px; line-height: 1; margin-top: 5px; }
+    .turn-info-label { display: none; } 
+    #current-turn-score { font-size: 32px; line-height: 1; margin-top: 2px; }
     #current-turn-score span { font-size: 12px; }
     
-    /* 4. Les Dés (Les stars de l'écran) */
-    #dice-arena { min-height: 50px; gap: 8px; margin-bottom: 0; padding: 5px; background: transparent; } /* Fond retiré pour alléger */
-    .die-wrapper { width: 48px; height: 48px; } /* On redonne une taille parfaite pour les doigts */
-    .die-wrapper.wrap-kept { transform: translateY(-8px); }
-    .die { font-size: 24px; border-radius: 8px; border-width: 1px; } 
+    #dice-arena { min-height: 45px; gap: 6px; margin-bottom: 0; padding: 2px; background: transparent; }
+    .die-wrapper { width: 44px; height: 44px; } 
+    .die-wrapper.wrap-kept { transform: translateY(-5px); }
+    .die { font-size: 22px; border-radius: 8px; border-width: 1px; } 
     
-    /* 5. Les Boutons */
-    #turn-controls { gap: 10px; margin-top: 0; min-height: 40px; }
-    button { padding: 10px 15px; font-size: 12px; min-width: 110px; }
-    .back-btn { margin-top: 0; margin-bottom: 0; font-size: 11px; padding: 5px; opacity: 0.6; }
+    #turn-controls { gap: 8px; margin-top: 0; min-height: 36px; }
+    button { padding: 8px 12px; font-size: 11px; min-width: 100px; }
+    .back-btn { margin-top: 0; margin-bottom: 0; font-size: 10px; padding: 4px; opacity: 0.6; }
 
     /* Modal Arsenal Mobile réparée */
     .rules-content { padding: 15px; width: 95%; height: 85vh !important; display: flex; flex-direction: column; }

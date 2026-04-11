@@ -167,7 +167,7 @@ function evaluateContracts() {
         if(cId === 'c9' && ms.highestTurnScoreThisMatch >= 30) isDone = true;
         if(cId === 'c10' && ms.highestTurnScoreThisMatch >= 50) isDone = true;
         if(cId === 'c11' && ms.bankedUnder15) isDone = true;
-        if(cId === 'c12' && ms.totalTurnsThisMatch <= 8) isDone = true; // Win very quickly
+        if(cId === 'c12' && ms.totalTurnsThisMatch <= 8) isDone = true; 
         if(cId === 'c13' && gameState.enemyScore < 30) isDone = true;
         if(cId === 'c14' && gameState.enemyScore >= 70) isDone = true;
         if(cId === 'c15' && gameState.playerScore === 80) isDone = true;
@@ -241,7 +241,7 @@ const i18n = {
         ui_tavern_title: "L'AUBERGE DU PONT-AUX-PIERRES", ui_tavern_sub: "Dirhael, les ombres s'allongent. Choisissez votre table.",
         ui_btn_rules: "Lire le Grimoire", name_brag: "BRAG", name_zamin: "ZÂMIN", name_kael: "KAEL", name_letranger: "L'ÉTRANGER",
         diff_easy: "FACILE", diff_normal: "NORMAL", diff_hard: "DIFFICILE", diff_random: "ALÉATOIRE",
-        ui_res_lives: "Vies (Déroute = -1)", ui_res_hope: "Espoir (Défenses)", ui_res_shadow: "Ombre (Risque mortel > 3)", ui_res_hate: "Haine (Malice & Attaques)",
+        ui_res_lives: "Vies (Déroute = -1)", ui_res_hope: "Espoir (Défenses & Actions)", ui_res_shadow: "Ombre (Risque mortel > 3)", ui_res_hate: "Haine (Malice & Attaques)",
         ui_rounds_won: "MANCHES REMPORTÉES :", ui_80_leagues: "80 LIEUES",
         ui_btn_roll: "Forcer l'allure", ui_btn_stop: "Établir le camp", ui_btn_leave: "Quitter la table", ui_btn_continue: "CONTINUER",
         ui_espoir_used: "Action d'Espoir utilisée", ui_espoir_none: "Espoir insuffisant (Min. 2)", ui_espoir_purify: "Dispo : Purifier (-2)", ui_espoir_compass: "Dispo : Purifier, Boussole, Elbereth",
@@ -353,9 +353,9 @@ const i18n = {
         ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game", ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles", ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles", ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked", ui_market_desc: "Spend your Shadow Shards.", stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:", stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:", stat_1life: "Close calls (1 Life wins):", save_title: "Save and Transfer", save_desc1: "Copy code.", save_btn_gen: "Generate", save_desc2: "Paste code.", save_btn_import: "Restore", toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shards!", toast_copy_ok: "Copied!", toast_import_ok: "Restored!", toast_import_fail: "Invalid code.",
         title_ranger: "The Ranger", title_walker: "The Walker", title_deathcheater: "Death-Cheater", title_dunedain: "Dúnadan", title_lordchance: "Lord of Chance", title_reckless: "The Reckless", title_orcblight: "Orc Bane", title_kingnocrown: "King Without a Crown", title_eternal: "The Eternal", title_lightbearer: "Light Bearer", title_bearer: "The Bearer", title_bloodwest: "Blood of the West", title_thiefshadow: "Thief in the Shadow", title_hobbit: "Lost Hobbit",
         dialogues: {
-            dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope guides me."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
-            brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["Give that back!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
-            zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Foreclosure."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
+            dirhael: { greetings: ["Chaque pas compte."], success: ["La piste est bonne."], failure: ["Le fardeau devient lourd..."], purify: ["Un mal pour un bien."], hope_hate: ["L'espoir fait vivre."], impasse: ["Maudites broussailles..."], camp: ["Prenons un instant."], shadow: ["Pardonnez-moi, ancêtres..."] },
+            brag: { greetings: ["Amène tes pièces !"], success: ["Je t'ai plumé !"], failure: ["Mes os !"], purify: ["Lâcher mon butin..."], hope_hate: ["Rends-moi ça !"], impasse: ["On s'égare ?"], camp: ["Moi j'empoche !"] },
+            zamin: { greetings: ["La Maison gagne toujours."], success: ["Le profit avant tout."], failure: ["Anomalie statistique."], purify: ["Déficit tactique."], hope_hate: ["Saisie immobilière."], impasse: ["Le marché stagne."], camp: ["Investissement sécurisé."] },
             kael: { greetings: ["Le Gondor is dead."], success: ["Succumb to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
             letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
         }
@@ -386,13 +386,7 @@ function updateLivesUI() {
 
 function updateEspoirUI() { 
     const c = document.getElementById('ui-espoir-tokens'); if (!c) return; 
-    
-    // On force le centrage absolu en JS pour écraser n'importe quelle classe HTML rebelle
-    c.style.display = 'flex'; 
-    c.style.flexDirection = 'column'; 
-    c.style.alignItems = 'center'; 
-    c.style.justifyContent = 'center';
-    
+    c.removeAttribute('style'); // Purge de tout style parasite
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
     let statusText = "";
     if (gameState.hasUsedEspoirThisTurn) { statusText = `⌛ ${t('ui_espoir_used')}`; } 
@@ -400,31 +394,21 @@ function updateEspoirUI() {
     else if (gameState.playerEspoir === 2) { statusText = `⚡ ${t('ui_espoir_purify')}`; } 
     else if (gameState.playerEspoir >= 3) { statusText = `⚡ ${t('ui_espoir_compass')}`; }
     
-    // On retire le gras (bold) et on réduit la taille à 14px max pour retrouver l'élégance
     c.innerHTML = `
-        <div style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: clamp(12px, 3vw, 14px); font-weight: normal; letter-spacing: 1px;">
-            ⭐ ${gameState.playerEspoir} / ${maxEspoir}
-        </div>
-        <div style="color:#888; font-size: clamp(9px, 2vw, 11px); margin-top: 2px;">
-            ${statusText}
-        </div>
-    `; 
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; line-height: 1;">
+            <span style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: clamp(14px, 4vw, 16px);">⭐ ${gameState.playerEspoir} / ${maxEspoir}</span>
+            <span style="color:#888; font-size: clamp(9px, 2.5vw, 11px); margin-top: 4px; white-space: nowrap;">${statusText}</span>
+        </div>`; 
 }
 
 function updateHaineUI() { 
     const c = document.getElementById('ui-haine-tokens'); if (!c) return; 
+    c.removeAttribute('style'); // Purge de tout style parasite
     
-    // On force le centrage absolu pour annuler l'effet du "justify-end" de l'ennemi
-    c.style.display = 'flex'; 
-    c.style.justifyContent = 'center'; 
-    c.style.alignItems = 'center';
-    
-    // Même punition : on retire le gras et on affine la police
     c.innerHTML = `
-        <div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(12px, 3vw, 14px); font-weight: normal; letter-spacing: 1px;">
+        <div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(14px, 4vw, 16px); line-height: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
             🔥 ${gameState.enemyHate} / 10
-        </div>
-    `; 
+        </div>`; 
 }
 
 function updateShadowUI() { const c = document.getElementById('ui-ombre-tokens'); if (!c) return; c.innerHTML = ''; let max = Math.max(3, gameState.playerShadow); for (let i = 0; i < max; i++) { if (i < gameState.playerShadow) c.innerHTML += `<div class="token ombre" style="${i>=3 ? 'background:var(--blood);border-color:var(--blood);box-shadow:0 0 10px var(--blood);' : 'background:var(--corruption);'}"></div>`; else c.innerHTML += `<div class="token ombre"></div>`; } }
@@ -818,8 +802,23 @@ function showEndScreen(t1, msg, btxt, cb, col) { const m = document.getElementBy
 function showEventScreen(t1, msg, btxt, cb, col) { const m = document.getElementById('event-modal'); const c = m.querySelector('.event-content'); document.getElementById('event-title').innerText = t1; document.getElementById('event-title').style.color = col; c.style.borderColor = col; c.style.boxShadow = `0 0 50px ${col}`; document.getElementById('event-message').innerHTML = msg; const b = document.getElementById('event-btn'); b.innerText = btxt; b.style.color = col; b.style.borderColor = col; b.onclick = () => { m.style.display = 'none'; cb(); }; m.style.display = 'flex'; }
 function showRules() { updateStaticUI(); document.getElementById('rules-modal').style.display = 'flex'; }
 function hideRules() { document.getElementById('rules-modal').style.display = 'none'; if(document.getElementById('tavern-screen').style.display !== 'none') { audioManager.playBGM('tavern'); } }
-function toggleSettings() { document.getElementById('settings-menu').classList.toggle('open'); }
-document.addEventListener('click', (e) => { const menu = document.getElementById('settings-menu'); const btn = document.getElementById('settings-btn'); if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove('open'); });
+
+function toggleSettings() { 
+    const menu = document.getElementById('settings-menu');
+    if (menu.style.display === 'flex') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'flex';
+    }
+}
+
+document.addEventListener('click', (e) => { 
+    const menu = document.getElementById('settings-menu'); 
+    const btn = document.getElementById('settings-btn'); 
+    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.style.display = 'none'; 
+    }
+});
 
 // ==========================================
 // 8. HAUTS FAITS & ARSENAL
