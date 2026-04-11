@@ -309,10 +309,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 #end-btn:hover, #event-btn:hover { background: rgba(255, 255, 255, 0.15) !important; color: inherit !important; }
 
 /* ========================================= */
-/* RESPONSIVE MOBILE (Compression Avancée)   */
-/* ========================================= */
-/* ========================================= */
-/* RESPONSIVE MOBILE (Compression Absolue)   */
+/* RESPONSIVE MOBILE (Compression & Jouabilité)*/
 /* ========================================= */
 @media (max-width: 850px) {
     body { padding: 2px; padding-top: 40px; justify-content: flex-start; }
@@ -337,26 +334,17 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     .table-card:nth-child(4) { grid-column: 1 / -1; }
     .table-card:nth-child(4) img { height: 100px; }
     
-    /* 1. L'Écran de Duel plaque les joueurs aux extrémités */
     #duel-screen { 
         height: calc(100dvh - 45px); 
-        gap: 5px; 
-        margin-top: 0; 
-        flex-direction: column; 
-        align-items: center; 
-        width: 100%; 
-        justify-content: space-between; /* LE FIX : Ramène Dirhael en haut, l'Ennemi en bas */
-        overflow: hidden; 
+        gap: 5px; margin-top: 0; flex-direction: column; align-items: center; 
+        width: 100%; justify-content: space-between; overflow: hidden; 
     }
     
-    /* 2. Les Joueurs : on leur interdit formellement de disparaître */
     .character-panel { 
         display: flex; flex-direction: row; flex-wrap: wrap; 
-        justify-content: center; 
-        align-items: flex-start; 
+        justify-content: center; align-items: flex-start; 
         padding: 8px 10px; gap: 8px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; 
-        flex-shrink: 0; /* LE FIX : Interdiction de rétrécir ou de se faire écraser */
-        z-index: 10;
+        flex-shrink: 0; z-index: 10;
     }
     .char-portrait { width: 45px; height: 45px; margin: 0; border-width: 2px !important; }
     .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0 0 5px 0; }
@@ -376,24 +364,39 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     #ui-mod-title { font-size: 14px !important; }
     #ui-mod-desc { font-size: 11px !important; margin-top: 4px !important; }
 
-    .dialogue-box { position: absolute; background: rgba(15, 15, 15, 0.95); border: 1px solid; padding: 6px 10px; color: var(--bone); font-size: 11px; width: max-content; max-width: 150px; z-index: 100; margin: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.9); border-radius: 8px; }
-    .hero-dialogue { top: 90%; left: 15px; border-color: var(--gold); border-top-left-radius: 2px; }
-    .enemy-dialogue { bottom: 90%; top: auto; right: 15px; border-color: var(--enemy-color); border-bottom-right-radius: 2px; text-align: right; }
-
-    /* 3. Le Plateau Central : devient une "éponge" qui s'écrase pour faire la place */
-    #center-board { 
-        padding: 5px 10px; 
+    /* ================================================== */
+    /* NOUVELLE POSITION DES BULLES DE DIALOGUE (GAUCHE)  */
+    /* ================================================== */
+    .dialogue-box { 
+        position: absolute; background: rgba(15, 15, 15, 0.95); border: 1px solid; 
+        padding: 6px 10px; color: var(--bone); font-size: 11px; width: max-content; 
+        max-width: 150px; z-index: 100; margin: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.9); 
         border-radius: 8px; 
-        width: 100%; 
-        max-width: 450px; 
-        box-sizing: border-box; 
-        margin: 0; 
-        flex: 1 1 auto; /* LE FIX : Absorbe l'espace dispo mais autorise la compression */
-        min-height: 0; /* LE FIX : Autorise le plateau à se tasser au max */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly; /* Répartit proprement à l'intérieur */
-        gap: 4px;
+    }
+    
+    /* Dirhael : Bulle alignée en haut à gauche, au niveau de son nom */
+    .hero-dialogue { 
+        top: 8px; 
+        left: 10px; 
+        border-color: var(--gold); 
+        border-top-left-radius: 2px; 
+    }
+    
+    /* Ennemi : Bulle alignée en haut à gauche, au niveau de son nom */
+    .enemy-dialogue { 
+        top: 8px; 
+        bottom: auto; /* On annule l'ancien réglage vers le bas */
+        left: 10px; 
+        right: auto; 
+        border-color: var(--enemy-color); 
+        border-top-left-radius: 2px; 
+        text-align: left; 
+    }
+
+    /* Le Plateau Central */
+    #center-board { 
+        padding: 5px 10px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; 
+        margin: 0; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 4px;
     }
     
     #rounds-tracker { margin-bottom: 0 !important; font-size: 12px !important; gap: 8px !important; }
@@ -405,8 +408,17 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     #race-track { height: 6px !important; }
     .race-badge { display: none; } 
     
-    .turn-info-container { margin-bottom: 0; }
-    .turn-info-label { display: none; } 
+    /* ================================================== */
+    /* RÉAFFICHER LE TEXTE D'ALERTE POUR JOUER !          */
+    /* ================================================== */
+    .turn-info-container { margin-bottom: 0; min-height: 24px; display: flex; flex-direction: column; justify-content: center; }
+    .turn-info-label { 
+        display: block !important; /* LE CORRÉCTIF VITAL : réaffiche le texte des attaques */
+        font-size: 11px; 
+        margin-bottom: 2px; 
+        font-weight: bold;
+        line-height: 1.2;
+    } 
     #current-turn-score { font-size: 32px; line-height: 1; margin-top: 2px; }
     #current-turn-score span { font-size: 12px; }
     
@@ -419,7 +431,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     button { padding: 8px 12px; font-size: 11px; min-width: 100px; }
     .back-btn { margin-top: 0; margin-bottom: 0; font-size: 10px; padding: 4px; opacity: 0.6; }
 
-    /* Modal Arsenal Mobile réparée */
+    /* Modal Arsenal Mobile */
     .rules-content { padding: 15px; width: 95%; height: 85vh !important; display: flex; flex-direction: column; }
     .arsenal-tabs { justify-content: center; gap: 5px; margin-bottom: 10px; padding-bottom: 5px; flex-shrink: 0; }
     .tab-btn { font-size: 13px; padding: 6px; }
