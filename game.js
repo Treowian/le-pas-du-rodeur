@@ -356,7 +356,7 @@ const i18n = {
             dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope guides me."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
             brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["Give that back!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
             zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Foreclosure."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
-            kael: { greetings: ["Gondor is dead."], success: ["Succombe to despair."], failure: ["Flamme vacillante !"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
+            kael: { greetings: ["Le Gondor is dead."], success: ["Succumb to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
             letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
         }
     }
@@ -383,17 +383,27 @@ function updateLivesUI() {
     const hc = document.getElementById('ui-hero-lives'); hc.innerHTML = ''; for (let i = 0; i < 3; i++) hc.innerHTML += `<div class="token vie ${i < gameState.playerLives ? '' : 'lost'}"></div>`;
     const ec = document.getElementById('ui-enemy-lives'); ec.innerHTML = ''; for (let i = 0; i < gameState.enemyStartLives; i++) ec.innerHTML += `<div class="token vie ${i < gameState.enemyLives ? '' : 'lost'}"></div>`;
 }
+
 function updateEspoirUI() { 
     const c = document.getElementById('ui-espoir-tokens'); if (!c) return; 
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
     let statusText = "";
-    if (gameState.hasUsedEspoirThisTurn) { statusText = `<span style="color:#888; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">⌛ ${t('ui_espoir_used')}</span>`; } 
-    else if (gameState.playerEspoir < 2) { statusText = `<span style="color:#888; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">❌ ${t('ui_espoir_none')}</span>`; } 
-    else if (gameState.playerEspoir === 2) { statusText = `<span style="color:#5dade2; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_purify')}</span>`; } 
-    else if (gameState.playerEspoir >= 3) { statusText = `<span style="color:#5dade2; font-size: 10px; display:block; margin-top: 2px; font-weight: normal; text-shadow: none;">⚡ ${t('ui_espoir_compass')}</span>`; }
-    c.innerHTML = `<div style="text-align: center; width: 100%;"><div style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: clamp(18px, 4vw, 22px); text-shadow: 0 0 10px rgba(212,175,55,0.5); display: flex; align-items: center; justify-content: center; gap: 8px;"><span style="font-size: 0.85em;">⭐</span> <span>${gameState.playerEspoir} / ${maxEspoir}</span></div>${statusText}</div>`; 
+    if (gameState.hasUsedEspoirThisTurn) { statusText = `⌛ ${t('ui_espoir_used')}`; } 
+    else if (gameState.playerEspoir < 2) { statusText = `❌ ${t('ui_espoir_none')}`; } 
+    else if (gameState.playerEspoir === 2) { statusText = `⚡ ${t('ui_espoir_purify')}`; } 
+    else if (gameState.playerEspoir >= 3) { statusText = `⚡ ${t('ui_espoir_compass')}`; }
+    
+    c.innerHTML = `<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+        <span style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: 16px; font-weight: bold;">⭐ ${gameState.playerEspoir} / ${maxEspoir}</span>
+        <span style="color:#888; font-size: 9px; white-space: nowrap;">${statusText}</span>
+    </div>`; 
 }
-function updateHaineUI() { const c = document.getElementById('ui-haine-tokens'); if (!c) return; c.innerHTML = `<div style="width: 100%; text-align: center;"><div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(18px, 4vw, 22px); text-shadow: 0 0 10px rgba(220,20,60,0.5); display: flex; align-items: center; justify-content: center; gap: 8px;"><span style="font-size: 0.85em;">🔥</span> <span>${gameState.enemyHate} / 10</span></div></div>`; }
+
+function updateHaineUI() { 
+    const c = document.getElementById('ui-haine-tokens'); if (!c) return; 
+    c.innerHTML = `<span style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: 16px; font-weight: bold;">🔥 ${gameState.enemyHate} / 10</span>`; 
+}
+
 function updateShadowUI() { const c = document.getElementById('ui-ombre-tokens'); if (!c) return; c.innerHTML = ''; let max = Math.max(3, gameState.playerShadow); for (let i = 0; i < max; i++) { if (i < gameState.playerShadow) c.innerHTML += `<div class="token ombre" style="${i>=3 ? 'background:var(--blood);border-color:var(--blood);box-shadow:0 0 10px var(--blood);' : 'background:var(--corruption);'}"></div>`; else c.innerHTML += `<div class="token ombre"></div>`; } }
 function updateGlobalUI() {
     let heroProgressPercent = Math.min((gameState.playerScore / gameState.targetScore) * 100, 100); let enemyProgressPercent = Math.min((gameState.enemyScore / gameState.targetScore) * 100, 100);

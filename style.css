@@ -236,7 +236,6 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 .die.skin-evenstar.die-triumph { color: #f39c12; border-color: #f39c12; }
 .die.skin-evenstar.die-danger { color: #c0392b; border-color: #c0392b; }
 
-
 /* --- FONDS DE TABLE (Boards) --- */
 #center-board.board-wood { background: linear-gradient(rgba(26,16,5,0.9), rgba(26,16,5,0.9)), url('images/wood.jpg') center/cover; border-color: #3e2723; box-shadow: inset 0 0 50px rgba(0,0,0,0.9); }
 #center-board.board-stone { background: linear-gradient(rgba(17,21,24,0.9), rgba(17,21,24,0.9)), url('images/stone.jpg') center/cover; border-color: #444; }
@@ -272,11 +271,12 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 /* ========================================= */
 /* UI DE LA MODALE ARSENAL                   */
 /* ========================================= */
-.arsenal-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
-.tab-btn { background: transparent; border: none; color: #888; font-family: 'Oswald', sans-serif; font-size: 16px; cursor: pointer; padding: 5px 10px; transition: 0.2s; }
+.arsenal-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.tab-btn { background: transparent; border: none; color: #888; font-family: 'Oswald', sans-serif; font-size: 16px; cursor: pointer; padding: 5px 10px; transition: 0.2s; white-space: nowrap; }
 .tab-btn:hover { color: #fff; }
 .tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
-.arsenal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+
+.arsenal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
 .arsenal-item { background: #111; border: 1px solid #333; padding: 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; position: relative; overflow: hidden; }
 .arsenal-item.equipped { border-color: var(--gold); background: #1a1710; box-shadow: inset 0 0 15px rgba(212,175,55,0.1); }
 .arsenal-item h3 { margin: 0; font-family: 'Oswald', sans-serif; font-size: 16px; color: var(--bone); }
@@ -313,47 +313,47 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 }
 
 /* ========================================= */
-/* RESPONSIVE MOBILE                         */
-/* ========================================= */
-/* ========================================= */
 /* RESPONSIVE MOBILE (Ultra-Compressé)       */
 /* ========================================= */
 @media (max-width: 850px) {
     body { padding: 2px; padding-top: 40px; justify-content: flex-start; }
     #settings-btn { top: 5px; right: 5px; width: 35px; height: 35px; font-size: 16px; }
     
-    .player-profile-bar { flex-direction: column; align-items: stretch; padding: 10px; margin-bottom: 10px; gap: 8px; }
+    .player-profile-bar { flex-direction: column; align-items: stretch; padding: 10px; margin-bottom: 10px; gap: 8px; border-radius: 4px; border-color: #444; }
     .xp-container { max-width: none; }
     .profile-name { font-size: 16px; }
+    .currency-box { font-size: 12px; padding: 2px 5px; }
+    .arsenal-btn { padding: 5px 10px; font-size: 12px; }
     
     .large-title { font-size: 26px; line-height: 1.1; }
     .tavern-header { margin-bottom: 15px; padding: 10px; }
     .tables-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 5px; }
     .table-card { padding: 8px; min-width: 0; max-width: none; }
     .table-name { font-size: 14px; margin-bottom: 3px; }
-    .table-card img { height: 70px; margin-bottom: 4px; }
+    .table-card img { height: 70px; margin-bottom: 4px; border-radius: 4px; }
     .diff-easy, .diff-normal, .diff-hard, .diff-random { font-size: 9px; }
     .table-card:nth-child(4) { grid-column: 1 / -1; }
     .table-card:nth-child(4) img { height: 100px; }
     
-    /* Compression absolue de l'écran de duel */
-     #duel-screen { 
-        height: calc(100dvh - 50px); /* Prend 100% de l'écran moins la marge du haut */
+    /* Verrouillage absolu de l'écran de duel */
+    #duel-screen { 
+        height: calc(100dvh - 50px); 
         gap: 5px; 
         margin-top: 0; 
         flex-direction: column; 
         align-items: center; 
         width: 100%; 
-        justify-content: space-between; /* Colle le Héros en haut et l'Ennemi en bas */
-        overflow: hidden; /* Interdit formellement le scroll */
+        justify-content: space-between; 
+        overflow: hidden; 
+    }
     
     .character-panel { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; padding: 6px; gap: 6px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; }
     .char-portrait { width: 45px; height: 45px; margin: 0; border-width: 2px !important; }
     .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0; }
     .hero-title { display: none; } 
     
-    .resource-zone { width: auto; min-width: 60px; margin: 0; text-align: center; }
-    .res-label { font-size: 8px; margin-bottom: 0px; letter-spacing: 0; } /* Texte réduit */
+    .resource-zone { width: auto; min-width: 80px; margin: 0; text-align: center; }
+    .res-label { font-size: 8px; margin-bottom: 0px; letter-spacing: 0; } 
     .token-row { min-height: 14px; gap: 3px; justify-content: center !important; margin-top: 2px; }
     .token { width: 10px; height: 10px; }
 
@@ -362,7 +362,6 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     #duel-screen > .character-panel:last-child .char-name { order: -2; }
     #duel-screen > .character-panel:last-child .char-portrait { order: -1; margin-left: 6px; }
 
-    /* Modificateur Météo (Bannière plus compacte) */
     #ui-modifier-banner { width: 90%; padding: 10px; top: 45%; }
     #ui-mod-title { font-size: 14px !important; }
     #ui-mod-desc { font-size: 11px !important; margin-top: 4px !important; }
@@ -374,26 +373,10 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
         max-width: 150px; z-index: 100; margin: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.9); 
         border-radius: 8px; 
     }
-    
-    /* Dirhael est en haut : sa bulle "tombe" vers le bas */
-    .hero-dialogue { 
-        top: 90%; 
-        left: 15px; 
-        border-color: var(--gold); 
-        border-top-left-radius: 2px; 
-    }
-    
-    /* L'ennemi est en bas : sa bulle "flotte" vers le haut */
-    .enemy-dialogue { 
-        bottom: 90%; 
-        top: auto; 
-        right: 15px; 
-        border-color: var(--enemy-color); 
-        border-bottom-right-radius: 2px; 
-        text-align: right;
-    }
+    .hero-dialogue { top: 90%; left: 15px; border-color: var(--gold); border-top-left-radius: 2px; }
+    .enemy-dialogue { bottom: 90%; top: auto; right: 15px; border-color: var(--enemy-color); border-bottom-right-radius: 2px; text-align: right; }
 
-    /* Plateau Central Ultra-Compact */
+    /* Le plateau central agit comme un ressort pour absorber l'espace */
     #center-board { 
         padding: 5px 10px; 
         border-radius: 8px; 
@@ -401,9 +384,10 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
         max-width: 450px; 
         box-sizing: border-box; 
         margin: 0; 
-        flex-grow: 1; /* Il prend toute la place libre au milieu */
-        justify-content: space-evenly; /* Il répartit ses éléments proprement */
+        flex-grow: 1; 
+        justify-content: space-evenly; 
     }
+
     #rounds-tracker { margin-bottom: 6px !important; font-size: 12px !important; gap: 8px !important; }
     #persistent-mod-icon { font-size: 18px !important; }
     .score-display { font-size: 12px; margin-bottom: 2px; width: 95%; }
@@ -425,11 +409,11 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     button { padding: 8px 12px; font-size: 11px; min-width: 100px; }
     .back-btn { margin-top: 5px; margin-bottom: 2px; font-size: 11px; padding: 4px; }
 
-    /* Modal Arsenal Mobile */
-    .rules-content { padding: 15px; width: 95%; height: 85vh !important; }
-    .arsenal-tabs { justify-content: center; gap: 5px; margin-bottom: 10px; padding-bottom: 5px; }
-    .tab-btn { font-size: 11px; padding: 4px; }
-    .arsenal-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .arsenal-item { padding: 10px; gap: 6px; }
-    .arsenal-item h3 { font-size: 13px; }
+    /* Modal Arsenal Mobile réparée */
+    .rules-content { padding: 15px; width: 95%; height: 85vh !important; display: flex; flex-direction: column; }
+    .arsenal-tabs { justify-content: center; gap: 5px; margin-bottom: 10px; padding-bottom: 5px; flex-shrink: 0; }
+    .tab-btn { font-size: 13px; padding: 6px; }
+    .arsenal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; overflow-y: auto; }
+    .arsenal-item { padding: 12px; gap: 8px; min-width: 0; }
+    .arsenal-item h3 { font-size: 14px; }
 }

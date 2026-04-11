@@ -15,8 +15,8 @@
 </head>
 <body>
 
-    <div id="settings-btn" onclick="toggleSettings()" style="z-index: 20000;">⚙️</div>
-    <div id="settings-menu" style="z-index: 20000;">
+    <div id="settings-btn" onclick="toggleSettings()" style="z-index: 20000; position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer;">⚙️</div>
+    <div id="settings-menu" style="z-index: 20000; position: fixed; top: 50px; right: 15px; background: rgba(0,0,0,0.9); border: 1px solid #444; padding: 15px; display: none; flex-direction: column; gap: 10px;">
         <button id="lang-btn" onclick="toggleLanguage()">🇬🇧 EN</button>
         <button id="music-btn" onclick="toggleMusic()">🔇 MUSIQUE OFF</button>
         <button id="sfx-btn" onclick="toggleSFX()">🔊 SFX ON</button>
@@ -92,10 +92,9 @@
                 <div class="token-row" id="ui-ombre-tokens"></div>
             </div>
             
-            <div class="resource-zone" style="margin-top: 15px;">
+            <div class="resource-zone">
                 <div class="res-label" data-i18n="ui_res_hope">Espoir (Défenses & Actions)</div>
-                <div class="token-row" id="ui-espoir-tokens" style="justify-content: center; width: 100%;">
-                    </div>
+                <div class="token-row" id="ui-espoir-tokens"></div>
             </div>
             <div class="dialogue-box hero-dialogue" id="ui-hero-dialogue">"..."</div>
         </div>
@@ -103,15 +102,12 @@
         <div id="center-board" style="position: relative;">
             
             <div id="rounds-tracker" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; font-family: 'Oswald', sans-serif; color: #888; font-size: 18px; letter-spacing: 2px;">
-                
                 <div id="persistent-mod-icon" style="display: none; font-size: clamp(20px, 6vw, 24px); opacity: 0.9; text-shadow: 0 0 10px rgba(255,255,255,0.3); cursor: help;" title="Météo">☀️</div>
-                
                 <div>
                     <span data-i18n="ui_rounds_won">MANCHES REMPORTÉES :</span> 
                     <span id="rounds-hero" style="color: var(--gold); font-size: 24px;">0</span> - 
                     <span id="rounds-enemy" style="color: var(--enemy-color); font-size: 24px;">0</span>
                 </div>
-
             </div>
 
             <div style="width: 90%; display: flex; justify-content: space-between; font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 5px;">
@@ -158,14 +154,13 @@
             </div>
             <div class="resource-zone text-right" style="margin-top: 15px;">
                 <div class="res-label" data-i18n="ui_res_hate">Haine (Malice & Attaques)</div>
-                <div class="token-row justify-end" id="ui-haine-tokens" style="justify-content: center; width: 100%;">
-                    </div>
+                <div class="token-row justify-end" id="ui-haine-tokens"></div>
             </div>
             <div class="dialogue-box enemy-dialogue" id="ui-enemy-dialogue">"..."</div>
         </div>
     </div>
 
-    <div id="end-modal"><div class="end-content" style="max-height: 90vh; overflow-y: auto;"><h2 class="title-oswald" id="end-title">TITRE</h2><p id="end-message">Message</p><button id="end-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
+    <div id="end-modal"><div class="end-content" style="max-height: 90vh; overflow-y: auto;"><h2 class="title-oswald" id="end-title">TITRE</h2><p id="end-message">Message</p><button id="end-btn" data-i18n="ui_btn_continue" style="margin-top: 20px;">CONTINUER</button></div></div>
     <div id="event-modal"><div class="event-content"><h2 class="title-oswald" id="event-title">ÉVÉNEMENT</h2><p id="event-message">Message</p><button id="event-btn" data-i18n="ui_btn_continue">CONTINUER</button></div></div>
     <div id="rules-modal"><div class="rules-content" style="max-width: 600px; padding: 25px;"><h2 class="title-oswald gold-text" style="margin-top:0; font-size: 28px; text-align: center;" data-i18n="rules_title">LE GRIMOIRE DU RÔDEUR</h2><div class="rules-text" id="rules-container" style="font-size: 14px; line-height: 1.5; color: #ccc;"></div><div style="text-align: center; margin-top: 25px;"><button onclick="hideRules()" style="background: var(--gold); color: #000; border: none; box-shadow: 0 0 15px rgba(212,175,55,0.4); font-weight: bold; padding: 12px 25px; border-radius: 4px; cursor: pointer;" data-i18n="rules_close">Fermer le Grimoire</button></div></div></div>
     
@@ -182,7 +177,7 @@
 
     <div id="arsenal-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,11,12,0.98); z-index:10000; justify-content:center; align-items:center;">
         <div class="rules-content" style="max-width: 900px; padding: 20px; display: flex; flex-direction: column; height: 90vh; border-color: var(--gold); box-shadow: 0 0 40px rgba(0,0,0,1);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; flex-shrink: 0;">
                 <div style="display: flex; align-items: baseline; gap: 15px;">
                     <h2 class="title-oswald gold-text" style="margin:0; font-size: 28px;" data-i18n="ui_arsenal_title">L'ARSENAL</h2>
                     <span class="gold-text" style="font-family: 'Oswald', sans-serif;"><span id="ui-arsenal-eclats">0</span> ✦ <span data-i18n="ui_shards_short">Éclats</span></span>
@@ -192,7 +187,7 @@
             
             <div class="arsenal-tabs">
                 <button class="tab-btn active" onclick="switchArsenalTab('vestiaire')" data-i18n="ui_tab_vestiaire">Le Vestiaire</button>
-                <button class="tab-btn" onclick="switchArsenalTab('contrats')" data-i18n="ui_tab_contracts">Les Contrats</button>
+                <button class="tab-btn" onclick="switchArsenalTab('contrats')" data-i18n="ui_tab_contracts">Les Traques</button>
                 <button class="tab-btn" onclick="switchArsenalTab('marche')" data-i18n="ui_tab_market">Le Marché Noir</button>
                 <button class="tab-btn" onclick="switchArsenalTab('achievements')" data-i18n="ui_tab_achiev">Les Hauts Faits</button>
                 <button class="tab-btn" onclick="switchArsenalTab('stats')" data-i18n="ui_tab_stats">Le Registre</button>
