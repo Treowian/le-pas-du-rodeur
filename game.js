@@ -83,7 +83,7 @@ function toggleMusic() { audioManager.isMusicMuted = !audioManager.isMusicMuted;
 function toggleSFX() { audioManager.isSfxMuted = !audioManager.isSfxMuted; updateAudioButtons(); if (!audioManager.isSfxMuted) audioManager.playSFX('audio/dice.mp3', 0.2); }
 
 // ==========================================
-// 2. LES 50 CONTRATS (BOUNTIES)
+// 2. LES 50 TRAQUES (CONTRATS)
 // ==========================================
 const contractsPool = [
     { id: 'c1', t_fr: "Chasseur de Primes", t_en: "Bounty Hunter", d_fr: "Battez Brag l'Éventreur.", d_en: "Defeat Brag.", reward: 50 },
@@ -290,7 +290,10 @@ const i18n = {
         ui_reward_title: "COURSE GAGNÉE", ui_reward_msg: "L'ennemi recule. Choisissez votre avantage pour la prochaine manche :",
         ui_reward_init: "L'Initiative (Vous jouez en premier)", ui_reward_heal: "L'Étincelle (+2 Espoirs)",
         ui_level: "Niv.", ui_shards: "Éclats d'Ombre", ui_shards_short: "Éclats", ui_btn_arsenal: "L'Arsenal", ui_arsenal_title: "L'ARSENAL", ui_btn_close: "Fermer",
-        ui_tab_vestiaire: "Le Vestiaire", ui_tab_contracts: "Les Contrats", ui_contract_desc: "Le devoir d'un Dúnadan ne s'arrête jamais. Vos frères d'armes vous ont confié 3 traques. Remplissez-les en duel pour amasser des Éclats. Une fois accomplie, revenez ici : une nouvelle traque vous attendra !",
+        ui_tab_vestiaire: "Le Vestiaire", 
+        ui_tab_contracts: "Les Traques", 
+        ui_contract_desc: "Le devoir d'un Dúnadan ne s'arrête jamais. Vos frères d'armes vous ont confié 3 traques. Remplissez-les en duel pour amasser des Éclats. Une fois accomplie, revenez ici : une nouvelle traque vous attendra !", 
+        ui_contract_reward: "PRIME :",
         ui_tab_market: "Le Marché Noir", ui_tab_achiev: "Les Hauts Faits", ui_tab_stats: "Le Registre", ui_tab_save: "Sauvegarde",
         ui_ars_boards: "Fonds de Table", ui_ars_dice: "Skins de Dés", ui_ars_frames: "Cadres de Portrait", ui_ars_titles: "Titres Honorifiques",
         ui_ars_ex_boards: "Fonds Exclusifs", ui_ars_ex_dice: "Dés Maudits", ui_ars_ex_frames: "Cadres Corrompus", ui_ars_ex_titles: "Titres Prestigieux",
@@ -342,7 +345,12 @@ const i18n = {
         mod_clairiere_title: "🌿 Wellinghall", mod_clairiere_desc: "A peaceful sanctuary. You start the round with +2 Hope.",
         status_shadow_6: "Opponent rolled a 6! Corrupt it?", status_shadow_other: "Opponent rolled a {val}! Shadow thirsts...", status_shadow_corrupt: "You corrupted their Triumph!", status_shadow_devour: "The Shadow devoured their {val}!", status_shadow_survive: "Miracle! You survived (Risk: {chance}%)!", status_enemy_purify_6: "Opponent sacrifices a 6 to survive!", status_enemy_impasse: "DEAD END for the opponent.", status_deroute_hero: "ROUT! You lose 1 Life.", status_deroute_enemy: "ROUT! Opponent loses 1 Life.", status_camp_hero: "You have set up camp.", status_camp_enemy: "Opponent set up camp.", status_select_dice: "Select your dice.", status_camp_choice: "Sacrifice a Triumph for +2 Hope?", btn_defend: "Defend (-2)", btn_suffer: "Suffer Rout", btn_compass: "Compass (-3)", btn_accept_defeat: "Accept Dead End", btn_corrupt: "Corrupt (+1 Shadow)", btn_devour: "Devour (+1 Shadow)", btn_ignore: "Ignore", btn_camp_sacrifice: "Sacrifice (+2 Hope)", btn_camp_normal: "Keep points",
         ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! You replay!", ev_pas_btn: "Continue", ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope collapses...", ev_gouffre_btn: "Suffer Rout", ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure", ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy collapses under their own Hate!", ev_malediction_btn: "Rout", end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table", end_def_title: "FATAL DEFEAT", end_def_msg: "Your journey ends here.", end_def_btn: "Flee tavern", end_manche_lose_title: "ROUND LOST", end_manche_lose_msg: "Enemy wins this race.", end_manche_lose_btn: "Continue", end_shadow_title: "CONSUMED", end_shadow_msg: "Your greed killed you.", end_shadow_btn: "Quit",
-        loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} SHARDS", loot_def_xp: "+ 0 XP (Match Lost)", loot_def_shards: "+ {val} SHARDS (Salvaged)", loot_lvl_up: "🎉 LEVEL {lvl} REACHED! 🎉", ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage for the next round:", ui_reward_init: "Initiative (You play first)", ui_reward_heal: "The Spark (+2 Hope)", ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal", ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close", ui_tab_vestiaire: "The Wardrobe", ui_tab_contracts: "Contracts", ui_contract_desc: "A Dúnadan's duty never ends. Your brothers-in-arms have entrusted you with 3 hunts. Complete them in duels to earn Shards. Once fulfilled, return here: a new hunt will await you!", ui_contract_reward: "BOUNTY:", ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game", ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles", ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles", ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked", ui_market_desc: "Spend your Shadow Shards.", stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:", stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:", stat_1life: "Close calls (1 Life wins):", save_title: "Save and Transfer", save_desc1: "Copy code.", save_btn_gen: "Generate", save_desc2: "Paste code.", save_btn_import: "Restore", toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shards!", toast_copy_ok: "Copied!", toast_import_ok: "Restored!", toast_import_fail: "Invalid code.",
+        loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} SHARDS", loot_def_xp: "+ 0 XP (Match Lost)", loot_def_shards: "+ {val} SHARDS (Salvaged)", loot_lvl_up: "🎉 LEVEL {lvl} REACHED! 🎉", ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage for the next round:", ui_reward_init: "Initiative (You play first)", ui_reward_heal: "The Spark (+2 Hope)", ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal", ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close", 
+        ui_tab_vestiaire: "The Wardrobe", 
+        ui_tab_contracts: "The Hunts", 
+        ui_contract_desc: "A Dúnadan's duty never ends. Your brothers-in-arms have entrusted you with 3 hunts. Complete them in duels to earn Shards. Once fulfilled, return here: a new hunt will await you!", 
+        ui_contract_reward: "BOUNTY:", 
+        ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game", ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles", ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles", ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked", ui_market_desc: "Spend your Shadow Shards.", stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:", stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:", stat_1life: "Close calls (1 Life wins):", save_title: "Save and Transfer", save_desc1: "Copy code.", save_btn_gen: "Generate", save_desc2: "Paste code.", save_btn_import: "Restore", toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shards!", toast_copy_ok: "Copied!", toast_import_ok: "Restored!", toast_import_fail: "Invalid code.",
         title_ranger: "The Ranger", title_walker: "The Walker", title_deathcheater: "Death-Cheater", title_dunedain: "Dúnadan", title_lordchance: "Lord of Chance", title_reckless: "The Reckless", title_orcblight: "Orc Bane", title_kingnocrown: "King Without a Crown", title_eternal: "The Eternal", title_lightbearer: "Light Bearer", title_bearer: "The Bearer", title_bloodwest: "Blood of the West", title_thiefshadow: "Thief in the Shadow", title_hobbit: "Lost Hobbit",
         dialogues: {
             dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope guides me."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
@@ -749,7 +757,7 @@ function resolveRoundWinner(winner) {
             let completedContracts = evaluateContracts();
             let contractBonus = 0; let contractMsg = '';
             if (completedContracts.length > 0) {
-                contractMsg = `<br><br><span style="color:var(--gold); font-family:'Oswald'; font-size:18px; border-bottom: 1px solid var(--gold);">📋 CONTRATS REMPLIS :</span><br>`;
+                contractMsg = `<br><br><span style="color:var(--gold); font-family:'Oswald'; font-size:18px; border-bottom: 1px solid var(--gold);">📋 TRAQUES ACCOMPLIES :</span><br>`;
                 completedContracts.forEach(c => { contractMsg += `<span style="color:#aaa; font-size:13px; font-style:italic; display:block; margin-top:5px;">- ${currentLang==='fr'?c.t_fr:c.t_en} (+${c.reward} ✦)</span>`; contractBonus += c.reward; });
             }
 
@@ -842,12 +850,26 @@ function switchArsenalTab(tabName) {
     } else if (tabName === 'achievements') {
         let html = ''; achievementsData.forEach(a => { let u = playerProfile.achievements[a.id]; let achTitle = currentLang === 'fr' ? a.t_fr : a.t_en; let achDesc = currentLang === 'fr' ? a.d_fr : a.d_en; html += `<div class="achiev-item ${u ? 'unlocked' : ''}"><h3>${achTitle} ${u ? '✔️' : '🔒'}</h3><p>${achDesc}</p></div>`; }); area.innerHTML = html;
     } else if (tabName === 'contrats') {
-        refreshContracts(); let html = `<p style='color:#888; font-style:italic; margin-bottom: 20px;'>${t('ui_contract_desc')}</p><div class="arsenal-grid">`;
+        refreshContracts(); 
+        let html = `<div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px; font-size: 13px; color: #ccc; line-height: 1.4; font-style: italic;">${t('ui_contract_desc')}</div><div class="arsenal-grid">`;
         playerProfile.activeContracts.forEach(cId => {
             let contract = contractsPool.find(c => c.id === cId);
-            if (contract) { let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
-                html += `<div class="arsenal-item" style="border-color:#555; background:rgba(0,0,0,0.4); text-align: left; padding: 15px;"><h3 style="color:var(--gold); margin-top:0;">${cTitle}</h3><p style="font-size:12px; color:#ccc; min-height: 40px;">${cDesc}</p><div style="font-family:'Oswald', sans-serif; font-size:16px; color:var(--corruption); border-top: 1px solid #333; padding-top: 10px;">${t('ui_contract_reward')} ${contract.reward} ✦</div></div>`; }
-        }); html += `</div>`; area.innerHTML = html;
+            if (contract) { 
+                let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; 
+                let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
+                html += `
+                <div class="arsenal-item" style="border-color:#555; background:rgba(0,0,0,0.4); text-align: left; padding: 15px;">
+                    <h3 style="color:var(--gold); margin-top:0; font-size: 16px;">${cTitle}</h3>
+                    <p style="font-size:12px; color:#ccc; min-height: 40px; margin: 10px 0;">${cDesc}</p>
+                    <div style="font-family:'Oswald', sans-serif; font-size:16px; color:var(--corruption); border-top: 1px solid #333; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>${t('ui_contract_reward')}</span>
+                        <span style="font-weight: bold;">${contract.reward} ✦</span>
+                    </div>
+                </div>`; 
+            }
+        }); 
+        html += `</div>`; 
+        area.innerHTML = html;
     } else if (tabName === 'vestiaire') {
         const renderEq = (title, key, dict) => { let equipKey = key; if (key === 'boards') equipKey = 'board'; if (key === 'frames') equipKey = 'frame'; let html = `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px;">${title}</h3><div class="arsenal-grid">`; for(let item in dict) { let isMarketItem = dict[item].price > 0; let itemName = currentLang === 'fr' ? dict[item].name_fr : dict[item].name_en; if(playerProfile.inventory[key].includes(item)) { let isEq = playerProfile.equipped[equipKey] === item; html += `<div class="arsenal-item ${isEq ? 'equipped' : ''}"><h3>${itemName}</h3><button onclick="equipItem('${equipKey}', '${item}')">${isEq ? t('ui_btn_equipped') : t('ui_btn_equip')}</button></div>`; } else if (!isMarketItem) { html += `<div class="arsenal-item" style="opacity:0.4; border-color:#222; background: transparent;"><h3 style="color:#555;">???</h3><p style="margin-top:5px;">${t('ui_locked_lvl')}</p></div>`; } } html += `</div>`; return html; };
         let html = renderEq(t('ui_ars_boards'), 'boards', itemDict.boards) + renderEq(t('ui_ars_dice'), 'dice', itemDict.dice) + renderEq(t('ui_ars_frames'), 'frames', itemDict.frames);
