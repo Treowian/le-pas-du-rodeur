@@ -157,7 +157,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 /* COSMÉTIQUES ET SKINS DE L'ARSENAL         */
 /* ========================================= */
 
-/* --- SKINS DE DÉS (Optimisés pour la lisibilité) --- */
+/* --- SKINS DE DÉS --- */
 .die.skin-bone { background: linear-gradient(135deg, #e3dac9 0%, #c4b7a6 100%); border-color: #8b7355; }
 .die.skin-bone.die-neutral { color: #777; }
 .die.skin-bone.die-advance { color: #2980b9; border-color: #2980b9; } 
@@ -307,13 +307,11 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 #end-title, #event-title { font-size: 36px; margin-bottom: 20px; }
 #end-message, #event-message { font-size: 18px; margin-bottom: 30px; line-height: 1.5; }
 #end-btn, #event-btn { font-size: 18px; padding: 15px 30px; background: transparent; border-width: 2px; }
-#end-btn:hover, #event-btn:hover { 
-    background: rgba(255, 255, 255, 0.15) !important; 
-    color: inherit !important; 
-}
+#end-btn:hover, #event-btn:hover { background: rgba(255, 255, 255, 0.15) !important; color: inherit !important; }
+
 
 /* ========================================= */
-/* RESPONSIVE MOBILE (Ultra-Compressé)       */
+/* RESPONSIVE MOBILE (Compression Avancée)   */
 /* ========================================= */
 @media (max-width: 850px) {
     body { padding: 2px; padding-top: 40px; justify-content: flex-start; }
@@ -325,8 +323,12 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     .currency-box { font-size: 12px; padding: 2px 5px; }
     .arsenal-btn { padding: 5px 10px; font-size: 12px; }
     
-    .large-title { font-size: 26px; line-height: 1.1; }
-    .tavern-header { margin-bottom: 15px; padding: 10px; }
+    /* Compression Titre Auberge */
+    .large-title { font-size: 22px; line-height: 1.1; }
+    .subtitle-merriweather { font-size: 11px; margin-top: 4px; }
+    .rules-btn { font-size: 11px; padding: 6px 12px; margin-top: 10px; }
+    .tavern-header { margin-bottom: 15px; padding: 5px; }
+
     .tables-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 5px; }
     .table-card { padding: 8px; min-width: 0; max-width: none; }
     .table-name { font-size: 14px; margin-bottom: 3px; }
@@ -338,23 +340,24 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     /* Verrouillage absolu de l'écran de duel */
     #duel-screen { 
         height: calc(100dvh - 50px); 
-        gap: 5px; 
-        margin-top: 0; 
-        flex-direction: column; 
-        align-items: center; 
-        width: 100%; 
-        justify-content: space-between; 
-        overflow: hidden; 
+        gap: 5px; margin-top: 0; flex-direction: column; align-items: center; 
+        width: 100%; justify-content: space-between; overflow: hidden; 
     }
     
-    .character-panel { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; padding: 6px; gap: 6px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; }
-    .char-portrait { width: 45px; height: 45px; margin: 0; border-width: 2px !important; }
+    .character-panel { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; padding: 4px; gap: 4px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; }
+    .char-portrait { width: 40px; height: 40px; margin: 0; border-width: 2px !important; }
     .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0; }
     .hero-title { display: none; } 
     
-    .resource-zone { width: auto; min-width: 80px; margin: 0; text-align: center; }
-    .res-label { font-size: 8px; margin-bottom: 0px; letter-spacing: 0; } 
-    .token-row { min-height: 14px; gap: 3px; justify-content: center !important; margin-top: 2px; }
+    .resource-zone { 
+        width: auto; min-width: 80px; margin: 0; text-align: center; 
+        display: flex; flex-direction: column; justify-content: flex-start; 
+    }
+    .res-label { font-size: 8px; margin-bottom: 4px; letter-spacing: 0; line-height: 1; } 
+    .token-row { 
+        display: flex; gap: 4px; justify-content: center !important; 
+        align-items: center; min-height: 16px; margin: 0; 
+    }
     .token { width: 10px; height: 10px; }
 
     #duel-screen > .character-panel:first-child .char-name { order: -2; }
@@ -366,48 +369,52 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     #ui-mod-title { font-size: 14px !important; }
     #ui-mod-desc { font-size: 11px !important; margin-top: 4px !important; }
 
-    /* Les bulles de dialogue Mobile */
-    .dialogue-box { 
-        position: absolute; background: rgba(15, 15, 15, 0.95); border: 1px solid; 
-        padding: 6px 10px; color: var(--bone); font-size: 11px; width: max-content; 
-        max-width: 150px; z-index: 100; margin: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.9); 
-        border-radius: 8px; 
-    }
+    .dialogue-box { position: absolute; background: rgba(15, 15, 15, 0.95); border: 1px solid; padding: 6px 10px; color: var(--bone); font-size: 11px; width: max-content; max-width: 150px; z-index: 100; margin: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.9); border-radius: 8px; }
     .hero-dialogue { top: 90%; left: 15px; border-color: var(--gold); border-top-left-radius: 2px; }
     .enemy-dialogue { bottom: 90%; top: auto; right: 15px; border-color: var(--enemy-color); border-bottom-right-radius: 2px; text-align: right; }
 
-    /* Le plateau central agit comme un ressort pour absorber l'espace */
+    /* Plateau Central : Épuré et Aéré pour le Mobile */
     #center-board { 
-        padding: 5px 10px; 
+        padding: 5px 15px; 
         border-radius: 8px; 
         width: 100%; 
         max-width: 450px; 
         box-sizing: border-box; 
         margin: 0; 
         flex-grow: 1; 
-        justify-content: space-evenly; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* On centre le tout verticalement */
+        gap: 12px; /* On redonne de l'air entre chaque gros bloc */
     }
-
-    #rounds-tracker { margin-bottom: 6px !important; font-size: 12px !important; gap: 8px !important; }
+    
+    /* 1. Bloc des Manches */
+    #rounds-tracker { margin-bottom: 0 !important; font-size: 12px !important; gap: 8px !important; }
     #persistent-mod-icon { font-size: 18px !important; }
-    .score-display { font-size: 12px; margin-bottom: 2px; width: 95%; }
-    .score-display span span { font-size: 18px; }
-    #race-track-container { margin-bottom: 8px; width: 95%; height: 8px; }
-    #race-track { height: 8px; }
-    .race-badge { top: -14px; font-size: 9px; padding: 2px 4px; }
-    .turn-info-container { margin-bottom: 4px; }
-    .turn-info-label { font-size: 10px; margin-bottom: 2px; }
-    #current-turn-score { font-size: 32px; }
+    
+    /* 2. Bloc de la Course */
+    #score-row { margin-bottom: 0 !important; font-size: 13px !important; }
+    #score-row span span { font-size: 20px !important; }
+    #race-track-container { margin-bottom: 0 !important; height: 8px !important; width: 100%; }
+    #race-track { height: 8px !important; }
+    .race-badge { display: none; } /* ON CACHE LE BADGE SUR MOBILE : Gain de place énorme */
+    
+    /* 3. Bloc du Tour (Score en cours) */
+    .turn-info-container { margin-bottom: 0; }
+    .turn-info-label { display: none; } /* ON CACHE "Avancée du tour" SUR MOBILE */
+    #current-turn-score { font-size: 36px; line-height: 1; margin-top: 5px; }
     #current-turn-score span { font-size: 12px; }
     
-    #dice-arena { min-height: 45px; gap: 6px; margin-bottom: 8px; padding: 10px; }
-    .die-wrapper { width: 42px; height: 42px; }
-    .die-wrapper.wrap-kept { transform: translateY(-5px); }
-    .die { font-size: 22px; border-radius: 8px; border-width: 1px; } 
+    /* 4. Les Dés (Les stars de l'écran) */
+    #dice-arena { min-height: 50px; gap: 8px; margin-bottom: 0; padding: 5px; background: transparent; } /* Fond retiré pour alléger */
+    .die-wrapper { width: 48px; height: 48px; } /* On redonne une taille parfaite pour les doigts */
+    .die-wrapper.wrap-kept { transform: translateY(-8px); }
+    .die { font-size: 24px; border-radius: 8px; border-width: 1px; } 
     
-    #turn-controls { gap: 8px; margin-top: 5px; min-height: 38px; }
-    button { padding: 8px 12px; font-size: 11px; min-width: 100px; }
-    .back-btn { margin-top: 5px; margin-bottom: 2px; font-size: 11px; padding: 4px; }
+    /* 5. Les Boutons */
+    #turn-controls { gap: 10px; margin-top: 0; min-height: 40px; }
+    button { padding: 10px 15px; font-size: 12px; min-width: 110px; }
+    .back-btn { margin-top: 0; margin-bottom: 0; font-size: 11px; padding: 5px; opacity: 0.6; }
 
     /* Modal Arsenal Mobile réparée */
     .rules-content { padding: 15px; width: 95%; height: 85vh !important; display: flex; flex-direction: column; }

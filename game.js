@@ -386,6 +386,13 @@ function updateLivesUI() {
 
 function updateEspoirUI() { 
     const c = document.getElementById('ui-espoir-tokens'); if (!c) return; 
+    
+    // On force le centrage absolu en JS pour écraser n'importe quelle classe HTML rebelle
+    c.style.display = 'flex'; 
+    c.style.flexDirection = 'column'; 
+    c.style.alignItems = 'center'; 
+    c.style.justifyContent = 'center';
+    
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
     let statusText = "";
     if (gameState.hasUsedEspoirThisTurn) { statusText = `⌛ ${t('ui_espoir_used')}`; } 
@@ -393,15 +400,31 @@ function updateEspoirUI() {
     else if (gameState.playerEspoir === 2) { statusText = `⚡ ${t('ui_espoir_purify')}`; } 
     else if (gameState.playerEspoir >= 3) { statusText = `⚡ ${t('ui_espoir_compass')}`; }
     
-    c.innerHTML = `<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-        <span style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: 16px; font-weight: bold;">⭐ ${gameState.playerEspoir} / ${maxEspoir}</span>
-        <span style="color:#888; font-size: 9px; white-space: nowrap;">${statusText}</span>
-    </div>`; 
+    // On retire le gras (bold) et on réduit la taille à 14px max pour retrouver l'élégance
+    c.innerHTML = `
+        <div style="color:var(--gold); font-family:'Oswald', sans-serif; font-size: clamp(12px, 3vw, 14px); font-weight: normal; letter-spacing: 1px;">
+            ⭐ ${gameState.playerEspoir} / ${maxEspoir}
+        </div>
+        <div style="color:#888; font-size: clamp(9px, 2vw, 11px); margin-top: 2px;">
+            ${statusText}
+        </div>
+    `; 
 }
 
 function updateHaineUI() { 
     const c = document.getElementById('ui-haine-tokens'); if (!c) return; 
-    c.innerHTML = `<span style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: 16px; font-weight: bold;">🔥 ${gameState.enemyHate} / 10</span>`; 
+    
+    // On force le centrage absolu pour annuler l'effet du "justify-end" de l'ennemi
+    c.style.display = 'flex'; 
+    c.style.justifyContent = 'center'; 
+    c.style.alignItems = 'center';
+    
+    // Même punition : on retire le gras et on affine la police
+    c.innerHTML = `
+        <div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(12px, 3vw, 14px); font-weight: normal; letter-spacing: 1px;">
+            🔥 ${gameState.enemyHate} / 10
+        </div>
+    `; 
 }
 
 function updateShadowUI() { const c = document.getElementById('ui-ombre-tokens'); if (!c) return; c.innerHTML = ''; let max = Math.max(3, gameState.playerShadow); for (let i = 0; i < max; i++) { if (i < gameState.playerShadow) c.innerHTML += `<div class="token ombre" style="${i>=3 ? 'background:var(--blood);border-color:var(--blood);box-shadow:0 0 10px var(--blood);' : 'background:var(--corruption);'}"></div>`; else c.innerHTML += `<div class="token ombre"></div>`; } }
