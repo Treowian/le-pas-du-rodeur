@@ -149,11 +149,17 @@ function refreshContracts() {
     saveProfile();
 }
 
-function evaluateContracts() {
+function evaluateContracts(matchWon) {
     if (!playerProfile.activeContracts) return [];
     let completed = []; let ms = gameState.matchStats;
     
+    // Liste des contrats qui exigent de gagner le duel
+    const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c15','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50'];
+
     playerProfile.activeContracts.forEach(cId => {
+        // Si le contrat demande de gagner la partie mais que le joueur a perdu, on ignore ce contrat
+        if (!matchWon && requiresWin.includes(cId)) return;
+
         let isDone = false;
         if(cId === 'c1' && gameState.currentEnemyId === 'brag') isDone = true;
         if(cId === 'c2' && gameState.currentEnemyId === 'zamin') isDone = true;
@@ -353,9 +359,9 @@ const i18n = {
         ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game", ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles", ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles", ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked", ui_market_desc: "Spend your Shadow Shards.", stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:", stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:", stat_1life: "Close calls (1 Life wins):", save_title: "Save and Transfer", save_desc1: "Copy code.", save_btn_gen: "Generate", save_desc2: "Paste code.", save_btn_import: "Restore", toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shards!", toast_copy_ok: "Copied!", toast_import_ok: "Restored!", toast_import_fail: "Invalid code.",
         title_ranger: "The Ranger", title_walker: "The Walker", title_deathcheater: "Death-Cheater", title_dunedain: "Dúnadan", title_lordchance: "Lord of Chance", title_reckless: "The Reckless", title_orcblight: "Orc Bane", title_kingnocrown: "King Without a Crown", title_eternal: "The Eternal", title_lightbearer: "Light Bearer", title_bearer: "The Bearer", title_bloodwest: "Blood of the West", title_thiefshadow: "Thief in the Shadow", title_hobbit: "Lost Hobbit",
         dialogues: {
-            dirhael: { greetings: ["Chaque pas compte."], success: ["La piste est bonne."], failure: ["Le fardeau devient lourd..."], purify: ["Un mal pour un bien."], hope_hate: ["L'espoir fait vivre."], impasse: ["Maudites broussailles..."], camp: ["Prenons un instant."], shadow: ["Pardonnez-moi, ancêtres..."] },
-            brag: { greetings: ["Amène tes pièces !"], success: ["Je t'ai plumé !"], failure: ["Mes os !"], purify: ["Lâcher mon butin..."], hope_hate: ["Rends-moi ça !"], impasse: ["On s'égare ?"], camp: ["Moi j'empoche !"] },
-            zamin: { greetings: ["La Maison gagne toujours."], success: ["Le profit avant tout."], failure: ["Anomalie statistique."], purify: ["Déficit tactique."], hope_hate: ["Saisie immobilière."], impasse: ["Le marché stagne."], camp: ["Investissement sécurisé."] },
+            dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope guides me."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
+            brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["Give that back!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
+            zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Foreclosure."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
             kael: { greetings: ["Le Gondor is dead."], success: ["Succumb to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
             letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
         }
@@ -771,7 +777,7 @@ function resolveRoundWinner(winner) {
             if(gameState.playerLives === 1) playerProfile.stats.gamesWonWith1Life++;
             if(gameState.matchStats.firstRoundLost) playerProfile.achievements.sermentParjures = true;
             
-            let completedContracts = evaluateContracts();
+            let completedContracts = evaluateContracts(true);
             let contractBonus = 0; let contractMsg = '';
             if (completedContracts.length > 0) {
                 contractMsg = `<br><br><span style="color:var(--gold); font-family:'Oswald'; font-size:18px; border-bottom: 1px solid var(--gold);">📋 TRAQUES ACCOMPLIES :</span><br>`;
@@ -790,8 +796,18 @@ function resolveRoundWinner(winner) {
         if(gameState.heroRounds === 0 && gameState.enemyRounds === 1) gameState.matchStats.firstRoundLost = true;
         if (gameState.enemyRounds >= 2) { 
             let eclatsConsolation = Math.floor(3 * mult); playerProfile.eclatsOmbre += eclatsConsolation; playerProfile.stats.currentWinStreak = 0; 
+            
+            let completedContracts = evaluateContracts(false);
+            let contractBonus = 0; let contractMsg = '';
+            if (completedContracts.length > 0) {
+                contractMsg = `<br><br><span style="color:var(--gold); font-family:'Oswald'; font-size:18px; border-bottom: 1px solid var(--gold);">📋 TRAQUES ACCOMPLIES :</span><br>`;
+                completedContracts.forEach(c => { contractMsg += `<span style="color:#aaa; font-size:13px; font-style:italic; display:block; margin-top:5px;">- ${currentLang==='fr'?c.t_fr:c.t_en} (+${c.reward} ✦)</span>`; contractBonus += c.reward; });
+            }
+
             saveProfile(); checkAchievements(); 
-            let msg = `${t('end_def_msg')}<br><br><span style="color:#555; font-family:'Oswald'; font-size:22px;">${t('loot_def_xp')}</span><br><span style="color:var(--corruption); font-family:'Oswald'; font-size:22px;">${t('loot_def_shards', {val: eclatsConsolation})}</span>`;
+            let msg = `${t('end_def_msg')}<br><br><span style="color:#555; font-family:'Oswald'; font-size:22px;">${t('loot_def_xp')}</span><br><span style="color:var(--corruption); font-family:'Oswald'; font-size:22px;">${t('loot_def_shards', {val: eclatsConsolation + contractBonus})}</span>`;
+            if (contractBonus > 0) msg += contractMsg;
+            
             showEndScreen(t('end_def_title'), msg, t('end_def_btn'), () => { exitDuel(); }, "var(--blood)"); 
         } else { showEndScreen(t('end_manche_lose_title'), t('end_manche_lose_msg'), t('end_manche_lose_btn'), () => { startNewRound(false, 'enemy'); }, "var(--blood)"); }
     }
@@ -932,4 +948,11 @@ function debugReset() { if(confirm("DEBUG: Tout effacer ?")) { localStorage.remo
 function triggerTutorial(tutoKey, textKey) { return new Promise((resolve) => { if (!playerProfile.tutorial.enabled || playerProfile.tutorial[tutoKey]) { resolve(); return; } playerProfile.tutorial[tutoKey] = true; saveProfile(); document.getElementById('tutorial-message').innerHTML = t(textKey); const modal = document.getElementById('tutorial-modal'); const btn = document.getElementById('tutorial-btn'); modal.style.display = 'flex'; btn.onclick = () => { modal.style.display = 'none'; resolve(); }; }); }
 function setTutorial(wantsGuide) { playerProfile.tutorial.enabled = wantsGuide; playerProfile.tutorial.asked = true; saveProfile(); document.getElementById('welcome-modal').style.display = 'none'; audioManager.isMusicMuted = false; updateAudioButtons(); audioManager.playBGM('tavern'); }
 
-window.onload = () => { updateStaticUI(); updateProfileUI(); applyCosmetics(); if (!playerProfile.tutorial.asked) { document.getElementById('welcome-modal').style.display = 'flex'; } else if (document.getElementById('tavern-screen').style.display !== 'none' && !audioManager.isMusicMuted) { audioManager.playBGM('tavern'); } };
+window.onload = () => { 
+    refreshContracts();
+    updateStaticUI(); 
+    updateProfileUI(); 
+    applyCosmetics(); 
+    if (!playerProfile.tutorial.asked) { document.getElementById('welcome-modal').style.display = 'flex'; } 
+    else if (document.getElementById('tavern-screen').style.display !== 'none' && !audioManager.isMusicMuted) { audioManager.playBGM('tavern'); } 
+};
