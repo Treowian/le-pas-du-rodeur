@@ -9,7 +9,7 @@ const MAX_LEVEL = 50;
 // ==========================================
 const defaultProfile = {
     xp: 0, level: 1, eclatsOmbre: 0,
-    stats: { totalLeagues: 0, gamesPlayed: 0, gamesWon: 0, shadowsUsed: 0, deroutesTaken: 0, purifications: 0, winsAgainst: { brag: 0, zamin: 0, kael: 0, letranger: 0 }, routsSurvived: 0, gamesWonWith1Life: 0, firstTurnRouts: 0, currentWinStreak: 0, survivedDeathRoll: false },
+    stats: { totalLeagues: 0, gamesPlayed: 0, gamesWon: 0, shadowsUsed: 0, deroutesTaken: 0, purifications: 0, winsAgainst: { brag: 0, zamin: 0, kael: 0, letranger: 0 }, routsSurvived: 0, gamesWonWith1Life: 0, firstTurnRouts: 0, currentWinStreak: 0, survivedDeathRoll: false, gamesSinceShuffle: 3 },
     achievements: { fardeauAnneau: false, flammeUdun: false, heritageNumenor: false, sermentParjures: false, maliceMorgoth: false, ruseSmaug: false, enduranceDunedain: false, fuiteComte: false, colereValar: false, pariIsildur: false, voieElfes: false, fleauOmbre: false, marcheurNuit: false, pillardGobelin: false, negociateurNain: false, tueurKael: false, enigmeObscurite: false, maitreFondcombe: false, maledictionAnneau: false, bravoureHobbit: false, heritierElendil: false, tueurBalrog: false, ombreMordor: false, retourRoi: false, seigneurOuest: false },
     inventory: { dice: ['classic'], boards: ['dark'], frames: ['basic'], titles: ['title_ranger'] },
     equipped: { dice: 'classic', board: 'dark', frame: 'basic', title: 'title_ranger' },
@@ -93,11 +93,11 @@ const contractsPool = [
     { id: 'c5', t_fr: "Dépouiller le Voleur", t_en: "Rob the Thief", d_fr: "Battez Brag sans utiliser d'Ombre.", d_en: "Defeat Brag without using Shadow.", reward: 100 },
     { id: 'c6', t_fr: "Saisie Sévère", t_en: "Harsh Foreclosure", d_fr: "Battez Zâmin avec 0 point sur une de ses manches.", d_en: "Defeat Zâmin with her scoring 0 in a round.", reward: 200 },
     { id: 'c7', t_fr: "La Chute du Gondor", t_en: "Fall of Gondor", d_fr: "Battez Kael en subissant au moins 2 Déroutes.", d_en: "Defeat Kael while suffering at least 2 Routs.", reward: 250 },
-    { id: 'c8', t_fr: "Lumière dans les Ténèbres", t_en: "Light in the Dark", d_fr: "Battez L'Étranger avec 10 d'Espoir à la fin.", d_en: "Defeat Stranger with 10 Hope remaining.", reward: 300 },
+    { id: 'c8', t_fr: "Lumière dans les Ténèbres", t_en: "Light in the Dark", d_fr: "Battez L'Étranger en finissant avec 10 d'Espoir.", d_en: "Defeat Stranger ending with 10 Hope.", reward: 300 },
     { id: 'c9', t_fr: "Le Sprinteur", t_en: "The Sprinter", d_fr: "Marquez 30+ Lieues en un seul lancer.", d_en: "Score 30+ Leagues in a single roll.", reward: 80 },
     { id: 'c10', t_fr: "L'Insatiable", t_en: "The Insatiable", d_fr: "Marquez 50+ Lieues en un seul lancer.", d_en: "Score 50+ Leagues in a single roll.", reward: 200 },
     { id: 'c11', t_fr: "Le Prudent", t_en: "The Cautious", d_fr: "Établissez le camp avec 15 Lieues ou moins.", d_en: "Set up camp with 15 Leagues or less.", reward: 50 },
-    { id: 'c12', t_fr: "La Voie Rapide", t_en: "The Fast Track", d_fr: "Gagnez un duel de 80 Lieues très rapidement.", d_en: "Win a duel of 80 Leagues very quickly.", reward: 150 },
+    { id: 'c12', t_fr: "La Voie Rapide", t_en: "The Fast Track", d_fr: "Gagnez un duel en 8 tours ou moins.", d_en: "Win a duel in 8 turns or less.", reward: 150 },
     { id: 'c13', t_fr: "Victoire Écrasante", t_en: "Crushing Victory", d_fr: "Gagnez alors que l'ennemi a moins de 30 Lieues.", d_en: "Win while enemy has less than 30 Leagues.", reward: 100 },
     { id: 'c14', t_fr: "Sur le Fil", t_en: "Down to the Wire", d_fr: "Gagnez alors que l'ennemi a déjà 70+ Lieues.", d_en: "Win while enemy has 70+ Leagues.", reward: 150 },
     { id: 'c15', t_fr: "Le Calculateur", t_en: "The Calculator", d_fr: "Gagnez une manche avec exactement 80 Lieues.", d_en: "Win a round with exactly 80 Leagues.", reward: 250 },
@@ -125,21 +125,25 @@ const contractsPool = [
     { id: 'c37', t_fr: "Alpiniste", t_en: "Mountaineer", d_fr: "Gagnez sous la Colère du Caradhras.", d_en: "Win under Wrath of Caradhras.", reward: 100 },
     { id: 'c38', t_fr: "Sylvestre", t_en: "Sylvan", d_fr: "Gagnez sous Wellinghall.", d_en: "Win under Wellinghall.", reward: 100 },
     { id: 'c39', t_fr: "Ciel Bleu", t_en: "Clear Sky", d_fr: "Gagnez sous un Ciel Dégagé.", d_en: "Win under Clear Sky.", reward: 50 },
-    { id: 'c40', t_fr: "Le Marathonien", t_en: "The Marathoner", d_fr: "Gagnez un duel long (> 15 tours).", d_en: "Win a long duel (> 15 turns).", reward: 150 },
+    { id: 'c40', t_fr: "Le Marathonien", t_en: "The Marathoner", d_fr: "Gagnez un duel long (15 tours ou +).", d_en: "Win a long duel (15+ turns).", reward: 150 },
     { id: 'c41', t_fr: "Retournement", t_en: "Turnaround", d_fr: "Gagnez après avoir perdu la 1ère manche.", d_en: "Win after losing the 1st round.", reward: 200 },
     { id: 'c42', t_fr: "Domination", t_en: "Domination", d_fr: "Remportez le duel 2 manches à 0.", d_en: "Win the duel 2 rounds to 0.", reward: 150 },
     { id: 'c43', t_fr: "L'Équilibriste", t_en: "The Tightrope", d_fr: "Gagnez avec 1 Vie, 0 Espoir, 0 Ombre.", d_en: "Win with 1 Life, 0 Hope, 0 Shadow.", reward: 300 },
     { id: 'c44', t_fr: "Ruse du Rôdeur", t_en: "Ranger's Ruse", d_fr: "Purifiez et utilisez l'Ombre au même tour.", d_en: "Purify and use Shadow in the same turn.", reward: 150 },
     { id: 'c45', t_fr: "Le Mur de Fer", t_en: "Iron Wall", d_fr: "Contrez Kael avec Elbereth et gagnez.", d_en: "Counter Kael with Elbereth and win.", reward: 150 },
-    { id: 'c46', t_fr: "Le Sang Froid", t_en: "Cold Blood", d_fr: "Acceptez une Impasse et gagnez la manche.", d_en: "Accept a Dead End and win the round.", reward: 150 },
+    { id: 'c46', t_fr: "Le Sang Froid", t_en: "Cold Blood", d_fr: "Acceptez une Impasse et gagnez le duel.", d_en: "Accept a Dead End and win the duel.", reward: 150 },
     { id: 'c47', t_fr: "L'Éclair Ténébreux", t_en: "Dark Lightning", d_fr: "Corrompez un dé au tout 1er tour.", d_en: "Corrupt a die on the very 1st turn.", reward: 100 },
     { id: 'c48', t_fr: "La Colère Aveugle", t_en: "Blind Anger", d_fr: "L'ennemi atteint 10 Haine sans pouvoir attaquer.", d_en: "Enemy hits 10 Hate without attacking.", reward: 250 },
-    { id: 'c49', t_fr: "Le Joueur", t_en: "The Gambler", d_fr: "Faites une Impasse après avoir sécurisé 20+ Lieues.", d_en: "Roll a Dead End after securing 20+ Leagues.", reward: 100 },
+    { id: 'c49', t_fr: "Le Joueur", t_en: "The Gambler", d_fr: "Subissez une Impasse avec 20+ Lieues en attente ce tour-ci.", d_en: "Suffer a Dead End with 20+ pending Leagues.", reward: 100 },
     { id: 'c50', t_fr: "Providence", t_en: "Providence", d_fr: "Gagnez juste après un Échec Magistral ennemi.", d_en: "Win right after an enemy Masterful Failure.", reward: 150 }
 ];
 
 function refreshContracts() {
     if (!playerProfile.activeContracts) playerProfile.activeContracts = [];
+    
+    // NETTOYEUR : On supprime les vieux contrats buggés qui traîneraient dans la sauvegarde
+    playerProfile.activeContracts = playerProfile.activeContracts.filter(c => typeof c === 'string');
+
     while (playerProfile.activeContracts.length < 3) {
         let available = contractsPool.filter(c => !playerProfile.activeContracts.includes(c.id));
         if (available.length === 0) break; 
@@ -149,11 +153,20 @@ function refreshContracts() {
     saveProfile();
 }
 
+window.shuffleContracts = function() {
+    if ((playerProfile.stats.gamesSinceShuffle || 0) < 3) return;
+    playerProfile.stats.gamesSinceShuffle = 0;
+    playerProfile.activeContracts = []; // On vide pour forcer le tirage
+    refreshContracts();
+    switchArsenalTab('contrats');
+    showToast(t('toast_shuffled'), "success");
+}
+
 function evaluateContracts(matchWon) {
     if (!playerProfile.activeContracts) return [];
     let completed = []; let ms = gameState.matchStats;
     
-    // Liste des contrats qui exigent de gagner le duel
+    // Liste des contrats qui exigent explicitement de GAGNER LE DUEL
     const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c15','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50'];
 
     playerProfile.activeContracts.forEach(cId => {
@@ -226,6 +239,7 @@ function evaluateContracts(matchWon) {
             let cData = contractsPool.find(c => c.id === id);
             playerProfile.eclatsOmbre += cData.reward;
             details.push(cData);
+            showToast(t('toast_contract_done') + " " + (currentLang==='fr'?cData.t_fr:cData.t_en), "success"); // Alerte visuelle !
         });
         playerProfile.activeContracts = playerProfile.activeContracts.filter(id => !completed.includes(id));
         refreshContracts(); 
@@ -298,8 +312,12 @@ const i18n = {
         ui_level: "Niv.", ui_shards: "Éclats d'Ombre", ui_shards_short: "Éclats", ui_btn_arsenal: "L'Arsenal", ui_arsenal_title: "L'ARSENAL", ui_btn_close: "Fermer",
         ui_tab_vestiaire: "Le Vestiaire", 
         ui_tab_contracts: "Les Traques", 
-        ui_contract_desc: "Le devoir d'un Dúnadan ne s'arrête jamais. Vos frères d'armes vous ont confié 3 traques. Remplissez-les en duel pour amasser des Éclats. Une fois accomplie, revenez ici : une nouvelle traque vous attendra !", 
+        ui_contract_desc: "Le devoir d'un Dúnadan ne s'arrête jamais. Vos frères d'armes vous ont confié 3 traques. Remplissez-les en duel pour amasser des Éclats.", 
         ui_contract_reward: "PRIME :",
+        ui_btn_shuffle_ready: "Renouveler les Traques (Gratuit)",
+        ui_btn_shuffle_wait: "Renouvellement (dans {val} parties)",
+        toast_shuffled: "Traques renouvelées avec succès !",
+        toast_contract_done: "Traque accomplie :",
         ui_tab_market: "Le Marché Noir", ui_tab_achiev: "Les Hauts Faits", ui_tab_stats: "Le Registre", ui_tab_save: "Sauvegarde",
         ui_ars_boards: "Fonds de Table", ui_ars_dice: "Skins de Dés", ui_ars_frames: "Cadres de Portrait", ui_ars_titles: "Titres Honorifiques",
         ui_ars_ex_boards: "Fonds Exclusifs", ui_ars_ex_dice: "Dés Maudits", ui_ars_ex_frames: "Cadres Corrompus", ui_ars_ex_titles: "Titres Prestigieux",
@@ -354,8 +372,12 @@ const i18n = {
         loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} SHARDS", loot_def_xp: "+ 0 XP (Match Lost)", loot_def_shards: "+ {val} SHARDS (Salvaged)", loot_lvl_up: "🎉 LEVEL {lvl} REACHED! 🎉", ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage for the next round:", ui_reward_init: "Initiative (You play first)", ui_reward_heal: "The Spark (+2 Hope)", ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal", ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close", 
         ui_tab_vestiaire: "The Wardrobe", 
         ui_tab_contracts: "The Hunts", 
-        ui_contract_desc: "A Dúnadan's duty never ends. Your brothers-in-arms have entrusted you with 3 hunts. Complete them in duels to earn Shards. Once fulfilled, return here: a new hunt will await you!", 
+        ui_contract_desc: "A Dúnadan's duty never ends. Your brothers-in-arms have entrusted you with 3 hunts. Complete them in duels to earn Shards.", 
         ui_contract_reward: "BOUNTY:", 
+        ui_btn_shuffle_ready: "Reroll Hunts (Free)",
+        ui_btn_shuffle_wait: "Reroll Hunts (in {val} matches)",
+        toast_shuffled: "Hunts rerolled successfully!",
+        toast_contract_done: "Hunt fulfilled:",
         ui_tab_market: "Black Market", ui_tab_achiev: "Achievements", ui_tab_stats: "The Ledger", ui_tab_save: "Save Game", ui_ars_boards: "Table Boards", ui_ars_dice: "Dice Skins", ui_ars_frames: "Portrait Frames", ui_ars_titles: "Honorary Titles", ui_ars_ex_boards: "Exclusive Boards", ui_ars_ex_dice: "Cursed Dice", ui_ars_ex_frames: "Corrupted Frames", ui_ars_ex_titles: "Prestigious Titles", ui_btn_equip: "Equip", ui_btn_equipped: "EQUIPPED", ui_btn_buy: "BUY", ui_locked_lvl: "Locked", ui_market_desc: "Spend your Shadow Shards.", stat_lvl: "Level:", stat_xp: "Total XP:", stat_leagues: "Leagues traveled:", stat_played: "Matches played:", stat_won: "Wins:", stat_shadows: "Shadows devoured:", stat_purif: "Ambushes purified:", stat_routs: "Routs suffered:", stat_streak: "Current win streak:", stat_1life: "Close calls (1 Life wins):", save_title: "Save and Transfer", save_desc1: "Copy code.", save_btn_gen: "Generate", save_desc2: "Paste code.", save_btn_import: "Restore", toast_lvl_up: "Level Up! Reached Level {lvl}!", toast_buy_ok: "Purchase successful!", toast_buy_fail: "Not enough Shards!", toast_copy_ok: "Copied!", toast_import_ok: "Restored!", toast_import_fail: "Invalid code.",
         title_ranger: "The Ranger", title_walker: "The Walker", title_deathcheater: "Death-Cheater", title_dunedain: "Dúnadan", title_lordchance: "Lord of Chance", title_reckless: "The Reckless", title_orcblight: "Orc Bane", title_kingnocrown: "King Without a Crown", title_eternal: "The Eternal", title_lightbearer: "Light Bearer", title_bearer: "The Bearer", title_bloodwest: "Blood of the West", title_thiefshadow: "Thief in the Shadow", title_hobbit: "Lost Hobbit",
         dialogues: {
@@ -392,7 +414,7 @@ function updateLivesUI() {
 
 function updateEspoirUI() { 
     const c = document.getElementById('ui-espoir-tokens'); if (!c) return; 
-    c.removeAttribute('style'); // Purge de tout style parasite
+    c.removeAttribute('style'); 
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
     let statusText = "";
     if (gameState.hasUsedEspoirThisTurn) { statusText = `⌛ ${t('ui_espoir_used')}`; } 
@@ -409,7 +431,7 @@ function updateEspoirUI() {
 
 function updateHaineUI() { 
     const c = document.getElementById('ui-haine-tokens'); if (!c) return; 
-    c.removeAttribute('style'); // Purge de tout style parasite
+    c.removeAttribute('style'); 
     
     c.innerHTML = `
         <div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(14px, 4vw, 16px); line-height: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
@@ -454,6 +476,10 @@ function enterDuel(id, fullName) {
     
     if (id === 'brag') { gameState.secretPersonality = 'brag'; gameState.enemyRiskProfile = 'brag'; } else if (id === 'zamin') { gameState.secretPersonality = 'zamin'; gameState.enemyRiskProfile = 'zamin'; } else if (id === 'kael') { gameState.secretPersonality = 'kael'; gameState.enemyRiskProfile = 'kael'; } else { gameState.secretPersonality = 'chaos'; gameState.enemyRiskProfile = 'chaos'; }
     gameState.enemyStartLives = 3; gameState.enemyMaxHate = 10; audioManager.playBGM('duel_' + id); 
+    
+    // On incrémente le compteur de parties pour le Shuffle des contrats
+    playerProfile.stats.gamesSinceShuffle = (playerProfile.stats.gamesSinceShuffle || 0) + 1;
+
     gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false };
     
     const modifiers = ['normal', 'brouillard', 'nuit', 'aube', 'froid', 'clairiere'];
@@ -899,7 +925,20 @@ function switchArsenalTab(tabName) {
         let html = ''; achievementsData.forEach(a => { let u = playerProfile.achievements[a.id]; let achTitle = currentLang === 'fr' ? a.t_fr : a.t_en; let achDesc = currentLang === 'fr' ? a.d_fr : a.d_en; html += `<div class="achiev-item ${u ? 'unlocked' : ''}"><h3>${achTitle} ${u ? '✔️' : '🔒'}</h3><p>${achDesc}</p></div>`; }); area.innerHTML = html;
     } else if (tabName === 'contrats') {
         refreshContracts(); 
-        let html = `<div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px; font-size: 13px; color: #ccc; line-height: 1.4; font-style: italic;">${t('ui_contract_desc')}</div><div class="arsenal-grid">`;
+        
+        let html = `<div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px; font-size: 13px; color: #ccc; line-height: 1.4; font-style: italic;">${t('ui_contract_desc')}</div>`;
+        
+        // BOUTON SHUFFLE
+        let gamesReq = 3;
+        let played = playerProfile.stats.gamesSinceShuffle || 0;
+        let canShuffle = played >= gamesReq;
+        let remain = Math.max(0, gamesReq - played);
+        let btnText = canShuffle ? t('ui_btn_shuffle_ready') : t('ui_btn_shuffle_wait', {val: remain});
+        let btnStyle = canShuffle ? "border-color: var(--gold); color: var(--gold); background: #111; padding: 10px; width: 100%; border-radius: 4px; font-family:'Oswald', sans-serif; text-transform: uppercase;" : "border-color: #444; color: #666; background: #111; padding: 10px; width: 100%; border-radius: 4px; font-family:'Oswald', sans-serif; text-transform: uppercase; cursor: not-allowed;";
+        
+        html += `<div style="text-align: center; margin-bottom: 20px;"><button onclick="shuffleContracts()" style="${btnStyle}" ${!canShuffle ? 'disabled' : ''}>🔄 ${btnText}</button></div>`;
+        
+        html += `<div class="arsenal-grid">`;
         playerProfile.activeContracts.forEach(cId => {
             let contract = contractsPool.find(c => c.id === cId);
             if (contract) { 
