@@ -76,9 +76,53 @@ body {
 /* ÉCRAN 2 : LE DUEL                         */
 /* ========================================= */
 #duel-screen { display: none; width: 100%; max-width: 1200px; justify-content: space-between; gap: 20px; align-items: stretch; margin-top: 20px; }
-.character-panel { width: 250px; background: rgba(20,20,20,0.8); padding: 20px; border-radius: 10px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; position: relative; }
-.char-name { font-family: 'Oswald', sans-serif; font-size: 24px; margin-bottom: 5px; text-transform: uppercase; }
-.hero-title { font-family: 'Merriweather', serif; font-style: italic; font-size: 12px; color: #888; margin-bottom: 15px; text-align: center; }
+
+.character-panel { 
+    width: 250px; 
+    background: rgba(20,20,20,0.8); 
+    padding: 20px; 
+    border-radius: 10px; 
+    border: 1px solid #333; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-start;
+    position: relative; 
+}
+
+.char-name { 
+    font-family: 'Oswald', sans-serif; 
+    font-size: 24px; 
+    margin: 0 0 5px 0; 
+    text-transform: uppercase; 
+}
+
+.hero-title { 
+    font-family: 'Merriweather', serif; 
+    font-style: italic; 
+    font-size: 12px; 
+    color: #888; 
+    margin: 0 0 15px 0; 
+    text-align: center; 
+    height: 18px; 
+    line-height: 18px;
+}
+
+/* Réparation des bulles de dialogue sur PC */
+.dialogue-box { 
+    margin-top: auto; /* Ça pousse la bulle tout en bas du panneau ! */
+    padding: 15px; 
+    border-left: 3px solid #555; 
+    font-style: italic; 
+    font-size: 14px; 
+    color: #aaa; 
+    text-align: left; 
+    width: 100%; 
+    box-sizing: border-box; 
+    transition: opacity 0.5s ease-in-out; 
+}
+.hero-dialogue { border-color: var(--gold); }
+.enemy-dialogue { text-align: right; border-left: none; border-right: 3px solid var(--enemy-color); }
 .hero-name { color: var(--gold); }
 .enemy-name { color: var(--bone); }
 .char-portrait { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #555; margin-bottom: 20px; transition: all 0.5s ease; background: #000; }
@@ -348,7 +392,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     }
     .char-portrait { width: 45px; height: 45px; margin: 0; border-width: 2px !important; }
     .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0 0 5px 0; }
-    .hero-title { display: none; } 
+    .hero-title { display: none; }
     
     .resource-zone { width: auto; min-width: 85px; margin: 0; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; }
     .res-label { font-size: 9px; margin-bottom: 4px; letter-spacing: 0; height: 12px; display: flex; align-items: flex-end; justify-content: center; line-height: 1; } 
