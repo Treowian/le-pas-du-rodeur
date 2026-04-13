@@ -321,7 +321,7 @@ const i18n = {
         loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} ÉCLATS",
         loot_def_xp: "+ 0 XP (Match Perdu)", loot_def_shards: "+ {val} ÉCLATS (Vestiges)", loot_lvl_up: "🎉 NIVEAU {lvl} ATTEINT ! 🎉",
         ui_reward_title: "COURSE GAGNÉE", ui_reward_msg: "L'ennemi recule. Choisissez votre avantage pour la prochaine manche :",
-        ui_reward_init: "L'Initiative (Vous jouez en premier)", ui_reward_heal: "L'Étincelle (+2 Espoirs)",
+        ui_reward_init: "L'Initiative (Vous jouez en premier)", ui_reward_heal: "Le Raccourci (+15 Lieues d'avance, l'ennemi joue en premier)",
         ui_level: "Niv.", ui_shards: "Éclats d'Ombre", ui_shards_short: "Éclats", ui_btn_arsenal: "L'Arsenal", ui_arsenal_title: "L'ARSENAL", ui_btn_close: "Fermer",
         ui_tab_vestiaire: "Le Vestiaire", 
         ui_tab_contracts: "Les Traques", 
@@ -382,7 +382,7 @@ const i18n = {
         mod_clairiere_title: "🌿 Wellinghall", mod_clairiere_desc: "A peaceful sanctuary. You start the round with +2 Hope.",
         status_shadow_6: "Opponent rolled a 6! Corrupt it?", status_shadow_other: "Opponent rolled a {val}! Shadow thirsts...", status_shadow_corrupt: "You corrupted their Triumph!", status_shadow_devour: "The Shadow devoured their {val}!", status_shadow_survive: "Miracle! You survived (Risk: {chance}%)!", status_enemy_purify_6: "Opponent sacrifices a 6 to survive!", status_enemy_impasse: "DEAD END for the opponent.", status_deroute_hero: "ROUT! You lose 1 Life.", status_deroute_enemy: "ROUT! Opponent loses 1 Life.", status_camp_hero: "You have set up camp.", status_camp_enemy: "Opponent set up camp.", status_select_dice: "Select your dice.", status_camp_choice: "Sacrifice a Triumph for +2 Hope?", btn_defend: "Defend (-2)", btn_suffer: "Suffer Rout", btn_compass: "Compass (-3)", btn_accept_defeat: "Accept Dead End", btn_corrupt: "Corrupt (+1 Shadow)", btn_devour: "Devour (+1 Shadow)", btn_ignore: "Ignore", btn_camp_sacrifice: "Sacrifice (+2 Hope)", btn_camp_normal: "Keep points",
         ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! You replay!", ev_pas_btn: "Continue", ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope collapses...", ev_gouffre_btn: "Suffer Rout", ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure", ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy collapses under their own Hate!", ev_malediction_btn: "Rout", end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table", end_def_title: "FATAL DEFEAT", end_def_msg: "Your journey ends here.", end_def_btn: "Flee tavern", end_manche_lose_title: "ROUND LOST", end_manche_lose_msg: "Enemy wins this race.", end_manche_lose_btn: "Continue", end_shadow_title: "CONSUMED", end_shadow_msg: "Your greed killed you.", end_shadow_btn: "Quit",
-        loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} SHARDS", loot_def_xp: "+ 0 XP (Match Lost)", loot_def_shards: "+ {val} SHARDS (Salvaged)", loot_lvl_up: "🎉 LEVEL {lvl} REACHED! 🎉", ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage for the next round:", ui_reward_init: "Initiative (You play first)", ui_reward_heal: "The Spark (+2 Hope)", ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal", ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close", 
+        loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} SHARDS", loot_def_xp: "+ 0 XP (Match Lost)", loot_def_shards: "+ {val} SHARDS (Salvaged)", loot_lvl_up: "🎉 LEVEL {lvl} REACHED! 🎉", ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage for the next round:", ui_reward_init: "Initiative (You play first)", ui_reward_heal: "The Shortcut (+15 Leagues head start, enemy plays first)", ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal", ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close", 
         ui_tab_vestiaire: "The Wardrobe", 
         ui_tab_contracts: "The Hunts", 
         ui_contract_desc: "A Dúnadan's duty never ends. Your brothers-in-arms have entrusted you with 3 hunts. Complete them in duels to earn Shards.", 
@@ -851,7 +851,25 @@ function resolveRoundWinner(winner) {
     }
 }
 
-function applyReward(choice) { document.getElementById('reward-modal').style.display = 'none'; if (choice === 'initiative') { startNewRound(false, 'hero'); } else if (choice === 'vie') { startNewRound(false, 'enemy'); gameState.playerEspoir = Math.min(10, gameState.playerEspoir + 2); updateEspoirUI(); } }
+function applyReward(choice) { 
+    document.getElementById('reward-modal').style.display = 'none'; 
+    if (choice === 'initiative') { 
+        startNewRound(false, 'hero'); 
+    } else if (choice === 'vie') { 
+        // 1. On lance la manche avec l'ennemi en premier
+        startNewRound(false, 'enemy'); 
+        
+        // 2. Le Raccourci Furtif : +15 Lieues silencieuses (hors chronomètre)
+        gameState.playerScore = 15; 
+        
+        // 3. On met à jour l'affichage de la barre de course
+        updateGlobalUI();
+        
+        // 4. Petite notification visuelle pour confirmer l'avantage
+        let toastMsg = currentLang === 'fr' ? "Le Raccourci : +15 Lieues sécurisées !" : "Shortcut: +15 Leagues secured!";
+        showToast(toastMsg, "success");
+    } 
+}
 function showEndScreen(t1, msg, btxt, cb, col) { const m = document.getElementById('end-modal'); const c = m.querySelector('.end-content'); document.getElementById('end-title').innerText = t1; document.getElementById('end-title').style.color = col; c.style.borderColor = col; c.style.boxShadow = `0 0 50px ${col}`; document.getElementById('end-message').innerHTML = msg; const b = document.getElementById('end-btn'); b.innerText = btxt; b.style.color = col; b.style.borderColor = col; b.onclick = () => { m.style.display = 'none'; cb(); }; m.style.display = 'flex'; }
 function showEventScreen(t1, msg, btxt, cb, col) { const m = document.getElementById('event-modal'); const c = m.querySelector('.event-content'); document.getElementById('event-title').innerText = t1; document.getElementById('event-title').style.color = col; c.style.borderColor = col; c.style.boxShadow = `0 0 50px ${col}`; document.getElementById('event-message').innerHTML = msg; const b = document.getElementById('event-btn'); b.innerText = btxt; b.style.color = col; b.style.borderColor = col; b.onclick = () => { m.style.display = 'none'; cb(); }; m.style.display = 'flex'; }
 function showRules() { updateStaticUI(); document.getElementById('rules-modal').style.display = 'flex'; }
