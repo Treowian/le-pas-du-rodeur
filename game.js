@@ -14,6 +14,7 @@ const defaultProfile = {
     inventory: { dice: ['classic'], boards: ['dark'], frames: ['basic'], titles: ['title_ranger'] },
     equipped: { dice: 'classic', board: 'dark', frame: 'basic', title: 'title_ranger' },
     activeContracts: [], 
+    completedContracts: [],
     tutorial: { asked: false, enabled: false, seenIntro: false, seenAmbush: false, seenHate: false, seenImpasse: false, seenShadow: false }
 };
 
@@ -26,6 +27,7 @@ playerProfile.inventory = { ...defaultProfile.inventory, ...(playerProfile.inven
 playerProfile.equipped = { ...defaultProfile.equipped, ...(playerProfile.equipped || {}) };
 playerProfile.tutorial = { ...defaultProfile.tutorial, ...(playerProfile.tutorial || {}) };
 if (!playerProfile.activeContracts) playerProfile.activeContracts = [];
+if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
 
 function saveProfile() { localStorage.setItem('rodeurProfile', JSON.stringify(playerProfile)); updateProfileUI(); }
 function getXPRequired(level) { return 100 + (25 * level); }
@@ -140,13 +142,16 @@ const contractsPool = [
 
 function refreshContracts() {
     if (!playerProfile.activeContracts) playerProfile.activeContracts = [];
+    if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
     
     // NETTOYEUR : On supprime les vieux contrats buggés qui traîneraient dans la sauvegarde
     playerProfile.activeContracts = playerProfile.activeContracts.filter(c => typeof c === 'string');
 
     while (playerProfile.activeContracts.length < 3) {
-        let available = contractsPool.filter(c => !playerProfile.activeContracts.includes(c.id));
-        if (available.length === 0) break; 
+        // On exclut les contrats déjà actifs ET ceux déjà terminés
+        let available = contractsPool.filter(c => !playerProfile.activeContracts.includes(c.id) && !playerProfile.completedContracts.includes(c.id));
+        if (available.length === 0) break; // Si on a fini les 50, on arrête d'en chercher !
+        
         let chosen = available[Math.floor(Math.random() * available.length)];
         playerProfile.activeContracts.push(chosen.id);
     }
@@ -235,10 +240,18 @@ function evaluateContracts(matchWon) {
 
     let details = [];
     if (completed.length > 0) {
+        if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
+        
         completed.forEach(id => {
             let cData = contractsPool.find(c => c.id === id);
             playerProfile.eclatsOmbre += cData.reward;
             details.push(cData);
+            
+            // On l'ajoute à la liste des victoires à vie
+            if (!playerProfile.completedContracts.includes(id)) {
+                playerProfile.completedContracts.push(id);
+            }
+            
             showToast(t('toast_contract_done') + " " + (currentLang==='fr'?cData.t_fr:cData.t_en), "success"); // Alerte visuelle !
         });
         playerProfile.activeContracts = playerProfile.activeContracts.filter(id => !completed.includes(id));
@@ -477,7 +490,6 @@ function enterDuel(id, fullName) {
     if (id === 'brag') { gameState.secretPersonality = 'brag'; gameState.enemyRiskProfile = 'brag'; } else if (id === 'zamin') { gameState.secretPersonality = 'zamin'; gameState.enemyRiskProfile = 'zamin'; } else if (id === 'kael') { gameState.secretPersonality = 'kael'; gameState.enemyRiskProfile = 'kael'; } else { gameState.secretPersonality = 'chaos'; gameState.enemyRiskProfile = 'chaos'; }
     gameState.enemyStartLives = 3; gameState.enemyMaxHate = 10; audioManager.playBGM('duel_' + id); 
     
-    // On incrémente le compteur de parties pour le Shuffle des contrats
     playerProfile.stats.gamesSinceShuffle = (playerProfile.stats.gamesSinceShuffle || 0) + 1;
 
     gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false };
@@ -928,7 +940,6 @@ function switchArsenalTab(tabName) {
         
         let html = `<div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px; font-size: 13px; color: #ccc; line-height: 1.4; font-style: italic;">${t('ui_contract_desc')}</div>`;
         
-        // BOUTON SHUFFLE
         let gamesReq = 3;
         let played = playerProfile.stats.gamesSinceShuffle || 0;
         let canShuffle = played >= gamesReq;
@@ -956,6 +967,27 @@ function switchArsenalTab(tabName) {
             }
         }); 
         html += `</div>`; 
+
+        if (playerProfile.completedContracts && playerProfile.completedContracts.length > 0) {
+            let titleText = currentLang === 'fr' ? `Traques Accomplies (${playerProfile.completedContracts.length}/50)` : `Completed Hunts (${playerProfile.completedContracts.length}/50)`;
+            html += `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px; margin-top:30px;">${titleText}</h3>`;
+            html += `<div class="arsenal-grid" style="opacity: 0.5;">`; 
+            
+            playerProfile.completedContracts.forEach(cId => {
+                let contract = contractsPool.find(c => c.id === cId);
+                if (contract) { 
+                    let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; 
+                    let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
+                    html += `
+                    <div class="arsenal-item" style="border-color:#333; background:rgba(0,0,0,0.2); text-align: left; padding: 15px;">
+                        <h3 style="color:#aaa; margin-top:0; font-size: 16px;">✔️ ${cTitle}</h3>
+                        <p style="font-size:12px; color:#777; min-height: 40px; margin: 10px 0;">${cDesc}</p>
+                    </div>`; 
+                }
+            });
+            html += `</div>`;
+        }
+
         area.innerHTML = html;
     } else if (tabName === 'vestiaire') {
         const renderEq = (title, key, dict) => { let equipKey = key; if (key === 'boards') equipKey = 'board'; if (key === 'frames') equipKey = 'frame'; let html = `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px;">${title}</h3><div class="arsenal-grid">`; for(let item in dict) { let isMarketItem = dict[item].price > 0; let itemName = currentLang === 'fr' ? dict[item].name_fr : dict[item].name_en; if(playerProfile.inventory[key].includes(item)) { let isEq = playerProfile.equipped[equipKey] === item; html += `<div class="arsenal-item ${isEq ? 'equipped' : ''}"><h3>${itemName}</h3><button onclick="equipItem('${equipKey}', '${item}')">${isEq ? t('ui_btn_equipped') : t('ui_btn_equip')}</button></div>`; } else if (!isMarketItem) { html += `<div class="arsenal-item" style="opacity:0.4; border-color:#222; background: transparent;"><h3 style="color:#555;">???</h3><p style="margin-top:5px;">${t('ui_locked_lvl')}</p></div>`; } } html += `</div>`; return html; };
