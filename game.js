@@ -63,7 +63,7 @@ let gameState = {
     currentModifier: 'normal',
     diceValues: [0, 0, 0, 0, 0], diceStates: ['idle', 'idle', 'idle', 'idle', 'idle'], isRolling: false, hasKeptDieThisRoll: false, pendingDeroute: false, heroRoutLastTurn: false,
     currentEnemyRolledIndices: [], currentHeroRolledIndices: [], currentEnemyTargetIdx: -1,
-    matchStats: { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false }
+    matchStats: { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false, exact80Round: false, enemyLostRoundWithZero: false }
 };
 
 let toastTimeout;
@@ -93,7 +93,7 @@ const contractsPool = [
     { id: 'c3', t_fr: "Fléau du Traître", t_en: "Bane of the Traitor", d_fr: "Battez Kael le Traître.", d_en: "Defeat Kael.", reward: 100 },
     { id: 'c4', t_fr: "Dissipateur d'Ombres", t_en: "Shadow Dispeller", d_fr: "Battez L'Étranger.", d_en: "Defeat The Stranger.", reward: 150 },
     { id: 'c5', t_fr: "Dépouiller le Voleur", t_en: "Rob the Thief", d_fr: "Battez Brag sans utiliser d'Ombre.", d_en: "Defeat Brag without using Shadow.", reward: 100 },
-    { id: 'c6', t_fr: "Saisie Sévère", t_en: "Harsh Foreclosure", d_fr: "Battez Zâmin avec 0 point sur une de ses manches.", d_en: "Defeat Zâmin with her scoring 0 in a round.", reward: 200 },
+    { id: 'c6', t_fr: "Saisie Sévère", t_en: "Harsh Foreclosure", d_fr: "Remportez une manche où Zâmin finit à 0.", d_en: "Win a round where Zâmin scores 0.", reward: 200 },
     { id: 'c7', t_fr: "La Chute du Gondor", t_en: "Fall of Gondor", d_fr: "Battez Kael en subissant au moins 2 Déroutes.", d_en: "Defeat Kael while suffering at least 2 Routs.", reward: 250 },
     { id: 'c8', t_fr: "Lumière dans les Ténèbres", t_en: "Light in the Dark", d_fr: "Battez L'Étranger en finissant avec 10 d'Espoir.", d_en: "Defeat Stranger ending with 10 Hope.", reward: 300 },
     { id: 'c9', t_fr: "Le Sprinteur", t_en: "The Sprinter", d_fr: "Marquez 30+ Lieues en un seul lancer.", d_en: "Score 30+ Leagues in a single roll.", reward: 80 },
@@ -102,7 +102,7 @@ const contractsPool = [
     { id: 'c12', t_fr: "La Voie Rapide", t_en: "The Fast Track", d_fr: "Gagnez un duel en 8 tours ou moins.", d_en: "Win a duel in 8 turns or less.", reward: 150 },
     { id: 'c13', t_fr: "Victoire Écrasante", t_en: "Crushing Victory", d_fr: "Gagnez alors que l'ennemi a moins de 30 Lieues.", d_en: "Win while enemy has less than 30 Leagues.", reward: 100 },
     { id: 'c14', t_fr: "Sur le Fil", t_en: "Down to the Wire", d_fr: "Gagnez alors que l'ennemi a déjà 70+ Lieues.", d_en: "Win while enemy has 70+ Leagues.", reward: 150 },
-    { id: 'c15', t_fr: "Le Calculateur", t_en: "The Calculator", d_fr: "Gagnez une manche avec exactement 80 Lieues.", d_en: "Win a round with exactly 80 Leagues.", reward: 250 },
+    { id: 'c15', t_fr: "Le Calculateur", t_en: "The Calculator", d_fr: "Atteignez exactement 80 Lieues lors d'une manche.", d_en: "Reach exactly 80 Leagues in a round.", reward: 250 },
     { id: 'c16', t_fr: "Coup d'Épée dans l'Eau", t_en: "Swing in the Dark", d_fr: "Subissez une Impasse mais gagnez le duel.", d_en: "Suffer a Dead End but win the duel.", reward: 100 },
     { id: 'c17', t_fr: "Le Survivant", t_en: "The Survivor", d_fr: "Gagnez un duel avec exactement 1 Vie restante.", d_en: "Win a duel with exactly 1 Life left.", reward: 150 },
     { id: 'c18', t_fr: "L'Intouchable", t_en: "The Untouchable", d_fr: "Gagnez un duel sans subir de Déroute.", d_en: "Win a duel without suffering a Rout.", reward: 150 },
@@ -133,24 +133,26 @@ const contractsPool = [
     { id: 'c43', t_fr: "L'Équilibriste", t_en: "The Tightrope", d_fr: "Gagnez avec 1 Vie, 0 Espoir, 0 Ombre.", d_en: "Win with 1 Life, 0 Hope, 0 Shadow.", reward: 300 },
     { id: 'c44', t_fr: "Ruse du Rôdeur", t_en: "Ranger's Ruse", d_fr: "Purifiez et utilisez l'Ombre au même tour.", d_en: "Purify and use Shadow in the same turn.", reward: 150 },
     { id: 'c45', t_fr: "Le Mur de Fer", t_en: "Iron Wall", d_fr: "Contrez Kael avec Elbereth et gagnez.", d_en: "Counter Kael with Elbereth and win.", reward: 150 },
-    { id: 'c46', t_fr: "Le Sang Froid", t_en: "Cold Blood", d_fr: "Acceptez une Impasse et gagnez le duel.", d_en: "Accept a Dead End and win the duel.", reward: 150 },
+    { id: 'c46', t_fr: "Le Tacticien", t_en: "The Tactician", d_fr: "Gagnez en ayant utilisé Purifier, Boussole et Elbereth.", d_en: "Win having used Purify, Compass and Elbereth.", reward: 200 },
     { id: 'c47', t_fr: "L'Éclair Ténébreux", t_en: "Dark Lightning", d_fr: "Corrompez un dé au tout 1er tour.", d_en: "Corrupt a die on the very 1st turn.", reward: 100 },
     { id: 'c48', t_fr: "La Colère Aveugle", t_en: "Blind Anger", d_fr: "L'ennemi atteint 10 Haine sans pouvoir attaquer.", d_en: "Enemy hits 10 Hate without attacking.", reward: 250 },
     { id: 'c49', t_fr: "Le Joueur", t_en: "The Gambler", d_fr: "Subissez une Impasse avec 20+ Lieues en attente ce tour-ci.", d_en: "Suffer a Dead End with 20+ pending Leagues.", reward: 100 },
-    { id: 'c50', t_fr: "Providence", t_en: "Providence", d_fr: "Gagnez juste après un Échec Magistral ennemi.", d_en: "Win right after an enemy Masterful Failure.", reward: 150 }
+    { id: 'c50', t_fr: "Providence", t_en: "Providence", d_fr: "Gagnez un duel au cours duquel l'ennemi a subi un Échec Magistral.", d_en: "Win a duel where the enemy suffered a Masterful Failure.", reward: 150 }
 ];
 
 function refreshContracts() {
     if (!playerProfile.activeContracts) playerProfile.activeContracts = [];
     if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
     
-    // NETTOYEUR : On supprime les vieux contrats buggés qui traîneraient dans la sauvegarde
+    // NETTOYEUR STRICT : On supprime les vieux contrats buggés et on force la limite à 3
     playerProfile.activeContracts = playerProfile.activeContracts.filter(c => typeof c === 'string');
+    if (playerProfile.activeContracts.length > 3) {
+        playerProfile.activeContracts = playerProfile.activeContracts.slice(0, 3);
+    }
 
     while (playerProfile.activeContracts.length < 3) {
-        // On exclut les contrats déjà actifs ET ceux déjà terminés
         let available = contractsPool.filter(c => !playerProfile.activeContracts.includes(c.id) && !playerProfile.completedContracts.includes(c.id));
-        if (available.length === 0) break; // Si on a fini les 50, on arrête d'en chercher !
+        if (available.length === 0) break; 
         
         let chosen = available[Math.floor(Math.random() * available.length)];
         playerProfile.activeContracts.push(chosen.id);
@@ -171,11 +173,9 @@ function evaluateContracts(matchWon) {
     if (!playerProfile.activeContracts) return [];
     let completed = []; let ms = gameState.matchStats;
     
-    // Liste des contrats qui exigent explicitement de GAGNER LE DUEL
-    const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c15','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50'];
+    const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50'];
 
     playerProfile.activeContracts.forEach(cId => {
-        // Si le contrat demande de gagner la partie mais que le joueur a perdu, on ignore ce contrat
         if (!matchWon && requiresWin.includes(cId)) return;
 
         let isDone = false;
@@ -184,7 +184,9 @@ function evaluateContracts(matchWon) {
         if(cId === 'c3' && gameState.currentEnemyId === 'kael') isDone = true;
         if(cId === 'c4' && gameState.currentEnemyId === 'letranger') isDone = true;
         if(cId === 'c5' && gameState.currentEnemyId === 'brag' && ms.shadowsUsedThisMatch === 0) isDone = true;
-        if(cId === 'c6' && gameState.currentEnemyId === 'zamin' && ms.enemyZeroPointRound) isDone = true;
+        
+        if(cId === 'c6' && gameState.currentEnemyId === 'zamin' && ms.enemyLostRoundWithZero) isDone = true;
+        
         if(cId === 'c7' && gameState.currentEnemyId === 'kael' && ms.deroutesThisMatch >= 2) isDone = true;
         if(cId === 'c8' && gameState.currentEnemyId === 'letranger' && gameState.playerEspoir === 10) isDone = true;
         
@@ -194,7 +196,7 @@ function evaluateContracts(matchWon) {
         if(cId === 'c12' && ms.totalTurnsThisMatch <= 8) isDone = true; 
         if(cId === 'c13' && gameState.enemyScore < 30) isDone = true;
         if(cId === 'c14' && gameState.enemyScore >= 70) isDone = true;
-        if(cId === 'c15' && gameState.playerScore === 80) isDone = true;
+        if(cId === 'c15' && ms.exact80Round) isDone = true;
         if(cId === 'c16' && ms.acceptedImpasseAndWon) isDone = true;
         
         if(cId === 'c17' && gameState.playerLives === 1) isDone = true;
@@ -229,7 +231,7 @@ function evaluateContracts(matchWon) {
         if(cId === 'c43' && gameState.playerLives === 1 && gameState.playerEspoir === 0 && gameState.playerShadow === 0) isDone = true;
         if(cId === 'c44' && ms.purifyAndShadowSameTurn) isDone = true;
         if(cId === 'c45' && ms.elberethVsKaelAndWon) isDone = true;
-        if(cId === 'c46' && ms.acceptedImpasseAndWon) isDone = true;
+        if(cId === 'c46' && ms.compassUsedThisMatch > 0 && ms.purificationsThisMatch > 0 && ms.defendsUsed > 0) isDone = true;
         if(cId === 'c47' && ms.firstTurnCorrupt) isDone = true;
         if(cId === 'c48' && ms.enemyReachedMaxHate && !ms.enemyAttackedAfterMaxHate) isDone = true;
         if(cId === 'c49' && ms.rerollWith20PlusAndImpasse) isDone = true;
@@ -247,12 +249,11 @@ function evaluateContracts(matchWon) {
             playerProfile.eclatsOmbre += cData.reward;
             details.push(cData);
             
-            // On l'ajoute à la liste des victoires à vie
             if (!playerProfile.completedContracts.includes(id)) {
                 playerProfile.completedContracts.push(id);
             }
             
-            showToast(t('toast_contract_done') + " " + (currentLang==='fr'?cData.t_fr:cData.t_en), "success"); // Alerte visuelle !
+            showToast(t('toast_contract_done') + " " + (currentLang==='fr'?cData.t_fr:cData.t_en), "success");
         });
         playerProfile.activeContracts = playerProfile.activeContracts.filter(id => !completed.includes(id));
         refreshContracts(); 
@@ -397,7 +398,7 @@ const i18n = {
             dirhael: { greetings: ["Every step counts."], success: ["The trail is good."], failure: ["The burden grows heavy..."], purify: ["A necessary evil."], hope_hate: ["Hope guides me."], impasse: ["Cursed underbrush..."], camp: ["Let's breathe."], shadow: ["Forgive me, ancestors..."] },
             brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["Give that back!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
             zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Foreclosure."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
-            kael: { greetings: ["Le Gondor is dead."], success: ["Succumb to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
+            kael: { greetings: ["Le Gondor is dead."], success: ["Succombe to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
             letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
         }
     }
@@ -492,7 +493,7 @@ function enterDuel(id, fullName) {
     
     playerProfile.stats.gamesSinceShuffle = (playerProfile.stats.gamesSinceShuffle || 0) + 1;
 
-    gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false };
+    gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false, exact80Round: false, enemyLostRoundWithZero: false };
     
     const modifiers = ['normal', 'brouillard', 'nuit', 'aube', 'froid', 'clairiere'];
     gameState.currentModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
@@ -611,7 +612,11 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
             let tens = availableIndices.filter(idx => gameState.diceValues[idx] === 6); let foursAndFives = availableIndices.filter(idx => gameState.diceValues[idx] === 4 || gameState.diceValues[idx] === 5).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); let allScoring = availableIndices.filter(idx => gameState.diceValues[idx] >= 4).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); let neutrals = availableIndices.filter(idx => gameState.diceValues[idx] === 2 || gameState.diceValues[idx] === 3);
             let isEmergency = (projectedScore >= gameState.targetScore - 15);
 
-            if (isEmergency && allScoring.length > 0) { targetIdx = allScoring[0]; } else if (activeAI === 'kael') { if (lockedOnes === 1 && availableIndices.length > 0) { availableIndices.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = availableIndices[0]; } else if (tens.length > 0) { targetIdx = tens[0]; } else if (allScoring.length > 0) { targetIdx = allScoring[0]; } } else if (activeAI === 'brag') { if (foursAndFives.length > 0) { targetIdx = foursAndFives[0]; } else if (tens.length > 0 && neutrals.length === 0) { targetIdx = tens[0]; } } else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[a] - gameState.diceValues[b]); targetIdx = allScoring[0]; } }
+            if (isEmergency && allScoring.length > 0) { targetIdx = allScoring[0]; } 
+            else if (gameState.enemyHate >= 8 && allScoring.length > 0) { targetIdx = allScoring[0]; } // FIX IA AGRESSIVE
+            else if (activeAI === 'kael') { if (lockedOnes === 1 && availableIndices.length > 0) { availableIndices.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = availableIndices[0]; } else if (tens.length > 0) { targetIdx = tens[0]; } else if (allScoring.length > 0) { targetIdx = allScoring[0]; } } 
+            else if (activeAI === 'brag') { if (foursAndFives.length > 0) { targetIdx = foursAndFives[0]; } else if (tens.length > 0 && neutrals.length === 0) { targetIdx = tens[0]; } } 
+            else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[a] - gameState.diceValues[b]); targetIdx = allScoring[0]; } }
 
             if (targetIdx !== -1) {
                 gameState.enemyHate -= sabotageCost; updateHaineUI(); gameState.matchStats.enemyAttackedAfterMaxHate = true;
@@ -751,8 +756,37 @@ function resumeEnemyRoll(rolledIndices) {
 function processEnemyDecision() {
     for (let i = 0; i < 5; i++) { if (gameState.diceValues[i] >= 4 && gameState.diceStates[i] === 'idle') { gameState.diceStates[i] = 'kept'; gameState.hasKeptDieThisRoll = true; document.getElementById(`wrap-${i}`).classList.add('wrap-kept'); } } recalculateScore();
     setTimeout(() => { 
-        let idleCount = gameState.diceStates.filter(s => s === 'idle').length; let shouldStop = false; let activeAI = gameState.currentEnemyId; let risk = (activeAI === 'letranger') ? ['prudent', 'agressif', 'kamikaze'][Math.floor(Math.random() * 3)] : gameState.enemyRiskProfile; 
-        if (idleCount === 0) { shouldStop = true; } else { let gap = gameState.playerScore - gameState.enemyScore; let baseTargetScore = 15; let minIdleToStop = 1; switch(risk) { case 'brag': case 'agressif': baseTargetScore = 18; minIdleToStop = 1; break; case 'zamin': case 'prudent': baseTargetScore = 14; minIdleToStop = 2; break; case 'kael': baseTargetScore = 16; minIdleToStop = 1; break; case 'kamikaze': baseTargetScore = 25; minIdleToStop = 0; break; } let dynamicTargetScore = baseTargetScore + Math.floor(gap * 0.3); if (gameState.enemyScore + gameState.turnScore >= gameState.targetScore) { shouldStop = true; } else if (gameState.turnScore >= dynamicTargetScore || idleCount <= minIdleToStop) { if (risk === 'kael' && gap > 0 && gameState.playerScore >= 60 && gameState.turnScore < dynamicTargetScore) { shouldStop = false; } else { shouldStop = true; } } } 
+        let idleCount = gameState.diceStates.filter(s => s === 'idle').length; 
+        let shouldStop = false; 
+        let activeAI = gameState.currentEnemyId; 
+        let risk = (activeAI === 'letranger') ? ['prudent', 'agressif', 'kamikaze'][Math.floor(Math.random() * 3)] : gameState.enemyRiskProfile; 
+        
+        if (idleCount === 0) { 
+            shouldStop = true; 
+        } else { 
+            let gap = gameState.playerScore - gameState.enemyScore; 
+            let baseTargetScore = 15; 
+            let minIdleToStop = 1; 
+            switch(risk) { 
+                case 'brag': case 'agressif': baseTargetScore = 18; minIdleToStop = 1; break; 
+                case 'zamin': case 'prudent': baseTargetScore = 14; minIdleToStop = 2; break; 
+                case 'kael': baseTargetScore = 16; minIdleToStop = 1; break; 
+                case 'kamikaze': baseTargetScore = 25; minIdleToStop = 0; break; 
+            } 
+            let dynamicTargetScore = baseTargetScore + Math.floor(gap * 0.3); 
+            
+            // LA FAMEUSE RÈGLE DU DÉSESPOIR : Le joueur est à 15 Lieues (ou moins) de la victoire !
+            let isDesperate = (gameState.playerScore >= gameState.targetScore - 15);
+
+            if (gameState.enemyScore + gameState.turnScore >= gameState.targetScore) { 
+                shouldStop = true; 
+            } else if (isDesperate) {
+                shouldStop = false; // MODE KAMIKAZE
+            } else if (gameState.turnScore >= dynamicTargetScore || idleCount <= minIdleToStop) { 
+                if (risk === 'kael' && gap > 0 && gameState.playerScore >= 60 && gameState.turnScore < dynamicTargetScore) { shouldStop = false; } 
+                else { shouldStop = true; } 
+            } 
+        } 
         if (shouldStop && gameState.turnScore > 0) { bankScore(); } else { playEnemyTurn(); } 
     }, 1500);
 }
@@ -784,6 +818,9 @@ function bankScore() {
         gameState.playerScore += gameState.turnScore; updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); updateStatus(t('status_camp_hero'), "var(--gold)"); 
         playerProfile.stats.totalLeagues += gameState.turnScore; gameState.heroRoutLastTurn = false; 
         
+        // C15 FIX: Le score exact de 80
+        if (gameState.playerScore === 80) gameState.matchStats.exact80Round = true;
+
         if (gameState.turnScore > 0 && gameState.turnScore <= 15) gameState.matchStats.bankedUnder15 = true;
         if (gameState.turnScore > gameState.matchStats.highestTurnScoreThisMatch) gameState.matchStats.highestTurnScoreThisMatch = gameState.turnScore;
         
@@ -805,6 +842,9 @@ function resolveRoundWinner(winner) {
     let startLevel = playerProfile.level;
 
     if (winner === 'hero') {
+        // C6 ZÂMIN FIX : Si l'ennemi finit la manche avec 0 point global
+        if (gameState.enemyScore === 0) gameState.matchStats.enemyLostRoundWithZero = true;
+
         gameState.heroRounds++; updateGlobalUI(); addXP(Math.floor(15 * mult)); 
         if (gameState.heroRounds >= 2) { 
             playerProfile.stats.gamesWon++; 
@@ -856,16 +896,9 @@ function applyReward(choice) {
     if (choice === 'initiative') { 
         startNewRound(false, 'hero'); 
     } else if (choice === 'vie') { 
-        // 1. On lance la manche avec l'ennemi en premier
         startNewRound(false, 'enemy'); 
-        
-        // 2. Le Raccourci Furtif : +15 Lieues silencieuses (hors chronomètre)
         gameState.playerScore = 15; 
-        
-        // 3. On met à jour l'affichage de la barre de course
         updateGlobalUI();
-        
-        // 4. Petite notification visuelle pour confirmer l'avantage
         let toastMsg = currentLang === 'fr' ? "Le Raccourci : +15 Lieues sécurisées !" : "Shortcut: +15 Leagues secured!";
         showToast(toastMsg, "success");
     } 

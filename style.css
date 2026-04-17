@@ -4,6 +4,8 @@
 :root {
     --gold: #d4af37; --blood: #8b0000; --bone: #e3dac9;
     --enemy-color: #663399; --corruption: #663399;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 body { 
     background: #0a0b0c; color: var(--bone); font-family: 'Merriweather', serif; 
@@ -90,37 +92,10 @@ body {
     position: relative; 
 }
 
-.char-name { 
-    font-family: 'Oswald', sans-serif; 
-    font-size: 24px; 
-    margin: 0 0 5px 0; 
-    text-transform: uppercase; 
-}
+.char-name { font-family: 'Oswald', sans-serif; font-size: 24px; margin: 0 0 5px 0; text-transform: uppercase; }
+.hero-title { font-family: 'Merriweather', serif; font-style: italic; font-size: 12px; color: #888; margin: 0 0 15px 0; text-align: center; height: 18px; line-height: 18px; }
 
-.hero-title { 
-    font-family: 'Merriweather', serif; 
-    font-style: italic; 
-    font-size: 12px; 
-    color: #888; 
-    margin: 0 0 15px 0; 
-    text-align: center; 
-    height: 18px; 
-    line-height: 18px;
-}
-
-/* Réparation des bulles de dialogue sur PC */
-.dialogue-box { 
-    margin-top: auto; /* Ça pousse la bulle tout en bas du panneau ! */
-    padding: 15px; 
-    border-left: 3px solid #555; 
-    font-style: italic; 
-    font-size: 14px; 
-    color: #aaa; 
-    text-align: left; 
-    width: 100%; 
-    box-sizing: border-box; 
-    transition: opacity 0.5s ease-in-out; 
-}
+.dialogue-box { margin-top: auto; padding: 15px; border-left: 3px solid #555; font-style: italic; font-size: 14px; color: #aaa; text-align: left; width: 100%; box-sizing: border-box; transition: opacity 0.5s ease-in-out; }
 .hero-dialogue { border-color: var(--gold); }
 .enemy-dialogue { text-align: right; border-left: none; border-right: 3px solid var(--enemy-color); }
 .hero-name { color: var(--gold); }
@@ -137,10 +112,6 @@ body {
 .token.ombre { border: 1px solid var(--corruption); background: transparent; }
 .token.haine { background: var(--blood); border-radius: 50%; transform: none; box-shadow: 0 0 5px var(--blood); }
 .token.lost { opacity: 0.1; background: transparent !important; border: 1px solid #555; box-shadow: none; }
-
-.dialogue-box { margin-top: auto; padding: 15px; border-left: 3px solid #555; font-style: italic; font-size: 14px; color: #aaa; text-align: left; width: 100%; box-sizing: border-box; transition: opacity 0.5s ease-in-out; }
-.hero-dialogue { border-color: var(--gold); }
-.enemy-dialogue { text-align: right; border-left: none; border-right: 3px solid var(--enemy-color); }
 
 /* Plateau Central */
 #center-board { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(20,20,20,0.8); padding: 30px; border-radius: 10px; border: 1px solid #333; position: relative; transition: all 0.5s ease; }
@@ -199,8 +170,6 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 /* ========================================= */
 /* COSMÉTIQUES ET SKINS DE L'ARSENAL         */
 /* ========================================= */
-
-/* --- SKINS DE DÉS --- */
 .die.skin-bone { background: linear-gradient(135deg, #e3dac9 0%, #c4b7a6 100%); border-color: #8b7355; }
 .die.skin-bone.die-neutral { color: #777; }
 .die.skin-bone.die-advance { color: #2980b9; border-color: #2980b9; } 
@@ -286,7 +255,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 #center-board.board-helm { background: linear-gradient(to bottom, #1c2833, #0a0e12); border-color: #566573; }
 #center-board.board-bivouac { background: radial-gradient(circle, #3e2723 0%, #0a0b0c 80%); border-color: #d35400; }
 #center-board.board-abyss { background: #000; border-color: #111; box-shadow: none; }
-#center-board.board-citeblanche { background: radial-gradient(circle, rgba(200,210,215,0.85), rgba(120,130,140,0.95)); border-color: #bdc3c7; box-shadow: inset 0 0 60px rgba(0,0,0,0.7); }
+#center-board.board-citeblanche { background: radial-gradient(circle, rgba(90, 105, 115, 0.9), rgba(15, 20, 25, 0.95)); border-color: #bdc3c7; box-shadow: inset 0 0 60px rgba(0,0,0,0.9); }
 #center-board.board-terresbrulees { background: radial-gradient(circle at bottom, #8b0000 0%, #1a0000 60%, #000 100%); border-color: #4a0e0e; box-shadow: inset 0 0 40px rgba(0,0,0,1); }
 #center-board.board-havre { background: linear-gradient(to right, #145a32, #0e6251); border-color: #2ecc71; box-shadow: inset 0 0 30px rgba(46, 204, 113, 0.2); }
 #center-board.board-moria { background: radial-gradient(circle, #2c3e50 0%, #000 100%); border-color: #1a252f; box-shadow: inset 0 0 50px #000; }
@@ -352,130 +321,343 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 #end-btn, #event-btn { font-size: 18px; padding: 15px 30px; background: transparent; border-width: 2px; }
 #end-btn:hover, #event-btn:hover { background: rgba(255, 255, 255, 0.15) !important; color: inherit !important; }
 
+
 /* ========================================= */
 /* RESPONSIVE MOBILE (Compression & Jouabilité)*/
 /* ========================================= */
 @media (max-width: 850px) {
-    body { padding: 2px; padding-top: 40px; justify-content: flex-start; }
-    #settings-btn { top: 5px; right: 5px; width: 35px; height: 35px; font-size: 16px; }
+    /* --- VERROUILLAGE 100DVH (ZÉRO SCROLL GLOBAL) --- */
+    html, body {
+        height: 100vh; 
+        height: 100dvh;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        background: #0a0b0c;
+    }
     
-    .player-profile-bar { flex-direction: column; align-items: stretch; padding: 10px; margin-bottom: 10px; gap: 8px; border-radius: 4px; border-color: #444; }
-    .xp-container { max-width: none; }
-    .profile-name { font-size: 16px; }
-    .currency-box { font-size: 12px; padding: 4px 8px; }
-    .arsenal-btn { padding: 5px 10px; font-size: 12px; }
-    
-    .large-title { font-size: 22px; line-height: 1.1; }
-    .subtitle-merriweather { font-size: 11px; margin-top: 4px; }
-    .rules-btn { font-size: 11px; padding: 6px 12px; margin-top: 10px; }
-    .tavern-header { margin-bottom: 15px; padding: 5px; }
+    body {
+        padding-top: var(--safe-top);
+        justify-content: flex-start;
+    }
 
-    .tables-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 5px; }
-    .table-card { padding: 8px; min-width: 0; max-width: none; }
+    #settings-btn { 
+        top: calc(4px + var(--safe-top)) !important; 
+        right: 4px !important; 
+        width: 30px !important; 
+        height: 30px !important; 
+        font-size: 14px !important; 
+    }
+
+    #settings-menu {
+        padding: 10px !important;
+        gap: 6px !important;
+        top: calc(38px + var(--safe-top)) !important;
+    }
+    
+    #settings-menu button { width: 100px !important; padding: 8px !important; font-size: 11px !important; }
+    #settings-menu hr { margin: 5px 0 !important; }
+    #settings-menu span { font-size: 10px !important; }
+
+    /* --- TAVERNE (Ajustée et Optimisée) --- */
+    #tavern-screen {
+        height: calc(100dvh - var(--safe-top)); 
+        overflow-y: auto !important; 
+        padding-bottom: 20px;
+        box-sizing: border-box;
+    }
+    /* --- BARRE DE PROFIL COMPRESSÉE (Grille 2x2) --- */
+    .player-profile-bar { 
+        display: grid !important;
+        grid-template-columns: 1fr auto !important; 
+        gap: 8px 15px !important; 
+        padding: 10px !important; 
+        width: 95% !important; 
+        /* LA CORRECTION EST ICI : 6vh de marge en haut pour centrer la taverne */
+        margin: 6vh auto 10px auto !important; 
+        box-sizing: border-box !important;
+        align-items: center !important;
+    }
+    
+    /* Haut Gauche : Nom et Niveau */
+    .profile-info { justify-content: flex-start !important; margin: 0 !important; }
+    .profile-name { font-size: 16px !important; }
+    
+    /* Bas Gauche : Jauge d'XP */
+    .xp-container { width: 100% !important; margin: 0 !important; max-width: none !important; }
+    
+    /* Haut Droite : Éclats d'Ombre */
+    .currency-box { 
+        justify-self: end !important; 
+        margin: 0 !important; 
+        font-size: 11px !important; 
+        padding: 4px 8px !important; 
+        text-align: center;
+    }
+    
+    /* Bas Droite : Bouton Arsenal */
+    .arsenal-btn { 
+        justify-self: end !important; 
+        margin: 0 !important; 
+        padding: 6px 12px !important; 
+        font-size: 11px !important; 
+        width: 100%; /* S'aligne parfaitement avec la boîte d'éclats au-dessus */
+        box-sizing: border-box;
+    }
+    
+    .tavern-header { margin-bottom: 8px !important; } /* Marges réduites */
+    .large-title { font-size: 18px !important; line-height: 1.1; } /* Titre légèrement réduit */
+    .subtitle-merriweather { font-size: 10px !important; margin-top: 2px; }
+    .rules-btn { font-size: 11px; padding: 6px 12px; margin-top: 5px !important; }
+    
+    .tables-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px !important; padding: 0 10px !important; width: 100%; box-sizing: border-box; }
+    .table-card { padding: 8px !important; min-width: 0; max-width: none; }
+    
+    /* LA MAGIE EST ICI : On redonne de la hauteur aux images */
+    .table-card img { 
+        height: 115px !important; /* Images beaucoup plus hautes */
+        margin-bottom: 4px; 
+        border-radius: 4px; 
+        object-fit: cover !important;
+        object-position: center !important; /* On centre pour bien voir le personnage */
+    }
+    
     .table-name { font-size: 14px; margin-bottom: 3px; }
-    .table-card img { height: 70px; margin-bottom: 4px; border-radius: 4px; }
     .diff-easy, .diff-normal, .diff-hard, .diff-random { font-size: 9px; }
-    .table-card:nth-child(4) { grid-column: 1 / -1; }
-    .table-card:nth-child(4) img { height: 100px; }
-    
-    #duel-screen { 
-        height: calc(100dvh - 45px); 
-        gap: 5px; margin-top: 0; flex-direction: column; align-items: center; 
-        width: 100%; justify-content: space-between; overflow: hidden; 
+
+    /* --- STRUCTURE DUEL SCREEN --- */
+    #duel-screen {
+        /* On a supprimé le display: flex !important; ici pour laisser le JS gérer l'affichage */
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        height: calc(100dvh - var(--safe-top)) !important;
+        padding-bottom: calc(130px + var(--safe-bottom)) !important; /* Place pour le grand dock */
+        margin: 0 !important;
+        gap: 0 !important; 
+        box-sizing: border-box !important;
     }
-    
-    .character-panel { 
-        display: flex; flex-direction: row; flex-wrap: wrap; 
-        justify-content: center; align-items: flex-start; 
-        padding: 8px 10px; gap: 8px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; 
-        flex-shrink: 0; z-index: 10;
+
+    #duel-screen > .character-panel:last-child { order: 1 !important; flex-shrink: 0; margin-bottom: 5px; }
+
+    /* 2. CENTRE / PLATEAU ("LE RESSORT") */
+    #center-board {
+        order: 2 !important;
+        flex: 1 1 auto !important; 
+        min-height: 0 !important;  
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-evenly !important; 
+        align-items: center !important;
+        /* ON REND LE CENTRE TOTALEMENT TRANSPARENT CAR LE FOND EST SUR L'ECRAN COMPLET */
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 10px !important; 
+        margin: 0 !important;
     }
-    .char-portrait { width: 45px; height: 45px; margin: 0; border-width: 2px !important; }
-    .char-name { width: 100%; text-align: center; font-size: 14px; margin: 0 0 5px 0; }
-    .hero-title { display: none; }
+
+    /* --- APPLICATION DES THEMES EN PLEIN ECRAN SUR MOBILE --- */
+    #duel-screen:has(#center-board.board-wood) { background: linear-gradient(rgba(26,16,5,0.9), rgba(26,16,5,0.9)), url('images/wood.jpg') center/cover !important; }
+    #duel-screen:has(#center-board.board-stone) { background: linear-gradient(rgba(17,21,24,0.9), rgba(17,21,24,0.9)), url('images/stone.jpg') center/cover !important; }
+    #duel-screen:has(#center-board.board-runic) { background: #0f1319 !important; }
+    #duel-screen:has(#center-board.board-helm) { background: linear-gradient(to bottom, #1c2833, #0a0e12) !important; }
+    #duel-screen:has(#center-board.board-bivouac) { background: radial-gradient(circle, #3e2723 0%, #0a0b0c 80%) !important; }
+    #duel-screen:has(#center-board.board-abyss) { background: #000 !important; }
+    #duel-screen:has(#center-board.board-citeblanche) { background: radial-gradient(circle, rgba(90, 105, 115, 0.9), rgba(15, 20, 25, 0.95)) !important; }
+    #duel-screen:has(#center-board.board-terresbrulees) { background: radial-gradient(circle at bottom, #8b0000 0%, #1a0000 60%, #000 100%) !important; }
+    #duel-screen:has(#center-board.board-havre) { background: linear-gradient(to right, #145a32, #0e6251) !important; }
+    #duel-screen:has(#center-board.board-moria) { background: radial-gradient(circle, #2c3e50 0%, #000 100%) !important; }
+    #duel-screen:has(#center-board.board-lorien) { background: radial-gradient(circle, #0e2b1d 0%, #06110c 100%) !important; }
+
+    #duel-screen > .character-panel:first-child { order: 3 !important; flex-shrink: 0; margin-top: 5px; }
+
+    /* --- PANNEAUX PERSONNAGES --- */
+    .character-panel {
+        display: grid !important;
+        grid-template-columns: 65px 1fr !important;
+        gap: 5px 10px !important;
+        padding: 10px !important; 
+        width: 100% !important;
+        box-sizing: border-box !important; 
+        border-top: none !important; 
+        border-bottom: none !important;
+        background: transparent !important;
+        align-items: center !important;
+    }
+    .char-portrait {
+        grid-column: 1 !important;
+        grid-row: 1 / span 3 !important;
+        width: 65px !important;
+        height: 65px !important;
+        margin: 0 !important;
+        border-width: 2px !important;
+    }
+    .char-name {
+        grid-column: 2 !important;
+        font-size: 18px !important;
+        margin: 0 !important;
+        border: none !important;
+        padding: 0 !important;
+        text-align: left !important;
+    }
+    .hero-title { display: none !important; }
     
-    .resource-zone { width: auto; min-width: 85px; margin: 0; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; }
-    .res-label { font-size: 9px; margin-bottom: 4px; letter-spacing: 0; height: 12px; display: flex; align-items: flex-end; justify-content: center; line-height: 1; } 
-    .token-row { display: flex; gap: 4px; justify-content: center !important; align-items: center; height: 20px; margin: 0; }
-    .token { width: 12px; height: 12px; }
+    .resource-zone {
+        grid-column: 2 !important;
+        display: flex !important;
+        flex-wrap: nowrap !important; 
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin: 0 !important;
+        width: 100% !important;
+        gap: 5px !important;
+        padding-right: 5px !important;
+    }
+    .res-label {
+        flex: 1 !important; 
+        min-width: 0 !important; 
+        font-size: 11px !important;
+        margin: 0 !important;
+        max-width: 40vw !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important; 
+        opacity: 0.8 !important;
+        text-align: left !important;
+    }
+    .token-row { margin: 0 !important; display: flex !important; justify-content: flex-end !important; flex-shrink: 0 !important; }
+    .token { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
+    #ui-espoir-tokens span { flex-shrink: 0 !important; }
+    #ui-espoir-tokens span:last-of-type { display: none !important; }
 
-    #duel-screen > .character-panel:first-child .char-name { order: -2; }
-    #duel-screen > .character-panel:first-child .char-portrait { order: -1; margin-right: 6px; margin-top: 5px; }
-    #duel-screen > .character-panel:last-child .char-name { order: -2; }
-    #duel-screen > .character-panel:last-child .char-portrait { order: -1; margin-left: 6px; margin-top: 5px; }
+    /* --- ÉLÉMENTS DU CENTRE --- */
+    #rounds-tracker { font-size: 14px !important; margin: 0 !important; gap: 5px !important; }
+    #score-row { font-size: 16px !important; margin: 0 !important; width: 100% !important; }
+    #score-row span span { font-size: 28px !important; }
+    #race-track-container { height: 4px !important; margin: 5px 0 !important; width: 100% !important; }
+    #race-track { height: 4px !important; }
+    .race-badge { display: none !important; }
 
-    #ui-modifier-banner { width: 90%; padding: 10px; top: 45%; }
-    #ui-mod-title { font-size: 14px !important; }
-    #ui-mod-desc { font-size: 11px !important; margin-top: 4px !important; }
+    .turn-info-container { margin: 0 !important; min-height: auto !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
+    .turn-info-label { font-size: 12px !important; margin: 0 !important; line-height: 1.2 !important; display: block !important; font-weight: bold !important; }
+    #current-turn-score { font-size: 48px !important; margin: 0 !important; line-height: 1 !important; }
+    #current-turn-score span { font-size: 14px !important; }
 
-    /* ================================================== */
-    /* NOUVELLE POSITION DES BULLES DE DIALOGUE (GAUCHE)  */
-    /* ================================================== */
+    /* --- BANNIÈRE MÉTÉO (Flottante, ne repousse plus les dés) --- */
+    #ui-modifier-banner {
+        position: absolute !important;
+        top: 25% !important; 
+        left: 50% !important; 
+        transform: translate(-50%, -50%) !important;
+        width: 85% !important;
+        padding: 8px !important; 
+        margin: 0 !important;
+        background: rgba(15, 15, 15, 0.98) !important;
+        border: 1px solid var(--gold) !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.8) !important;
+        z-index: 50 !important;
+    }
+    #ui-mod-title { font-size: 14px !important; margin: 0 !important; }
+    #ui-mod-desc { font-size: 11px !important; margin-top: 2px !important; }
+
+    /* --- DÉS PLUS PETITS (65px) & FORMAT FORCÉ 3-2 --- */
+    #dice-arena {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        /* MATHÉMATIQUE: 3 dés de 65px + 2 gaps de 12px = ~219px. 230 force le passage à la ligne. */
+        max-width: 230px !important;
+        gap: 8px 12px !important;
+        margin: 10px auto 0 auto !important;
+        padding: 0 !important;
+        background: transparent !important;
+        min-height: auto !important;
+    }
+    .die-wrapper { 
+        width: 65px !important; 
+        height: 65px !important; 
+    }
+    .die-wrapper.wrap-kept { transform: translateY(-4px) !important; }
+    .die { font-size: 28px !important; border-radius: 10px !important; border-width: 1px !important; }
+
+    /* --- LE DOCK DES BOUTONS (Effet Verre Dépoli) --- */
+    #turn-controls {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: calc(130px + var(--safe-bottom)) !important; 
+        
+        /* LA CORRECTION EST ICI : Transparence et Flou */
+        background: rgba(10, 11, 12, 0.5) !important; /* Fond noir à 50% de transparence */
+        backdrop-filter: blur(12px) !important; /* L'effet flou magique */
+        -webkit-backdrop-filter: blur(12px) !important; /* Pour la compatibilité iPhone/Safari */
+        
+        /* On adoucit la bordure pour qu'elle soit moins agressive */
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 15px 15px calc(50px + var(--safe-bottom)) 15px !important; 
+        box-sizing: border-box !important;
+        z-index: 1000 !important;
+        margin: 0 !important;
+        transform: none !important; 
+    }
+    #turn-controls button {
+        flex: 1 !important;
+        margin: 0 !important;
+        height: 60px !important; 
+        min-height: 60px !important;
+        /* On réduit très légèrement la police pour aider les textes longs */
+        font-size: 14px !important; 
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        font-weight: bold !important;
+        
+        /* LA CORRECTION EST ICI : Centrage parfait du texte (même sur 2 lignes) */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        line-height: 1.1 !important; /* Rapproche les lignes de texte entre elles */
+        padding: 5px !important;
+    }
+
+    .back-btn { 
+        position: fixed !important; 
+        bottom: calc(10px + var(--safe-bottom)) !important; 
+        left: 50% !important; 
+        transform: translateX(-50%) !important;
+        font-size: 13px !important; 
+        opacity: 0.6 !important; 
+        margin: 0 !important; 
+        padding: 5px 15px !important; 
+        z-index: 1001 !important; 
+        background: transparent !important;
+        border: none !important;
+        color: #888 !important;
+        text-decoration: underline !important;
+        min-height: auto !important;
+    }
+
+    /* Bulles de dialogue flottantes */
     .dialogue-box { 
-        position: absolute; background: rgba(15, 15, 15, 0.95); border: 1px solid; 
-        padding: 6px 10px; color: var(--bone); font-size: 11px; width: max-content; 
-        max-width: 150px; z-index: 100; margin: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.9); 
-        border-radius: 8px; 
+        position: absolute !important; background: rgba(15, 15, 15, 0.95) !important; 
+        padding: 6px 10px !important; font-size: 11px !important; width: max-content !important; 
+        max-width: 150px !important; z-index: 100 !important; margin: 0 !important; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border-radius: 8px !important; 
     }
-    
-    /* Dirhael : Bulle alignée en haut à gauche, au niveau de son nom */
-    .hero-dialogue { 
-        top: 8px; 
-        left: 10px; 
-        border-color: var(--gold); 
-        border-top-left-radius: 2px; 
-    }
-    
-    /* Ennemi : Bulle alignée en haut à gauche, au niveau de son nom */
-    .enemy-dialogue { 
-        top: 8px; 
-        bottom: auto; /* On annule l'ancien réglage vers le bas */
-        left: 10px; 
-        right: auto; 
-        border-color: var(--enemy-color); 
-        border-top-left-radius: 2px; 
-        text-align: left; 
-    }
+    .hero-dialogue { top: -20px !important; left: 10px !important; border-color: var(--gold) !important; border-bottom-left-radius: 2px !important; }
+    .enemy-dialogue { bottom: -20px !important; left: 10px !important; border-color: var(--enemy-color) !important; border-top-left-radius: 2px !important; text-align: left !important; }
 
-    /* Le Plateau Central */
-    #center-board { 
-        padding: 5px 10px; border-radius: 8px; width: 100%; max-width: 450px; box-sizing: border-box; 
-        margin: 0; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 4px;
-    }
-    
-    #rounds-tracker { margin-bottom: 0 !important; font-size: 12px !important; gap: 8px !important; }
-    #persistent-mod-icon { font-size: 18px !important; }
-    
-    #score-row { margin-bottom: 0 !important; font-size: 13px !important; }
-    #score-row span span { font-size: 20px !important; }
-    #race-track-container { margin-bottom: 0 !important; height: 6px !important; width: 100%; }
-    #race-track { height: 6px !important; }
-    .race-badge { display: none; } 
-    
-    /* ================================================== */
-    /* RÉAFFICHER LE TEXTE D'ALERTE POUR JOUER !          */
-    /* ================================================== */
-    .turn-info-container { margin-bottom: 0; min-height: 24px; display: flex; flex-direction: column; justify-content: center; }
-    .turn-info-label { 
-        display: block !important; /* LE CORRÉCTIF VITAL : réaffiche le texte des attaques */
-        font-size: 11px; 
-        margin-bottom: 2px; 
-        font-weight: bold;
-        line-height: 1.2;
-    } 
-    #current-turn-score { font-size: 32px; line-height: 1; margin-top: 2px; }
-    #current-turn-score span { font-size: 12px; }
-    
-    #dice-arena { min-height: 45px; gap: 6px; margin-bottom: 0; padding: 2px; background: transparent; }
-    .die-wrapper { width: 44px; height: 44px; } 
-    .die-wrapper.wrap-kept { transform: translateY(-5px); }
-    .die { font-size: 22px; border-radius: 8px; border-width: 1px; } 
-    
-    #turn-controls { gap: 8px; margin-top: 0; min-height: 36px; }
-    button { padding: 8px 12px; font-size: 11px; min-width: 100px; }
-    .back-btn { margin-top: 0; margin-bottom: 0; font-size: 10px; padding: 4px; opacity: 0.6; }
-
-    /* Modal Arsenal Mobile */
+    /* Modales */
     .rules-content { padding: 15px; width: 95%; height: 85vh !important; display: flex; flex-direction: column; }
     .arsenal-tabs { justify-content: center; gap: 5px; margin-bottom: 10px; padding-bottom: 5px; flex-shrink: 0; }
     .tab-btn { font-size: 13px; padding: 6px; }
