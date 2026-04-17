@@ -473,11 +473,12 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 
     #duel-screen > .character-panel:first-child { order: 3 !important; flex-shrink: 0; margin-top: 5px; }
 
-    /* --- PANNEAUX PERSONNAGES --- */
+    /* --- PANNEAUX PERSONNAGES (Titre en ligne & Alignements parfaits) --- */
     .character-panel {
         display: grid !important;
-        grid-template-columns: 65px 1fr !important;
-        gap: 5px 10px !important;
+        /* MAGIE ICI : 3 colonnes. Avatar (65px) | Nom (Ajusté au texte) | Titre (Prend le reste) */
+        grid-template-columns: 65px max-content 1fr !important; 
+        gap: 2px 10px !important; 
         padding: 10px !important; 
         width: 100% !important;
         box-sizing: border-box !important; 
@@ -488,24 +489,46 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
     }
     .char-portrait {
         grid-column: 1 !important;
-        grid-row: 1 / span 3 !important;
+        grid-row: 1 / span 5 !important; 
         width: 65px !important;
         height: 65px !important;
         margin: 0 !important;
         border-width: 2px !important;
     }
+    
+    /* NOM DU PERSONNAGE (Colonne 2) */
     .char-name {
         grid-column: 2 !important;
-        font-size: 18px !important;
+        grid-row: 1 !important;
+        font-size: 16px !important;
         margin: 0 !important;
         border: none !important;
         padding: 0 !important;
         text-align: left !important;
+        align-self: end !important; /* Aligne le bas du nom avec le titre */
     }
-    .hero-title { display: none !important; }
     
+    /* TITRE DU PERSONNAGE (Colonne 3, à côté du nom) */
+    .hero-title { 
+        grid-column: 3 !important; 
+        grid-row: 1 !important;
+        display: block !important; 
+        font-family: 'Merriweather', serif !important;
+        font-style: italic !important;
+        font-size: 11px !important; 
+        color: #aaa !important;
+        margin: 0 0 1px 5px !important; /* Marge à gauche pour décoller du nom */
+        text-align: left !important;
+        align-self: end !important;
+        /* Sécurité Anti-Débordement */
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important; 
+    }
+    
+    /* ZONES DE RESSOURCES (S'étendent sur les colonnes 2 et 3) */
     .resource-zone {
-        grid-column: 2 !important;
+        grid-column: 2 / span 2 !important; 
         display: flex !important;
         flex-wrap: nowrap !important; 
         justify-content: space-between !important;
@@ -513,22 +536,44 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
         margin: 0 !important;
         width: 100% !important;
         gap: 5px !important;
-        padding-right: 5px !important;
+        padding-right: 15px !important; /* Décolle légèrement du bord droit de l'écran */
     }
+    
     .res-label {
-        flex: 1 !important; 
-        min-width: 0 !important; 
-        font-size: 11px !important;
+        flex: 1 1 auto !important; 
+        min-width: 0 !important; /* Vital pour que le texte puisse rétrécir proprement */
+        font-size: 10px !important;
         margin: 0 !important;
-        max-width: 40vw !important;
+        /* On enlève les contraintes de largeur, on laisse Flexbox gérer intelligemment */
+        max-width: none !important; 
         white-space: nowrap !important;
         overflow: hidden !important;
-        text-overflow: ellipsis !important; 
+        text-overflow: ellipsis !important; /* Le texte se coupera avec "..." si les losanges poussent trop */
         opacity: 0.8 !important;
         text-align: left !important;
     }
-    .token-row { margin: 0 !important; display: flex !important; justify-content: flex-end !important; flex-shrink: 0 !important; }
-    .token { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
+    
+    /* BOÎTE DES LOSANGES/ÉTOILES (S'étend vers la gauche, protège les icônes) */
+    .token-row { 
+        margin: 0 0 0 10px !important; /* Petite marge à gauche pour ne pas coller au texte si ça raccourcit */
+        display: flex !important; 
+        justify-content: flex-end !important; /* Pousse tout à droite, donc l'ajout se fait vers la gauche */
+        align-items: center !important; 
+        gap: 3px !important; /* Gap très légèrement réduit pour optimiser l'espace de chaque losange */
+        
+        /* LA CORRECTION : Strictement sur 1 ligne, et les losanges sont intouchables */
+        flex-wrap: nowrap !important;
+        flex: 0 0 auto !important; 
+        flex-shrink: 0 !important; /* Interdit au navigateur d'écraser ou déformer les losanges */
+    }
+    
+    .token { 
+        width: 14px !important; 
+        height: 14px !important; 
+        flex-shrink: 0 !important; 
+        margin: 0 !important; 
+    }
+    
     #ui-espoir-tokens span { flex-shrink: 0 !important; }
     #ui-espoir-tokens span:last-of-type { display: none !important; }
 
