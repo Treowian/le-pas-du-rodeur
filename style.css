@@ -419,7 +419,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
         margin-bottom: 4px; 
         border-radius: 4px; 
         object-fit: cover !important;
-        object-position: center !important; /* On centre pour bien voir le personnage */
+        object-position: 50% 15% !important; 
     }
     
     .table-name { font-size: 14px; margin-bottom: 3px; }
@@ -581,8 +581,15 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
         width: 65px !important; 
         height: 65px !important; 
     }
-    .die-wrapper.wrap-kept { transform: translateY(-4px) !important; }
-    .die { font-size: 28px !important; border-radius: 10px !important; border-width: 1px !important; }
+    .die-wrapper.wrap-kept { 
+        transform: translateY(-10px) scale(1.04) !important; 
+    }
+    
+    .die-wrapper.wrap-kept .die {
+        /* On ajoute un puissant halo doré extérieur et intérieur */
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 10px rgba(212, 175, 55, 0.5) !important;
+        border-color: var(--gold) !important;
+    }
 
     /* --- LE DOCK DES BOUTONS (Effet Verre Dépoli) --- */
     #turn-controls {
