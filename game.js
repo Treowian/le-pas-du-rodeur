@@ -107,7 +107,7 @@ const contractsPool = [
     { id: 'c17', t_fr: "Le Survivant", t_en: "The Survivor", d_fr: "Gagnez un duel avec exactement 1 Vie restante.", d_en: "Win a duel with exactly 1 Life left.", reward: 150 },
     { id: 'c18', t_fr: "L'Intouchable", t_en: "The Untouchable", d_fr: "Gagnez un duel sans subir de Déroute.", d_en: "Win a duel without suffering a Rout.", reward: 150 },
     { id: 'c19', t_fr: "Le Purificateur", t_en: "The Purifier", d_fr: "Purifiez au moins 3 Embuscades.", d_en: "Purify at least 3 Ambushes.", reward: 100 },
-    { id: 'c20', t_fr: "Purge Totale", t_en: "Total Purge", d_fr: "Purifiez au moins 5 Embuscades.", d_en: "Purify at least 5 Ambushes.", reward: 200 },
+    { id: 'c20', t_fr: "Purge Totale", t_en: "Total Purge", d_fr: "Purifiez un total de 5 Embuscades (cumulatif).", d_en: "Purify 5 Ambushes in total (cumulative).", reward: 200 },
     { id: 'c21', t_fr: "Le Cartographe", t_en: "The Cartographer", d_fr: "Utilisez la Boussole au moins 2 fois.", d_en: "Use the Compass at least twice.", reward: 100 },
     { id: 'c22', t_fr: "Le Défenseur", t_en: "The Defender", d_fr: "Bloquez 2 Malices avec 'A Elbereth !'.", d_en: "Block 2 Malice attacks with 'A Elbereth !'.", reward: 150 },
     { id: 'c23', t_fr: "Le Pacifiste", t_en: "The Pacifist", d_fr: "Gagnez sans utiliser 'A Elbereth !'.", d_en: "Win without using 'A Elbereth !'.", reward: 200 },
@@ -202,7 +202,7 @@ function evaluateContracts(matchWon) {
         if(cId === 'c17' && gameState.playerLives === 1) isDone = true;
         if(cId === 'c18' && ms.deroutesThisMatch === 0) isDone = true;
         if(cId === 'c19' && ms.purificationsThisMatch >= 3) isDone = true;
-        if(cId === 'c20' && ms.purificationsThisMatch >= 5) isDone = true;
+        if(cId === 'c20' && (playerProfile.stats.purifForContract || 0) >= 5) { isDone = true; playerProfile.stats.purifForContract = 0; }
         if(cId === 'c21' && ms.compassUsedThisMatch >= 2) isDone = true;
         if(cId === 'c22' && ms.defendsUsed >= 2) isDone = true;
         if(cId === 'c23' && ms.defendsUsed === 0) isDone = true;
@@ -298,7 +298,7 @@ const i18n = {
         ask_sabotage_letranger: "L'ÉTRANGER tisse sa toile autour de votre {val} ! Voulez-vous en appeler à Elbereth ?",
         mod_normal_title: "☀️ Ciel Dégagé", mod_normal_desc: "La voie est libre. Aucune altération des règles n'est en vigueur.",
         mod_brouillard_title: "🌫️ Brouillard des Galgals", mod_brouillard_desc: "L'air est lourd. Marquer 8+ Lieues d'un coup attire la Haine de l'Ennemi (au lieu de 10).",
-        mod_nuit_title: "🌑 Nuit sur l'Emyn Muil", mod_nuit_desc: "L'obscurité étouffe votre volonté. Votre jauge d'Espoir ne peut pas dépasser 8.",
+        mod_nuit_title: "🌑 Nuit sur l'Emyn Muil", mod_nuit_desc: "L'obscurité étouffe votre volonté. Votre jauge d'Espoir ne peut pas dépasser 5.",
         mod_aube_title: "🌅 Aube sur l'Anduin", mod_aube_desc: "Une lueur persiste. Sacrifier un Triomphe au campement rend 3 Espoirs au lieu de 2.",
         mod_froid_title: "❄️ Colère du Caradhras", mod_froid_desc: "La montagne est cruelle. L'Ennemi commence la manche avec +2 en Haine.",
         mod_clairiere_title: "🌿 Wellinghall", mod_clairiere_desc: "Un sanctuaire paisible. Vous commencez la manche avec +2 en Espoir.",
@@ -377,7 +377,7 @@ const i18n = {
         ask_sabotage_kael: "KAEL targets your {val} for corruption! Will you call upon Elbereth?", ask_sabotage_brag: "BRAG attempts to steal your {val}! Will you call upon Elbereth?", ask_sabotage_zamin: "ZÂMIN wants to freeze your {val}! Will you call upon Elbereth?", ask_sabotage_letranger: "THE STRANGER weaves his web around your {val}! Will you call upon Elbereth?",
         mod_normal_title: "☀️ Clear Sky", mod_normal_desc: "The path is clear. No special rules are in effect.",
         mod_brouillard_title: "🌫️ Fog on the Barrow-downs", mod_brouillard_desc: "The air is heavy. Scoring 8+ Leagues at once draws Enemy Hate (instead of 10).",
-        mod_nuit_title: "🌑 Night on the Emyn Muil", mod_nuit_desc: "The dark stifles your will. Your Hope gauge cannot exceed 8.",
+        mod_nuit_title: "🌑 Night on the Emyn Muil", mod_nuit_desc: "The dark stifles your will. Your Hope gauge cannot exceed 5.",
         mod_aube_title: "🌅 Dawn on the Anduin", mod_aube_desc: "A glimmer persists. Sacrificing a Triumph at camp restores 3 Hope instead of 2.",
         mod_froid_title: "❄️ Wrath of Caradhras", mod_froid_desc: "The mountain is cruel. The Enemy starts the round with +2 Hate.",
         mod_clairiere_title: "🌿 Wellinghall", mod_clairiere_desc: "A peaceful sanctuary. You start the round with +2 Hope.",
@@ -429,7 +429,7 @@ function updateLivesUI() {
 function updateEspoirUI() { 
     const c = document.getElementById('ui-espoir-tokens'); if (!c) return; 
     c.removeAttribute('style'); 
-    let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
+    let maxEspoir = (gameState.currentModifier === 'nuit') ? 5 : 10;
     let statusText = "";
     if (gameState.hasUsedEspoirThisTurn) { statusText = `⌛ ${t('ui_espoir_used')}`; } 
     else if (gameState.playerEspoir < 2) { statusText = `❌ ${t('ui_espoir_none')}`; } 
@@ -522,7 +522,7 @@ function startNewRound(isFirstRound = false, roundWinner = 'hero') {
         if (gameState.heroRounds > gameState.enemyRounds) { baseHate += 1; } else if (gameState.enemyRounds > gameState.heroRounds) { baseEspoir += 1; }
     }
     
-    let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10;
+    let maxEspoir = (gameState.currentModifier === 'nuit') ? 5 : 10;
     gameState.playerShadow = 0; gameState.playerEspoir = Math.min(maxEspoir, baseEspoir); gameState.enemyHate = Math.min(10, baseHate); gameState.matchStats.turnsPlayedThisRound = 0;
     
     updateGlobalUI(); updateEspoirUI(); updateHaineUI(); updateLivesUI(); updateShadowUI(); gameState.activePlayer = roundWinner;
@@ -594,7 +594,7 @@ async function playHeroTurn() {
 
 async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
     let rollCountTens = rolledIndices.filter(idx => gameState.diceValues[idx] === 6).length; let rollCountOnes = rolledIndices.filter(idx => gameState.diceValues[idx] === 1).length;
-    if (!isReevaluation && rollCountOnes > 0) { let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10; gameState.playerEspoir = Math.min(maxEspoir, gameState.playerEspoir + rollCountOnes); updateEspoirUI(); await triggerTutorial('seenAmbush', 'tuto_ambush'); }
+    if (!isReevaluation && rollCountOnes > 0) { let maxEspoir = (gameState.currentModifier === 'nuit') ? 5 : 10; gameState.playerEspoir = Math.min(maxEspoir, gameState.playerEspoir + rollCountOnes); updateEspoirUI(); await triggerTutorial('seenAmbush', 'tuto_ambush'); }
     let countLockedTotal = gameState.diceStates.filter(s => s === 'locked').length; let isAlreadyDeroute = (countLockedTotal >= 2); let isAlreadyImpasse = !rolledIndices.some(idx => gameState.diceStates[idx] === 'idle' && gameState.diceValues[idx] >= 4);
 
     if (!isReevaluation) {
@@ -606,21 +606,81 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
         }
         if (rollCountOnes >= 3) { audioManager.playSFX('audio/hit.mp3', 0.25); gameState.playerEspoir = 0; updateEspoirUI(); showEventScreen(t('ev_gouffre_title'), t('ev_gouffre_msg'), t('ev_gouffre_btn'), () => { handleDeroute('hero'); }, "var(--blood)"); return; }
 
-        let activeAI = gameState.currentEnemyId; if (activeAI === 'letranger') { activeAI = ['brag', 'zamin', 'kael'][Math.floor(Math.random() * 3)]; } let sabotageCost = { brag: 4, zamin: 3, kael: 5 }[activeAI] || 4;
-        if (!isAlreadyDeroute && !isAlreadyImpasse && gameState.enemyHate >= sabotageCost && gameState.activePlayer === 'hero') {
-            let availableIndices = rolledIndices.filter(idx => gameState.diceStates[idx] === 'idle'); let targetIdx = -1; let lockedOnes = gameState.diceStates.filter(s => s === 'locked').length; let projectedScore = gameState.playerScore + gameState.turnScore;
-            let tens = availableIndices.filter(idx => gameState.diceValues[idx] === 6); let foursAndFives = availableIndices.filter(idx => gameState.diceValues[idx] === 4 || gameState.diceValues[idx] === 5).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); let allScoring = availableIndices.filter(idx => gameState.diceValues[idx] >= 4).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); let neutrals = availableIndices.filter(idx => gameState.diceValues[idx] === 2 || gameState.diceValues[idx] === 3);
+        let activeAI = gameState.currentEnemyId; 
+        if (activeAI === 'letranger') { activeAI = ['brag', 'zamin', 'kael'][Math.floor(Math.random() * 3)]; } 
+        let sabotageCost = { brag: 4, zamin: 3, kael: 5 }[activeAI] || 4;
+        
+        if (!isAlreadyDeroute && !isAlreadyImpasse && gameState.activePlayer === 'hero') {
+            let availableIndices = rolledIndices.filter(idx => gameState.diceStates[idx] === 'idle'); 
+            let targetIdx = -1; 
+            let lockedOnes = gameState.diceStates.filter(s => s === 'locked').length; 
+            let projectedScore = gameState.playerScore + gameState.turnScore;
+            let tens = availableIndices.filter(idx => gameState.diceValues[idx] === 6); 
+            let foursAndFives = availableIndices.filter(idx => gameState.diceValues[idx] === 4 || gameState.diceValues[idx] === 5).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); 
+            let allScoring = availableIndices.filter(idx => gameState.diceValues[idx] >= 4).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); 
+            let neutrals = availableIndices.filter(idx => gameState.diceValues[idx] === 2 || gameState.diceValues[idx] === 3);
+            
             let isEmergency = (projectedScore >= gameState.targetScore - 15);
+            let isAcharnement = false;
 
-            if (isEmergency && allScoring.length > 0) { targetIdx = allScoring[0]; } 
-            else if (gameState.enemyHate >= 8 && allScoring.length > 0) { targetIdx = allScoring[0]; } // FIX IA AGRESSIVE
-            else if (activeAI === 'kael') { if (lockedOnes === 1 && availableIndices.length > 0) { availableIndices.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = availableIndices[0]; } else if (tens.length > 0) { targetIdx = tens[0]; } else if (allScoring.length > 0) { targetIdx = allScoring[0]; } } 
-            else if (activeAI === 'brag') { if (foursAndFives.length > 0) { targetIdx = foursAndFives[0]; } else if (tens.length > 0 && neutrals.length === 0) { targetIdx = tens[0]; } } 
-            else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[a] - gameState.diceValues[b]); targetIdx = allScoring[0]; } }
+            // --- SABOTAGE CLASSIQUE ---
+            if (gameState.enemyHate >= sabotageCost) {
+                if (isEmergency && allScoring.length > 0) { targetIdx = allScoring[0]; } 
+                else if (gameState.enemyHate >= 8 && allScoring.length > 0) { targetIdx = allScoring[0]; } 
+                else if (activeAI === 'kael') { if (lockedOnes === 1 && availableIndices.length > 0) { availableIndices.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = availableIndices[0]; } else if (tens.length > 0) { targetIdx = tens[0]; } else if (allScoring.length > 0) { targetIdx = allScoring[0]; } } 
+                else if (activeAI === 'brag') { if (foursAndFives.length > 0) { targetIdx = foursAndFives[0]; } else if (tens.length > 0 && neutrals.length === 0) { targetIdx = tens[0]; } } 
+                else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[a] - gameState.diceValues[b]); targetIdx = allScoring[0]; } }
+            
+            // --- RÈGLE DE L'ACHARNEMENT ---
+            } else if (gameState.enemyHate === 0 && tens.length > 0 && gameState.enemyScore <= gameState.playerScore) {
+                // ÉTAPE 1 : Conditions de Déclenchement
+                if (!(gameState.enemyScore < 15 && gameState.enemyLives === 1)) { // Anti-Suicide
+                    // ÉTAPE 2 : La Décision (60% de chances)
+                    if (Math.random() < 0.60) { 
+                        targetIdx = tens[0]; 
+                        isAcharnement = true;
+                    }
+                }
+            }
 
             if (targetIdx !== -1) {
-                gameState.enemyHate -= sabotageCost; updateHaineUI(); gameState.matchStats.enemyAttackedAfterMaxHate = true;
-                let countered = false;
+                if (isAcharnement) {
+                    // ÉTAPE 3 : Le Jet de Risque
+                    gameState.acharnementAttempts = (gameState.acharnementAttempts || 0) + 1;
+                    let failChance = Math.min(gameState.acharnementAttempts * 25, 90); 
+                    let roll = Math.random() * 100;
+
+                    updateStatus(t('status_acharnement_try'), "var(--blood)");
+                    audioManager.playSFX('audio/shadow.mp3', 0.2);
+                    await new Promise(r => setTimeout(r, 1500));
+
+                    if (roll < failChance) {
+                        // ÉTAPE 4 : Résolution - ÉCHEC
+                        if (gameState.enemyScore >= 15) {
+                            gameState.enemyScore -= 15;
+                            updateStatus(t('status_acharnement_fail_score'), "var(--gold)");
+                            updateGlobalUI();
+                        } else {
+                            gameState.enemyLives--;
+                            updateLivesUI();
+                            updateStatus(t('status_acharnement_fail_life'), "var(--gold)");
+                            if (gameState.enemyLives <= 0) { setTimeout(() => { resolveRoundWinner('hero'); }, 2000); return; } 
+                        }
+                        await new Promise(r => setTimeout(r, 2000));
+                        targetIdx = -1; 
+                    } else {
+                        // ÉTAPE 4 : Résolution - SUCCÈS
+                        updateStatus(t('status_acharnement_success'), "var(--blood)");
+                        await new Promise(r => setTimeout(r, 1500));
+                        activeAI = 'kael'; // Force Kael pour corrompre le 6
+                    }
+                } else {
+                    // Sabotage classique
+                    gameState.enemyHate -= sabotageCost; updateHaineUI(); gameState.matchStats.enemyAttackedAfterMaxHate = true;
+                }
+
+                if (targetIdx !== -1) {
+                    let countered = false;
                 if (gameState.playerEspoir >= 3 && !gameState.hasUsedEspoirThisTurn) {
                     let askText = ""; let targetVal = gameState.diceValues[targetIdx];
                     if (gameState.currentEnemyId === 'letranger') askText = t('ask_sabotage_letranger', {val: targetVal}); else if (activeAI === 'kael') askText = t('ask_sabotage_kael', {val: targetVal}); else if (activeAI === 'brag') askText = t('ask_sabotage_brag', {val: targetVal}); else if (activeAI === 'zamin') askText = t('ask_sabotage_zamin', {val: targetVal}); else askText = t('status_elbereth_ask'); 
@@ -644,6 +704,7 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
                 }
             }
         }
+    }
     }
 
     countLockedTotal = gameState.diceStates.filter(s => s === 'locked').length; let hasScoringDiceInThisRoll = rolledIndices.some(idx => gameState.diceStates[idx] === 'idle' && gameState.diceValues[idx] >= 4); let isDeroute = (countLockedTotal >= 2);
@@ -673,8 +734,13 @@ async function toggleKeepDie(index) {
         if (gameState.playerEspoir >= 2 && !gameState.hasUsedEspoirThisTurn) {
             gameState.playerEspoir -= 2; gameState.hasUsedEspoirThisTurn = true; updateEspoirUI(); updateDialogue('dirhael', 'hope_hate', 'ui-hero-dialogue'); updateStatus(t('status_hope_used'), "var(--gold)"); document.getElementById('turn-controls').innerHTML = ''; 
             gameState.diceStates[index] = 'idle'; document.getElementById(`val-${index}`).innerText = "-"; document.getElementById(`die-${index}`).className = `die die-idle ${skin}`; document.getElementById(`wrap-${index}`).classList.remove('pulse-danger');
-            playerProfile.stats.purifications++; gameState.matchStats.purificationsThisMatch++; if(gameState.playerLives === 1) playerProfile.stats.routsSurvived++; addXP(10); saveProfile();
             
+            playerProfile.stats.purifications++; 
+            gameState.matchStats.purificationsThisMatch++; 
+            playerProfile.stats.purifForContract = (playerProfile.stats.purifForContract || 0) + 1; 
+            if(gameState.playerLives === 1) playerProfile.stats.routsSurvived++; 
+            addXP(10); 
+            saveProfile();
             gameState.matchStats.purifyUsedThisTurn = true;
             if(gameState.matchStats.shadowUsedThisTurn) gameState.matchStats.purifyAndShadowSameTurn = true;
 
@@ -701,7 +767,7 @@ function initiateCamp() {
 function executeCampNormal() { document.getElementById('turn-controls').innerHTML = ''; bankScore(); }
 function executeCampSacrifice(idx) {
     document.getElementById('turn-controls').innerHTML = ''; gameState.diceStates[idx] = 'sacrificed'; gameState.diceValues[idx] = 0; document.getElementById(`wrap-${idx}`).classList.remove('wrap-kept'); document.getElementById(`val-${idx}`).innerText = "X"; let skin = playerProfile.equipped.dice !== 'classic' ? `skin-${playerProfile.equipped.dice}` : ''; document.getElementById(`die-${idx}`).className = `die die-sacrificed ${skin}`;
-    let maxEspoir = (gameState.currentModifier === 'nuit') ? 8 : 10; let gainEspoir = (gameState.currentModifier === 'aube') ? 3 : 2;
+    let maxEspoir = (gameState.currentModifier === 'nuit') ? 5 : 10; let gainEspoir = (gameState.currentModifier === 'aube') ? 3 : 2;
     gameState.playerEspoir = Math.min(maxEspoir, gameState.playerEspoir + gainEspoir); gameState.matchStats.sacrificedSix = true; updateEspoirUI(); recalculateScore(); playerProfile.eclatsOmbre += 1; addXP(10); setTimeout(() => { bankScore(); }, 800); 
 }
 
