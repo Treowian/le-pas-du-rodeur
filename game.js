@@ -24,7 +24,10 @@ playerProfile.stats = { ...defaultProfile.stats, ...(playerProfile.stats || {}) 
 playerProfile.stats.winsAgainst = { ...{ brag:0, zamin:0, kael:0, letranger:0 }, ...(playerProfile.stats.winsAgainst || {}) };
 playerProfile.achievements = { ...defaultProfile.achievements, ...(playerProfile.achievements || {}) };
 playerProfile.inventory = { ...defaultProfile.inventory, ...(playerProfile.inventory || {}) };
+// FIX SAUVEGARDE : Force la création de la liste 'titles' si elle manque dans les vieilles saves
+if (!playerProfile.inventory.titles) playerProfile.inventory.titles = ['title_ranger'];
 playerProfile.equipped = { ...defaultProfile.equipped, ...(playerProfile.equipped || {}) };
+if (!playerProfile.equipped.title) playerProfile.equipped.title = 'title_ranger';
 playerProfile.tutorial = { ...defaultProfile.tutorial, ...(playerProfile.tutorial || {}) };
 if (!playerProfile.activeContracts) playerProfile.activeContracts = [];
 if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
@@ -60,6 +63,7 @@ function updateProfileUI() {
 let gameState = {
     currentEnemyId: '', activePlayer: 'hero', heroRounds: 0, enemyRounds: 0, targetScore: 80, playerScore: 0, enemyScore: 0, turnScore: 0,
     playerLives: 3, enemyLives: 3, enemyStartLives: 3, playerShadow: 0, playerEspoir: 1, hasUsedEspoirThisTurn: false, enemyHate: 1, enemyMaxHate: 10, secretPersonality: '', enemyRiskProfile: '',
+    strangerTurnPersonality: 'prudent',
     currentModifier: 'normal',
     diceValues: [0, 0, 0, 0, 0], diceStates: ['idle', 'idle', 'idle', 'idle', 'idle'], isRolling: false, hasKeptDieThisRoll: false, pendingDeroute: false, heroRoutLastTurn: false,
     currentEnemyRolledIndices: [], currentHeroRolledIndices: [], currentEnemyTargetIdx: -1,
@@ -85,7 +89,7 @@ function toggleMusic() { audioManager.isMusicMuted = !audioManager.isMusicMuted;
 function toggleSFX() { audioManager.isSfxMuted = !audioManager.isSfxMuted; updateAudioButtons(); if (!audioManager.isSfxMuted) audioManager.playSFX('audio/dice.mp3', 0.2); }
 
 // ==========================================
-// 2. LES 50 TRAQUES (CONTRATS)
+// 2. LES TRAQUES (CONTRATS)
 // ==========================================
 const contractsPool = [
     { id: 'c1', t_fr: "Chasseur de Primes", t_en: "Bounty Hunter", d_fr: "Battez Brag l'Éventreur.", d_en: "Defeat Brag.", reward: 50 },
@@ -97,7 +101,7 @@ const contractsPool = [
     { id: 'c7', t_fr: "La Chute du Gondor", t_en: "Fall of Gondor", d_fr: "Battez Kael en subissant au moins 2 Déroutes.", d_en: "Defeat Kael while suffering at least 2 Routs.", reward: 250 },
     { id: 'c8', t_fr: "Lumière dans les Ténèbres", t_en: "Light in the Dark", d_fr: "Battez L'Étranger en finissant avec 10 d'Espoir.", d_en: "Defeat Stranger ending with 10 Hope.", reward: 300 },
     { id: 'c9', t_fr: "Le Sprinteur", t_en: "The Sprinter", d_fr: "Marquez 30+ Lieues en un seul lancer.", d_en: "Score 30+ Leagues in a single roll.", reward: 80 },
-    { id: 'c10', t_fr: "L'Insatiable", t_en: "The Insatiable", d_fr: "Marquez 50+ Lieues en un seul lancer.", d_en: "Score 50+ Leagues in a single roll.", reward: 200 },
+    { id: 'c10', t_fr: "L'Insatiable", t_en: "The Insatiable", d_fr: "Marquez 40+ Lieues lors d'un seul tour.", d_en: "Score 40+ Leagues in a single turn.", reward: 200 },
     { id: 'c11', t_fr: "Le Prudent", t_en: "The Cautious", d_fr: "Établissez le camp avec 15 Lieues ou moins.", d_en: "Set up camp with 15 Leagues or less.", reward: 50 },
     { id: 'c12', t_fr: "La Voie Rapide", t_en: "The Fast Track", d_fr: "Gagnez un duel en 8 tours ou moins.", d_en: "Win a duel in 8 turns or less.", reward: 150 },
     { id: 'c13', t_fr: "Victoire Écrasante", t_en: "Crushing Victory", d_fr: "Gagnez alors que l'ennemi a moins de 30 Lieues.", d_en: "Win while enemy has less than 30 Leagues.", reward: 100 },
@@ -121,39 +125,29 @@ const contractsPool = [
     { id: 'c31', t_fr: "Le Dévoreur", t_en: "The Devourer", d_fr: "Dévorez une Avancée (4/5) ennemie.", d_en: "Devour an enemy Advance (4/5).", reward: 75 },
     { id: 'c32', t_fr: "L'Imprudent", t_en: "The Reckless", d_fr: "Terminez avec la jauge d'Ombre à 3.", d_en: "End duel with Shadow gauge at 3.", reward: 150 },
     { id: 'c33', t_fr: "Trompe-la-mort", t_en: "Death Cheater", d_fr: "Survivez à un jet de mort (Ombre > 3).", d_en: "Survive a death roll (Shadow > 3).", reward: 200 },
-    { id: 'c34', t_fr: "Météorologue", t_en: "Meteorologist", d_fr: "Gagnez sous le Brouillard des Galgals.", d_en: "Win under Fog on the Barrow-downs.", reward: 100 },
-    { id: 'c35', t_fr: "Nyctalope", t_en: "Night Vision", d_fr: "Gagnez sous la Nuit sur l'Emyn Muil.", d_en: "Win under Night on the Emyn Muil.", reward: 100 },
-    { id: 'c36', t_fr: "Matinal", t_en: "Early Bird", d_fr: "Gagnez sous l'Aube sur l'Anduin.", d_en: "Win under Dawn on the Anduin.", reward: 100 },
-    { id: 'c37', t_fr: "Alpiniste", t_en: "Mountaineer", d_fr: "Gagnez sous la Colère du Caradhras.", d_en: "Win under Wrath of Caradhras.", reward: 100 },
-    { id: 'c38', t_fr: "Sylvestre", t_en: "Sylvan", d_fr: "Gagnez sous Wellinghall.", d_en: "Win under Wellinghall.", reward: 100 },
+    { id: 'c34', t_fr: "Le Survivant du Climat", t_en: "Climate Survivor", d_fr: "Gagnez sous une Météo Hostile (Brouillard, Nuit ou Froid).", d_en: "Win under a Hostile Weather (Fog, Night or Cold).", reward: 150 },
     { id: 'c39', t_fr: "Ciel Bleu", t_en: "Clear Sky", d_fr: "Gagnez sous un Ciel Dégagé.", d_en: "Win under Clear Sky.", reward: 50 },
     { id: 'c40', t_fr: "Le Marathonien", t_en: "The Marathoner", d_fr: "Gagnez un duel long (15 tours ou +).", d_en: "Win a long duel (15+ turns).", reward: 150 },
     { id: 'c41', t_fr: "Retournement", t_en: "Turnaround", d_fr: "Gagnez après avoir perdu la 1ère manche.", d_en: "Win after losing the 1st round.", reward: 200 },
     { id: 'c42', t_fr: "Domination", t_en: "Domination", d_fr: "Remportez le duel 2 manches à 0.", d_en: "Win the duel 2 rounds to 0.", reward: 150 },
     { id: 'c43', t_fr: "L'Équilibriste", t_en: "The Tightrope", d_fr: "Gagnez avec 1 Vie, 0 Espoir, 0 Ombre.", d_en: "Win with 1 Life, 0 Hope, 0 Shadow.", reward: 300 },
-    { id: 'c44', t_fr: "Ruse du Rôdeur", t_en: "Ranger's Ruse", d_fr: "Purifiez et utilisez l'Ombre au même tour.", d_en: "Purify and use Shadow in the same turn.", reward: 150 },
+    { id: 'c44', t_fr: "Ruse du Rôdeur", t_en: "Ranger's Ruse", d_fr: "Purifiez et utilisez l'Ombre dans la même manche.", d_en: "Purify and use Shadow in the same round.", reward: 150 },
     { id: 'c45', t_fr: "Le Mur de Fer", t_en: "Iron Wall", d_fr: "Contrez Kael avec Elbereth et gagnez.", d_en: "Counter Kael with Elbereth and win.", reward: 150 },
     { id: 'c46', t_fr: "Le Tacticien", t_en: "The Tactician", d_fr: "Gagnez en ayant utilisé Purifier, Boussole et Elbereth.", d_en: "Win having used Purify, Compass and Elbereth.", reward: 200 },
     { id: 'c47', t_fr: "L'Éclair Ténébreux", t_en: "Dark Lightning", d_fr: "Corrompez un dé au tout 1er tour.", d_en: "Corrupt a die on the very 1st turn.", reward: 100 },
     { id: 'c48', t_fr: "La Colère Aveugle", t_en: "Blind Anger", d_fr: "L'ennemi atteint 10 Haine sans pouvoir attaquer.", d_en: "Enemy hits 10 Hate without attacking.", reward: 250 },
     { id: 'c49', t_fr: "Le Joueur", t_en: "The Gambler", d_fr: "Subissez une Impasse avec 20+ Lieues en attente ce tour-ci.", d_en: "Suffer a Dead End with 20+ pending Leagues.", reward: 100 },
-    { id: 'c50', t_fr: "Providence", t_en: "Providence", d_fr: "Gagnez un duel au cours duquel l'ennemi a subi un Échec Magistral.", d_en: "Win a duel where the enemy suffered a Masterful Failure.", reward: 150 }
+    { id: 'c50', t_fr: "Pression Constante", t_en: "Constant Pressure", d_fr: "L'ennemi subit 2 Déroutes dans le même duel.", d_en: "Enemy suffers 2 Routs in the same duel.", reward: 150 }
 ];
 
 function refreshContracts() {
     if (!playerProfile.activeContracts) playerProfile.activeContracts = [];
     if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
-    
-    // NETTOYEUR STRICT : On supprime les vieux contrats buggés et on force la limite à 3
-    playerProfile.activeContracts = playerProfile.activeContracts.filter(c => typeof c === 'string');
-    if (playerProfile.activeContracts.length > 3) {
-        playerProfile.activeContracts = playerProfile.activeContracts.slice(0, 3);
-    }
-
+    playerProfile.activeContracts = playerProfile.activeContracts.filter(c => typeof c === 'string' && contractsPool.some(poolC => poolC.id === c));
+    if (playerProfile.activeContracts.length > 3) playerProfile.activeContracts = playerProfile.activeContracts.slice(0, 3);
     while (playerProfile.activeContracts.length < 3) {
         let available = contractsPool.filter(c => !playerProfile.activeContracts.includes(c.id) && !playerProfile.completedContracts.includes(c.id));
         if (available.length === 0) break; 
-        
         let chosen = available[Math.floor(Math.random() * available.length)];
         playerProfile.activeContracts.push(chosen.id);
     }
@@ -163,7 +157,7 @@ function refreshContracts() {
 window.shuffleContracts = function() {
     if ((playerProfile.stats.gamesSinceShuffle || 0) < 3) return;
     playerProfile.stats.gamesSinceShuffle = 0;
-    playerProfile.activeContracts = []; // On vide pour forcer le tirage
+    playerProfile.activeContracts = []; 
     refreshContracts();
     switchArsenalTab('contrats');
     showToast(t('toast_shuffled'), "success");
@@ -172,33 +166,27 @@ window.shuffleContracts = function() {
 function evaluateContracts(matchWon) {
     if (!playerProfile.activeContracts) return [];
     let completed = []; let ms = gameState.matchStats;
-    
     const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50'];
 
     playerProfile.activeContracts.forEach(cId => {
         if (!matchWon && requiresWin.includes(cId)) return;
-
         let isDone = false;
         if(cId === 'c1' && gameState.currentEnemyId === 'brag') isDone = true;
         if(cId === 'c2' && gameState.currentEnemyId === 'zamin') isDone = true;
         if(cId === 'c3' && gameState.currentEnemyId === 'kael') isDone = true;
         if(cId === 'c4' && gameState.currentEnemyId === 'letranger') isDone = true;
         if(cId === 'c5' && gameState.currentEnemyId === 'brag' && ms.shadowsUsedThisMatch === 0) isDone = true;
-        
         if(cId === 'c6' && gameState.currentEnemyId === 'zamin' && ms.enemyLostRoundWithZero) isDone = true;
-        
         if(cId === 'c7' && gameState.currentEnemyId === 'kael' && ms.deroutesThisMatch >= 2) isDone = true;
         if(cId === 'c8' && gameState.currentEnemyId === 'letranger' && gameState.playerEspoir === 10) isDone = true;
-        
         if(cId === 'c9' && ms.highestTurnScoreThisMatch >= 30) isDone = true;
-        if(cId === 'c10' && ms.highestTurnScoreThisMatch >= 50) isDone = true;
+        if(cId === 'c10' && ms.highestTurnScoreThisMatch >= 40) isDone = true;
         if(cId === 'c11' && ms.bankedUnder15) isDone = true;
         if(cId === 'c12' && ms.totalTurnsThisMatch <= 8) isDone = true; 
         if(cId === 'c13' && gameState.enemyScore < 30) isDone = true;
         if(cId === 'c14' && gameState.enemyScore >= 70) isDone = true;
         if(cId === 'c15' && ms.exact80Round) isDone = true;
         if(cId === 'c16' && ms.acceptedImpasseAndWon) isDone = true;
-        
         if(cId === 'c17' && gameState.playerLives === 1) isDone = true;
         if(cId === 'c18' && ms.deroutesThisMatch === 0) isDone = true;
         if(cId === 'c19' && ms.purificationsThisMatch >= 3) isDone = true;
@@ -209,7 +197,6 @@ function evaluateContracts(matchWon) {
         if(cId === 'c24' && gameState.playerEspoir === 0) isDone = true;
         if(cId === 'c25' && gameState.playerEspoir === 10) isDone = true;
         if(cId === 'c26' && ms.sacrificedSix) isDone = true;
-        
         if(cId === 'c27' && ms.shadowsUsedThisMatch === 0) isDone = true;
         if(cId === 'c28' && ms.shadowsUsedThisMatch >= 3) isDone = true;
         if(cId === 'c29' && ms.shadowsUsedThisMatch >= 5) isDone = true;
@@ -217,17 +204,11 @@ function evaluateContracts(matchWon) {
         if(cId === 'c31' && ms.devouredAdvance) isDone = true;
         if(cId === 'c32' && gameState.playerShadow === 3) isDone = true;
         if(cId === 'c33' && playerProfile.stats.survivedDeathRoll) { isDone = true; playerProfile.stats.survivedDeathRoll = false; }
-        
-        if(cId === 'c34' && gameState.currentModifier === 'brouillard') isDone = true;
-        if(cId === 'c35' && gameState.currentModifier === 'nuit') isDone = true;
-        if(cId === 'c36' && gameState.currentModifier === 'aube') isDone = true;
-        if(cId === 'c37' && gameState.currentModifier === 'froid') isDone = true;
-        if(cId === 'c38' && gameState.currentModifier === 'clairiere') isDone = true;
+        if(cId === 'c34' && (gameState.currentModifier === 'brouillard' || gameState.currentModifier === 'nuit' || gameState.currentModifier === 'froid')) isDone = true;
         if(cId === 'c39' && gameState.currentModifier === 'normal') isDone = true;
         if(cId === 'c40' && ms.totalTurnsThisMatch >= 15) isDone = true;
         if(cId === 'c41' && ms.firstRoundLost) isDone = true;
         if(cId === 'c42' && gameState.enemyRounds === 0) isDone = true;
-        
         if(cId === 'c43' && gameState.playerLives === 1 && gameState.playerEspoir === 0 && gameState.playerShadow === 0) isDone = true;
         if(cId === 'c44' && ms.purifyAndShadowSameTurn) isDone = true;
         if(cId === 'c45' && ms.elberethVsKaelAndWon) isDone = true;
@@ -235,7 +216,7 @@ function evaluateContracts(matchWon) {
         if(cId === 'c47' && ms.firstTurnCorrupt) isDone = true;
         if(cId === 'c48' && ms.enemyReachedMaxHate && !ms.enemyAttackedAfterMaxHate) isDone = true;
         if(cId === 'c49' && ms.rerollWith20PlusAndImpasse) isDone = true;
-        if(cId === 'c50' && ms.enemyMasterfulFailure) isDone = true;
+        if(cId === 'c50' && ms.deroutesThisMatch >= 2) isDone = true;
 
         if (isDone) completed.push(cId);
     });
@@ -243,16 +224,11 @@ function evaluateContracts(matchWon) {
     let details = [];
     if (completed.length > 0) {
         if (!playerProfile.completedContracts) playerProfile.completedContracts = [];
-        
         completed.forEach(id => {
             let cData = contractsPool.find(c => c.id === id);
             playerProfile.eclatsOmbre += cData.reward;
             details.push(cData);
-            
-            if (!playerProfile.completedContracts.includes(id)) {
-                playerProfile.completedContracts.push(id);
-            }
-            
+            if (!playerProfile.completedContracts.includes(id)) playerProfile.completedContracts.push(id);
             showToast(t('toast_contract_done') + " " + (currentLang==='fr'?cData.t_fr:cData.t_en), "success");
         });
         playerProfile.activeContracts = playerProfile.activeContracts.filter(id => !completed.includes(id));
@@ -280,13 +256,13 @@ const i18n = {
         ui_btn_roll: "Forcer l'allure", ui_btn_stop: "Établir le camp", ui_btn_leave: "Quitter la table", ui_btn_continue: "CONTINUER",
         ui_espoir_used: "Action d'Espoir utilisée", ui_espoir_none: "Espoir insuffisant (Min. 2)", ui_espoir_purify: "Dispo : Purifier (-2)", ui_espoir_compass: "Dispo : Purifier, Boussole, Elbereth",
         rules_title: "LE GRIMOIRE DU RÔDEUR", rules_close: "Fermer", ui_leagues: "LIEUES",
-        rules_text: `<div style="font-family: 'Merriweather', serif; font-size: 14px; line-height: 1.6;"><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⚔️ LE BUT</h3><p style="margin-top: 0;">Remporter 2 manches en parcourant 80 Lieues avant l'adversaire.</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🎲 LES DÉS</h3><ul style="margin-top: 0; padding-left: 20px; list-style-type: none;"><li><b style="color:var(--gold);">[ 6 ] Triomphe</b> : Donne 10 points.</li><li><b style="color:#5dade2;">[ 4, 5 ] Avancée</b> : Donne 4 ou 5 points.</li><li><b style="color:#888;">[ 2, 3 ] Neutre</b> : Aucun point.</li><li><b style="color:var(--blood);">[ 1 ] Embuscade</b> : Danger mortel. Bloque le dé.</li></ul><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">💀 DÉROUTE & IMPASSE</h3><p style="margin-top: 0;"><b>Déroute :</b> Deux "1" sur la table. Vous perdez votre tour, vos points en cours, et <b style="color:var(--gold);">1 Vie</b>.</p><p><b>🛑 IMPASSE :</b> Si votre lancer ne contient aucun dé gagnant, le tour s'arrête net (0 point).</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⭐ L'ESPOIR (Le Joueur)</h3><p style="margin-top: 0;">Gagnez +1 Espoir par "1" tiré, ou +2 en sacrifiant un "6" au campement. Dépensez-les pour survivre :</p><ul style="margin-top: 0; padding-left: 20px;"><li><b>Purifier (-2)</b> : Cliquez sur un "1" pour l'annuler et le relancer.</li><li><b>Boussole (-3)</b> : Relance une Impasse.</li><li><b>A Elbereth (Vide l'Espoir)</b> : Bloque instantanément une attaque ennemie (Min. 3 Espoirs).</li></ul><p style="color: #5dade2; font-style: italic;">⚠️ 1 seule Action d'Espoir autorisée par tour !</p><h3 style="color:var(--blood); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🔥 LA HAINE (L'Ennemi)</h3><p style="margin-top: 0;">L'ennemi gagne de la Haine à chaque tour ou si vous marquez ${SEUIL_HAINE}+ Lieues d'un coup. S'il a accumulé assez de Haine, il lance une attaque de Malice.</p></div>`,
+        rules_text: `<div style="font-family: 'Merriweather', serif; font-size: 14px; line-height: 1.6;"><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⚔️ LE BUT</h3><p style="margin-top: 0;">Remporter 2 manches en parcourant 80 Lieues avant l'adversaire.</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🎲 LES DÉS</h3><ul style="margin-top: 0; padding-left: 20px; list-style-type: none;"><li><b style="color:var(--gold);">[ 6 ] Triomphe</b> : Donne 10 points.</li><li><b style="color:#5dade2;">[ 4, 5 ] Avancée</b> : Donne 4 ou 5 points.</li><li><b style="color:#888;">[ 2, 3 ] Neutre</b> : Aucun point.</li><li><b style="color:var(--blood);">[ 1 ] Embuscade</b> : Danger mortel. Bloque le dé.</li></ul><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">💀 DÉROUTE & IMPASSE</h3><p style="margin-top: 0;"><b>Déroute :</b> Deux "1" sur la table. Vous perdez votre tour, vos points en cours, et <b style="color:var(--gold);">1 Vie</b>.</p><p><b>🛑 IMPASSE :</b> Si votre lancer ne contient aucun dé gagnant, le tour s'arrête net (0 point).</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⭐ L'ESPOIR (Le Joueur)</h3><p style="margin-top: 0;">Gagnez +1 Espoir par "1" tiré, ou +2 en sacrifiant un "6" au campement. Dépensez-les pour survivre :</p><ul style="margin-top: 0; padding-left: 20px;"><li><b>Purifier (-2)</b> : Cliquez sur un "1" pour l'annuler et le relancer.</li><li><b>Boussole (-3)</b> : Relance une Impasse.</li><li><b>A Elbereth (Vide l'Espoir)</b> : Bloque instantanément une attaque ennemie (Min. 3 Espoirs).</li></ul><p style="color: #5dade2; font-style: italic;">⚠️ 1 seule Action d'Espoir autorisée par tour !</p><h3 style="color:var(--blood); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🔥 LA HAINE (L'Ennemi)</h3><p style="margin-top: 0;">L'ennemi gagne de la Haine à chaque tour ou si vous marquez ${SEUIL_HAINE}+ Lieues d'un coup. S'il a accumulé assez de Haine, il lance une attaque de Malice.</p><h3 style="color:var(--corruption); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🌑 L'OMBRE (Corruption)</h3><p style="margin-top: 0;">Corrompre ou dévorer un dé ennemi vous octroie de l'Ombre. Attention : <b>plus votre Ombre est haute, plus vos futurs lancers seront truqués</b> (moins de chances d'obtenir des 4, 5 et 6). Au-delà de 3 d'Ombre, chaque utilisation risque de vous tuer sur le coup !</p></div>`,
         status_turn_hero: "À vous de jouer.", status_turn_enemy: "L'adversaire réfléchit...", status_rolling: "Les dés roulent...",
         status_sabotage_kael: "MALICE ! L'ennemi cible votre Triomphe...", status_sabotage_kael_res: "Votre dé est corrompu en Embuscade !",
         status_sabotage_brag: "MALICE ! L'ennemi s'intéresse à votre butin...", status_sabotage_brag_res: "L'ennemi vous dérobe un dé !",
         status_sabotage_zamin: "MALICE ! L'ennemi évalue vos actifs...", status_sabotage_zamin_res: "L'ennemi a gelé l'un de vos dés neutres !",
         status_sabotage_letranger: "MALICE ! L'Étranger frappe depuis l'Ombre...",
-	status_acharnement_try: "L'ennemi s'acharne par désespoir !",
+        status_acharnement_try: "L'ennemi s'acharne par désespoir !",
         status_acharnement_fail_score: "Échec ! L'ennemi s'épuise et perd 15 Lieues.",
         status_acharnement_fail_life: "Échec critique ! L'ennemi s'effondre et perd 1 Vie.",
         status_acharnement_success: "L'acharnement réussit ! Malice imminente...",
@@ -315,7 +291,7 @@ const i18n = {
         status_camp_choice: "Sacrifier un Triomphe pour +2 Espoir ?",
         btn_defend: "Se Défendre (-2)", btn_suffer: "Subir la Déroute", btn_compass: "La Boussole (-3)", btn_accept_defeat: "Accepter l'Impasse",
         btn_corrupt: "Corrompre (+1 Ombre)", btn_devour: "Dévorer (+1 Ombre)", btn_ignore: "Ignorer", btn_camp_sacrifice: "Sacrifier (+2 Espoir)", btn_camp_normal: "Garder les points",
-        ev_pas_title: "LE PAS DU RÔDEUR", ev_pas_msg: "Succès Magistral ! Vous rejouez !", ev_pas_btn: "Continuer",
+        ev_pas_title: "LE PAS DU RÔDEUR", ev_pas_msg: "Succès Magistral ! + {val} Lieues ! Vous rejouez !", ev_pas_btn: "Continuer",
         ev_gouffre_title: "GOUFFRE DU DÉSESPOIR", ev_gouffre_msg: "Échec Magistral ! Volonté brisée...", ev_gouffre_btn: "Subir la Déroute",
         ev_elan_title: "ÉLAN TÉNÉBREUX", ev_elan_msg: "L'Ennemi fait une percée de {val} Lieues !", ev_elan_btn: "Subir",
         ev_malediction_title: "MALÉDICTION", ev_malediction_msg: "L'Ennemi s'effondre sous sa propre Haine !", ev_malediction_btn: "Déroute",
@@ -331,7 +307,7 @@ const i18n = {
         ui_tab_vestiaire: "Le Vestiaire", 
         ui_tab_contracts: "Les Traques", 
         ui_contract_desc: "Le devoir d'un Dúnadan ne s'arrête jamais. Vos frères d'armes vous ont confié 3 traques. Remplissez-les en duel pour amasser des Éclats.", 
-        ui_contract_reward: "PRIME :",
+        ui_contract_reward: "PRIME&nbsp;:",
         ui_btn_shuffle_ready: "Renouveler les Traques (Gratuit)",
         ui_btn_shuffle_wait: "Renouvellement (dans {val} parties)",
         toast_shuffled: "Traques renouvelées avec succès !",
@@ -366,19 +342,19 @@ const i18n = {
         ui_rounds_won: "ROUNDS WON :", ui_80_leagues: "80 LEAGUES", ui_btn_roll: "Push the pace", ui_btn_stop: "Set up camp", ui_btn_leave: "Leave table", ui_btn_continue: "CONTINUE",
         ui_espoir_used: "Hope Action used", ui_espoir_none: "Not enough Hope (Min. 2)", ui_espoir_purify: "Ready: Purify (-2)", ui_espoir_compass: "Ready: Purify, Compass, Elbereth",
         rules_title: "THE RANGER'S GRIMOIRE", rules_close: "Close", ui_leagues: "LEAGUES",
-        rules_text: `<div style="font-family: 'Merriweather', serif; font-size: 14px; line-height: 1.6;"><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⚔️ THE GOAL</h3><p style="margin-top: 0;">Win 2 rounds by traveling 80 Leagues before your opponent.</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🎲 THE DICE</h3><ul style="margin-top: 0; padding-left: 20px; list-style-type: none;"><li><b style="color:var(--gold);">[ 6 ] Triumph</b>: 10 points.</li><li><b style="color:#5dade2;">[ 4, 5 ] Advance</b>: 4 or 5 points.</li><li><b style="color:#888;">[ 2, 3 ] Neutral</b>: No points.</li><li><b style="color:var(--blood);">[ 1 ] Ambush</b>: Deadly threat. Locks the die.</li></ul><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">💀 ROUT & DEAD END</h3><p style="margin-top: 0;"><b>Rout:</b> Two "1"s. You lose your turn, points, and <b style="color:var(--gold);">1 Life</b>.</p><p><b>🛑 DEAD END:</b> 0 points rolled. Turn ends.</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⭐ HOPE (You)</h3><p style="margin-top: 0;">Gain +1 Hope per "1" rolled, or +2 by sacrificing a "6" at camp. Spend it to survive:</p><ul style="margin-top: 0; padding-left: 20px;"><li><b>Purify (-2)</b>: Click a "1" to cancel it and reroll.</li><li><b>Compass (-3)</b>: Reroll a Dead End.</li><li><b>A Elbereth (Empties Hope)</b>: Instantly blocks an enemy attack (Min. 3 Hope).</li></ul><p style="color: #5dade2; font-style: italic;">⚠️ Only 1 Hope Action allowed per turn!</p><h3 style="color:var(--blood); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🔥 HATE (Enemy)</h3><p style="margin-top: 0;">The enemy gains Hate every turn or if you score ${SEUIL_HAINE}+ Leagues at once. If high enough, they launch a Malice attack.</p></div>`,
+        rules_text: `<div style="font-family: 'Merriweather', serif; font-size: 14px; line-height: 1.6;"><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⚔️ THE GOAL</h3><p style="margin-top: 0;">Win 2 rounds by traveling 80 Leagues before your opponent.</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🎲 THE DICE</h3><ul style="margin-top: 0; padding-left: 20px; list-style-type: none;"><li><b style="color:var(--gold);">[ 6 ] Triumph</b>: 10 points.</li><li><b style="color:#5dade2;">[ 4, 5 ] Advance</b>: 4 or 5 points.</li><li><b style="color:#888;">[ 2, 3 ] Neutral</b>: No points.</li><li><b style="color:var(--blood);">[ 1 ] Ambush</b>: Deadly threat. Locks the die.</li></ul><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">💀 ROUT & DEAD END</h3><p style="margin-top: 0;"><b>Rout:</b> Two "1"s. You lose your turn, points, and <b style="color:var(--gold);">1 Life</b>.</p><p><b>🛑 DEAD END:</b> 0 points rolled. Turn ends.</p><h3 style="color:var(--gold); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">⭐ HOPE (You)</h3><p style="margin-top: 0;">Gain +1 Hope per "1" rolled, or +2 by sacrificing a "6" at camp. Spend it to survive:</p><ul style="margin-top: 0; padding-left: 20px;"><li><b>Purify (-2)</b>: Click a "1" to cancel it and reroll.</li><li><b>Compass (-3)</b>: Reroll a Dead End.</li><li><b>A Elbereth (Empties Hope)</b>: Instantly blocks an enemy attack (Min. 3 Hope).</li></ul><p style="color: #5dade2; font-style: italic;">⚠️ Only 1 Hope Action allowed per turn!</p><h3 style="color:var(--blood); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🔥 HATE (Enemy)</h3><p style="margin-top: 0;">The enemy gains Hate every turn or if you score ${SEUIL_HAINE}+ Leagues at once. If high enough, they launch a Malice attack.</p><h3 style="color:var(--corruption); font-family: 'Oswald', sans-serif; margin-bottom: 5px;">🌑 THE SHADOW (Corruption)</h3><p style="margin-top: 0;">Corrupting or devouring an enemy die gives you Shadow. Beware: <b>the higher your Shadow, the more your future rolls are rigged</b> (fewer chances to roll 4, 5, and 6). Beyond 3 Shadow, each use might kill you instantly!</p></div>`,
         status_turn_hero: "It's your turn.", status_turn_enemy: "The opponent is thinking...", status_rolling: "Rolling...",
         status_sabotage_kael: "MALICE! Enemy targets your Triumph...", status_sabotage_kael_res: "Die corrupted into Ambush!",
         status_sabotage_brag: "MALICE! Enemy eyes your loot...", status_sabotage_brag_res: "Enemy steals your die!",
         status_sabotage_zamin: "MALICE! Enemy evaluates assets...", status_sabotage_zamin_res: "Enemy froze a neutral die!",
         status_sabotage_letranger: "MALICE! The Stranger strikes from the Shadow...",
-	status_acharnement_try: "The enemy strikes in desperation!",
+        status_acharnement_try: "The enemy strikes in desperation!",
         status_acharnement_fail_score: "Failure! The enemy exhausts itself and loses 15 Leagues.",
         status_acharnement_fail_life: "Critical failure! The enemy collapses and loses 1 Life.",
         status_acharnement_success: "Desperation succeeds! Malice incoming...",
         status_deroute_imminent: "IMMINENT ROUT! What do you decide?", status_impasse_ask: "DEAD END! Reroll with Compass (-3)?",
         status_impasse_lost: "DEAD END! Hostile terrain. Turn lost.", status_action_purify: "ACTION REQUIRED: CLICK the RED DIE!",
-        status_urgency: "URGENCY: Defend yourself first!", status_purify_success: "Heroic sacrifice: Ambush purified!",
+        status_urgency: "URGENCE: Defend yourself first!", status_purify_success: "Heroic sacrifice: Ambush purified!",
         status_hope_used: "HOPE! You purified the cursed die...", status_deroute_forced: "YOU CAN NO LONGER DEFEND YOURSELF.",
         status_cannot_purify: "Cannot purify: Hope Action already used or not enough Hope.", status_compass_used: "The Compass guides you! Rerolling...", status_impasse_accepted: "Dead End accepted. Turn lost.",
         status_elbereth_ask: "MALICE! Enemy attacks!", status_elbereth_success: "A Elbereth! The light drives back the Shadow!", btn_elbereth: "A Elbereth! (Empties Hope)",
@@ -390,12 +366,12 @@ const i18n = {
         mod_froid_title: "❄️ Wrath of Caradhras", mod_froid_desc: "The mountain is cruel. The Enemy starts the round with +2 Hate.",
         mod_clairiere_title: "🌿 Wellinghall", mod_clairiere_desc: "A peaceful sanctuary. You start the round with +2 Hope.",
         status_shadow_6: "Opponent rolled a 6! Corrupt it?", status_shadow_other: "Opponent rolled a {val}! Shadow thirsts...", status_shadow_corrupt: "You corrupted their Triumph!", status_shadow_devour: "The Shadow devoured their {val}!", status_shadow_survive: "Miracle! You survived (Risk: {chance}%)!", status_enemy_purify_6: "Opponent sacrifices a 6 to survive!", status_enemy_impasse: "DEAD END for the opponent.", status_deroute_hero: "ROUT! You lose 1 Life.", status_deroute_enemy: "ROUT! Opponent loses 1 Life.", status_camp_hero: "You have set up camp.", status_camp_enemy: "Opponent set up camp.", status_select_dice: "Select your dice.", status_camp_choice: "Sacrifice a Triumph for +2 Hope?", btn_defend: "Defend (-2)", btn_suffer: "Suffer Rout", btn_compass: "Compass (-3)", btn_accept_defeat: "Accept Dead End", btn_corrupt: "Corrupt (+1 Shadow)", btn_devour: "Devour (+1 Shadow)", btn_ignore: "Ignore", btn_camp_sacrifice: "Sacrifice (+2 Hope)", btn_camp_normal: "Keep points",
-        ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! You replay!", ev_pas_btn: "Continue", ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope collapses...", ev_gouffre_btn: "Suffer Rout", ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure", ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy collapses under their own Hate!", ev_malediction_btn: "Rout", end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table", end_def_title: "FATAL DEFEAT", end_def_msg: "Your journey ends here.", end_def_btn: "Flee tavern", end_manche_lose_title: "ROUND LOST", end_manche_lose_msg: "Enemy wins this race.", end_manche_lose_btn: "Continue", end_shadow_title: "CONSUMED", end_shadow_msg: "Your greed killed you.", end_shadow_btn: "Quit",
+        ev_pas_title: "THE RANGER'S STRIDE", ev_pas_msg: "Masterful Success! + {val} Leagues! You replay!", ev_pas_btn: "Continue", ev_gouffre_title: "ABYSS OF DESPAIR", ev_gouffre_msg: "Masterful Failure! Hope collapses...", ev_gouffre_btn: "Suffer Rout", ev_elan_title: "DARK MOMENTUM", ev_elan_msg: "Enemy covers {val} Leagues!", ev_elan_btn: "Endure", ev_malediction_title: "CURSE", ev_malediction_msg: "Enemy collapses under their own Hate!", ev_malediction_btn: "Rout", end_vic_title: "TOTAL VICTORY", end_vic_msg: "You survived the shadow and triumphed.", end_vic_btn: "Leave table", end_def_title: "FATAL DEFEAT", end_def_msg: "Your journey ends here.", end_def_btn: "Flee tavern", end_manche_lose_title: "ROUND LOST", end_manche_lose_msg: "Enemy wins this race.", end_manche_lose_btn: "Continue", end_shadow_title: "CONSUMED", end_shadow_msg: "Your greed killed you.", end_shadow_btn: "Quit",
         loot_vic_xp: "+ {val} XP", loot_vic_shards: "+ {val} SHARDS", loot_def_xp: "+ 0 XP (Match Lost)", loot_def_shards: "+ {val} SHARDS (Salvaged)", loot_lvl_up: "🎉 LEVEL {lvl} REACHED! 🎉", ui_reward_title: "RACE WON", ui_reward_msg: "Choose your advantage for the next round:", ui_reward_init: "Initiative (You play first)", ui_reward_heal: "The Shortcut (+15 Leagues head start, enemy plays first)", ui_level: "Lvl.", ui_shards: "Shadow Shards", ui_shards_short: "Shards", ui_btn_arsenal: "The Arsenal", ui_arsenal_title: "THE ARSENAL", ui_btn_close: "Close", 
         ui_tab_vestiaire: "The Wardrobe", 
         ui_tab_contracts: "The Hunts", 
         ui_contract_desc: "A Dúnadan's duty never ends. Your brothers-in-arms have entrusted you with 3 hunts. Complete them in duels to earn Shards.", 
-        ui_contract_reward: "BOUNTY:", 
+        ui_contract_reward: "BOUNTY&nbsp;:", 
         ui_btn_shuffle_ready: "Reroll Hunts (Free)",
         ui_btn_shuffle_wait: "Reroll Hunts (in {val} matches)",
         toast_shuffled: "Hunts rerolled successfully!",
@@ -407,7 +383,7 @@ const i18n = {
             brag: { greetings: ["Bring your coins!"], success: ["I plucked you!"], failure: ["My bones!"], purify: ["Dropping good loot!"], hope_hate: ["Give that back!"], impasse: ["Are we lost?"], camp: ["I'm cashing in!"] },
             zamin: { greetings: ["The House of Gold wins."], success: ["Haste is the enemy of profit."], failure: ["Statistical anomaly."], purify: ["Tactical deficit."], hope_hate: ["Foreclosure."], impasse: ["Market stagnates..."], camp: ["Investment secured."] },
             kael: { greetings: ["Le Gondor is dead."], success: ["Succombe to despair."], failure: ["Flickering flame!"], purify: ["Sacrifice for survival."], hope_hate: ["Suffer, Dúnadan!"], impasse: ["We run in circles."], camp: ["The net tightens."] },
-            letranger: { greetings: ["Give me the dice."], success: ["You slip..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
+            letranger: { greetings: ["Give me the dice."], success: ["Tu glisses..."], failure: ["Too much light..."], purify: ["*Hiss*"], hope_hate: ["Shadow spreads..."], impasse: ["*Silence*"], camp: ["*He watches*"] }
         }
     }
 };
@@ -427,7 +403,7 @@ function setLanguage(lang) { currentLang = lang; document.getElementById('lang-b
 function updateStaticUI() { document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (i18n[currentLang] && i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key]; }); const rulesContainer = document.getElementById('rules-container'); if (rulesContainer && i18n[currentLang].rules_text) rulesContainer.innerHTML = i18n[currentLang].rules_text; }
 
 // ==========================================
-// INTERFACE & JEU
+// 4. INTERFACE & JEU
 // ==========================================
 function updateLivesUI() {
     const hc = document.getElementById('ui-hero-lives'); hc.innerHTML = ''; for (let i = 0; i < 3; i++) hc.innerHTML += `<div class="token vie ${i < gameState.playerLives ? '' : 'lost'}"></div>`;
@@ -454,7 +430,6 @@ function updateEspoirUI() {
 function updateHaineUI() { 
     const c = document.getElementById('ui-haine-tokens'); if (!c) return; 
     c.removeAttribute('style'); 
-    
     c.innerHTML = `
         <div style="color:var(--blood); font-family:'Oswald', sans-serif; font-size: clamp(14px, 4vw, 16px); line-height: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
             🔥 ${gameState.enemyHate} / 10
@@ -491,6 +466,9 @@ function applyCosmetics() {
     }
 }
 
+// ==========================================
+// 5. CYCLE DU DUEL
+// ==========================================
 function enterDuel(id, fullName) {
     gameState.currentEnemyId = id; document.body.className = 'theme-' + id; document.getElementById('ui-enemy-name').innerText = i18n[currentLang]["name_"+id];
     let imgName = "images/" + id.charAt(0).toUpperCase() + id.slice(1) + ".png"; if(id === 'letranger') imgName = "images/Letranger.png"; document.getElementById('enemy-portrait-img').src = imgName;
@@ -533,6 +511,8 @@ function startNewRound(isFirstRound = false, roundWinner = 'hero') {
     let maxEspoir = (gameState.currentModifier === 'nuit') ? 5 : 10;
     gameState.playerShadow = 0; gameState.playerEspoir = Math.min(maxEspoir, baseEspoir); gameState.enemyHate = Math.min(10, baseHate); gameState.matchStats.turnsPlayedThisRound = 0;
     
+    gameState.matchStats.purifyUsedThisTurn = false; gameState.matchStats.shadowUsedThisTurn = false;
+    
     updateGlobalUI(); updateEspoirUI(); updateHaineUI(); updateLivesUI(); updateShadowUI(); gameState.activePlayer = roundWinner;
     if (isFirstRound) { updateDialogue('dirhael', 'greetings', 'ui-hero-dialogue'); updateDialogue(gameState.currentEnemyId, 'greetings', 'ui-enemy-dialogue'); }
     switchTurn(true);
@@ -544,7 +524,6 @@ function switchTurn(isInit = false) {
     if (!isInit) gameState.activePlayer = (gameState.activePlayer === 'hero') ? 'enemy' : 'hero';
     if (gameState.activePlayer === 'hero') gameState.matchStats.turnsPlayedThisRound++;
     gameState.matchStats.totalTurnsThisMatch++;
-    gameState.matchStats.purifyUsedThisTurn = false; gameState.matchStats.shadowUsedThisTurn = false;
     
     if (gameState.playerShadow >= 3) gameState.matchStats.consecutiveShadowMaxTurns++; else gameState.matchStats.consecutiveShadowMaxTurns = 0;
     
@@ -554,6 +533,11 @@ function switchTurn(isInit = false) {
         let hateGain = 1; if (gameState.currentEnemyId === 'letranger') { hateGain = Math.floor(Math.random() * 3) + 1; }
         gameState.enemyHate = Math.min(10, gameState.enemyHate + hateGain); updateHaineUI();
         if(gameState.enemyHate === 10) gameState.matchStats.enemyReachedMaxHate = true;
+        
+        // FIX ÉTRANGER : On fixe sa personnalité une fois pour tout son tour !
+        if (gameState.currentEnemyId === 'letranger') {
+            gameState.strangerTurnPersonality = ['prudent', 'agressif', 'kamikaze'][Math.floor(Math.random() * 3)];
+        }
     }
     
     gameState.turnScore = 0; gameState.diceStates = ['idle', 'idle', 'idle', 'idle', 'idle']; gameState.diceValues = [0, 0, 0, 0, 0]; gameState.hasKeptDieThisRoll = false; gameState.pendingDeroute = false;
@@ -610,109 +594,122 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
             rolledIndices.forEach(idx => { if(gameState.diceValues[idx] >= 4) { gameState.diceStates[idx] = 'kept'; document.getElementById(`wrap-${idx}`).classList.add('wrap-kept'); } }); recalculateScore(); let gained = gameState.turnScore; gameState.playerScore += gained; updateGlobalUI(); playerProfile.stats.totalLeagues += gained; saveProfile(); addXP(10);
             let currentSeuil = (gameState.currentModifier === 'brouillard') ? 8 : SEUIL_HAINE; if (gained >= currentSeuil) { gameState.enemyHate = Math.min(10, gameState.enemyHate + 1); updateHaineUI(); }
             if(!playerProfile.achievements.maitreFondcombe) { playerProfile.achievements.maitreFondcombe = true; saveProfile(); }
-            let actionCallback = (gameState.playerScore >= gameState.targetScore) ? () => { resolveRoundWinner('hero'); } : () => { switchTurn(true); }; showEventScreen(t('ev_pas_title'), t('ev_pas_msg', {val: gained}), t('ev_pas_btn'), actionCallback, "var(--gold)"); return; 
+            let actionCallback = (gameState.playerScore >= gameState.targetScore) ? () => { resolveRoundWinner('hero'); } : () => { switchTurn(true); }; 
+            showEventScreen(t('ev_pas_title'), t('ev_pas_msg', {val: gained}), t('ev_pas_btn'), actionCallback, "var(--gold)"); return; 
         }
-        if (rollCountOnes >= 3) { audioManager.playSFX('audio/hit.mp3', 0.25); gameState.playerEspoir = 0; updateEspoirUI(); showEventScreen(t('ev_gouffre_title'), t('ev_gouffre_msg'), t('ev_gouffre_btn'), () => { handleDeroute('hero'); }, "var(--blood)"); return; }
+        
+        if (rollCountOnes >= 3) { gameState.playerEspoir = 0; updateEspoirUI(); showEventScreen(t('ev_gouffre_title'), t('ev_gouffre_msg'), t('ev_gouffre_btn'), () => { handleDeroute('hero'); }, "var(--blood)"); return; }
 
         let activeAI = gameState.currentEnemyId; 
         if (activeAI === 'letranger') { activeAI = ['brag', 'zamin', 'kael'][Math.floor(Math.random() * 3)]; } 
-        let sabotageCost = { brag: 4, zamin: 3, kael: 5 }[activeAI] || 4;
+        let sabotageCost = { brag: 5, zamin: 4, kael: 3 }[activeAI] || 4;
         
         if (!isAlreadyDeroute && !isAlreadyImpasse && gameState.activePlayer === 'hero') {
             let availableIndices = rolledIndices.filter(idx => gameState.diceStates[idx] === 'idle'); 
             let targetIdx = -1; 
             let lockedOnes = gameState.diceStates.filter(s => s === 'locked').length; 
-            let projectedScore = gameState.playerScore + gameState.turnScore;
+            
+            // MATHÉMATIQUE : L'IA anticipe les dés gagnants qui sont sur la table ce tour-ci !
+            let potentialGain = 0;
+            availableIndices.forEach(idx => {
+                if (gameState.diceValues[idx] >= 4) {
+                    potentialGain += (gameState.diceValues[idx] === 6) ? 10 : gameState.diceValues[idx];
+                }
+            });
+            let realProjectedScore = gameState.playerScore + gameState.turnScore + potentialGain;
+            
             let tens = availableIndices.filter(idx => gameState.diceValues[idx] === 6); 
             let foursAndFives = availableIndices.filter(idx => gameState.diceValues[idx] === 4 || gameState.diceValues[idx] === 5).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); 
             let allScoring = availableIndices.filter(idx => gameState.diceValues[idx] >= 4).sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); 
             let neutrals = availableIndices.filter(idx => gameState.diceValues[idx] === 2 || gameState.diceValues[idx] === 3);
             
-            let isEmergency = (projectedScore >= gameState.targetScore - 15);
+            // L'urgence se base désormais sur ce score projeté réaliste
+            let isEmergency = (realProjectedScore >= gameState.targetScore - 15);
             let isAcharnement = false;
 
             // --- SABOTAGE CLASSIQUE ---
             if (gameState.enemyHate >= sabotageCost) {
                 if (isEmergency && allScoring.length > 0) { targetIdx = allScoring[0]; } 
                 else if (gameState.enemyHate >= 8 && allScoring.length > 0) { targetIdx = allScoring[0]; } 
-                else if (activeAI === 'kael') { if (lockedOnes === 1 && availableIndices.length > 0) { availableIndices.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = availableIndices[0]; } else if (tens.length > 0) { targetIdx = tens[0]; } else if (allScoring.length > 0) { targetIdx = allScoring[0]; } } 
+                else if (activeAI === 'kael') { 
+                    if (tens.length > 0) { targetIdx = tens[0]; } 
+                    else if (allScoring.length > 0 && Math.random() < 0.33) { targetIdx = allScoring[0]; } 
+                } 
                 else if (activeAI === 'brag') { if (foursAndFives.length > 0) { targetIdx = foursAndFives[0]; } else if (tens.length > 0 && neutrals.length === 0) { targetIdx = tens[0]; } } 
-                else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[a] - gameState.diceValues[b]); targetIdx = allScoring[0]; } }
+                else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = allScoring[0]; } }
             
-            // --- RÈGLE DE L'ACHARNEMENT ---
-            } else if (gameState.enemyHate === 0 && tens.length > 0 && gameState.enemyScore <= gameState.playerScore) {
-                // ÉTAPE 1 : Conditions de Déclenchement
-                if (!(gameState.enemyScore < 15 && gameState.enemyLives === 1)) { // Anti-Suicide
-                    // ÉTAPE 2 : La Décision (60% de chances)
-                    if (Math.random() < 0.60) { 
-                        targetIdx = tens[0]; 
-                        isAcharnement = true;
+            // --- PHASE 2 : L'ACHARNEMENT (Bouton Panique avec Anticipation) ---
+            } else if (gameState.enemyHate < sabotageCost && tens.length > 0) {
+                // L'IA sait lire la table et panique SI tu VAS dépasser 55 ou prendre 15 Lieues d'avance !
+                let isLateGame = (realProjectedScore >= 55);
+                
+                // NOUVEAU : On bloque la panique des 15 Lieues au Tour 1 pour laisser l'IA s'installer
+                let playerHasHugeLead = (realProjectedScore >= gameState.enemyScore + 15) && (gameState.matchStats.turnsPlayedThisRound > 1);
+
+                if (isLateGame || playerHasHugeLead) {
+                    if (!(gameState.enemyScore < 15 && gameState.enemyLives === 1)) { 
+                        if (Math.random() < 0.60) { targetIdx = tens[0]; isAcharnement = true; }
                     }
                 }
             }
 
             if (targetIdx !== -1) {
                 if (isAcharnement) {
-                    // ÉTAPE 3 : Le Jet de Risque
                     gameState.acharnementAttempts = (gameState.acharnementAttempts || 0) + 1;
                     let failChance = Math.min(gameState.acharnementAttempts * 25, 90); 
                     let roll = Math.random() * 100;
 
                     updateStatus(t('status_acharnement_try'), "var(--blood)");
-                    audioManager.playSFX('audio/shadow.mp3', 0.2);
                     await new Promise(r => setTimeout(r, 1500));
 
                     if (roll < failChance) {
-                        // ÉTAPE 4 : Résolution - ÉCHEC
                         if (gameState.enemyScore >= 15) {
                             gameState.enemyScore -= 15;
                             updateStatus(t('status_acharnement_fail_score'), "var(--gold)");
                             updateGlobalUI();
                         } else {
-                            gameState.enemyLives--;
-                            updateLivesUI();
-                            updateStatus(t('status_acharnement_fail_life'), "var(--gold)");
+                            gameState.enemyLives--; updateLivesUI(); updateStatus(t('status_acharnement_fail_life'), "var(--gold)");
                             if (gameState.enemyLives <= 0) { setTimeout(() => { resolveRoundWinner('hero'); }, 2000); return; } 
                         }
                         await new Promise(r => setTimeout(r, 2000));
                         targetIdx = -1; 
-                    } else {
-                        // ÉTAPE 4 : Résolution - SUCCÈS
-                        updateStatus(t('status_acharnement_success'), "var(--blood)");
-                        await new Promise(r => setTimeout(r, 1500));
-                        activeAI = 'kael'; // Force Kael pour corrompre le 6
-                    }
+                    } else { activeAI = 'kael'; }
                 } else {
-                    // Sabotage classique
                     gameState.enemyHate -= sabotageCost; updateHaineUI(); gameState.matchStats.enemyAttackedAfterMaxHate = true;
                 }
 
                 if (targetIdx !== -1) {
                     let countered = false;
-                if (gameState.playerEspoir >= 3 && !gameState.hasUsedEspoirThisTurn) {
-                    let askText = ""; let targetVal = gameState.diceValues[targetIdx];
-                    if (gameState.currentEnemyId === 'letranger') askText = t('ask_sabotage_letranger', {val: targetVal}); else if (activeAI === 'kael') askText = t('ask_sabotage_kael', {val: targetVal}); else if (activeAI === 'brag') askText = t('ask_sabotage_brag', {val: targetVal}); else if (activeAI === 'zamin') askText = t('ask_sabotage_zamin', {val: targetVal}); else askText = t('status_elbereth_ask'); 
-                    updateStatus(askText, "var(--blood)"); document.getElementById(`wrap-${targetIdx}`).classList.add('pulse-danger'); audioManager.playSFX('audio/shadow.mp3', 0.1);
-                    countered = await new Promise(resolve => {
-                        let controlsHTML = `<button data-choice="elbereth" style="background: var(--gold); color: #000; font-weight: bold; border-color: var(--gold); box-shadow: 0 0 15px var(--gold);">${t('btn_elbereth')}</button><button data-choice="suffer">${t('btn_ignore')}</button>`;
-                        const tc = document.getElementById('turn-controls'); tc.innerHTML = controlsHTML;
-                        tc.querySelectorAll('button').forEach(btn => { btn.onclick = () => { tc.innerHTML = ''; document.getElementById(`wrap-${targetIdx}`).classList.remove('pulse-danger'); resolve(btn.getAttribute('data-choice') === 'elbereth'); }; });
-                    });
-                }
-                if (countered) {
-                    gameState.playerEspoir = 0; gameState.hasUsedEspoirThisTurn = true; gameState.matchStats.defendsUsed++; updateEspoirUI(); audioManager.playSFX('audio/dice.mp3', 0.2); updateStatus(t('status_elbereth_success'), "var(--gold)");
-                    if(activeAI === 'kael') gameState.matchStats.elberethVsKaelAndWon = true; 
-                    await new Promise(r => setTimeout(r, 1500));
-                } else {
-                    if (gameState.currentEnemyId === 'letranger') { updateStatus(t('status_sabotage_letranger'), "var(--blood)"); await new Promise(r => setTimeout(r, 1200)); } else if (activeAI === 'kael') { updateStatus(t('status_sabotage_kael'), "var(--blood)"); await new Promise(r => setTimeout(r, 1200)); } else if (activeAI === 'brag') { updateStatus(t('status_sabotage_brag'), "var(--blood)"); await new Promise(r => setTimeout(r, 1200)); } else if (activeAI === 'zamin') { updateStatus(t('status_sabotage_zamin'), "var(--enemy-color)"); await new Promise(r => setTimeout(r, 1200)); }
-                    if (activeAI === 'kael') { gameState.diceValues[targetIdx] = 1; gameState.diceStates[targetIdx] = 'locked'; document.getElementById(`val-${targetIdx}`).innerText = "1"; let skin = playerProfile.equipped.dice !== 'classic' ? `skin-${playerProfile.equipped.dice}` : ''; document.getElementById(`die-${targetIdx}`).className = `die die-danger ${skin}`; document.getElementById(`wrap-${targetIdx}`).classList.add('pulse-danger'); updateStatus(t('status_sabotage_kael_res'), "var(--blood)"); } 
-                    else if (activeAI === 'brag') { gameState.diceValues[targetIdx] = 0; gameState.diceStates[targetIdx] = 'sacrificed'; document.getElementById(`val-${targetIdx}`).innerText = "X"; let skin = playerProfile.equipped.dice !== 'classic' ? `skin-${playerProfile.equipped.dice}` : ''; document.getElementById(`die-${targetIdx}`).className = `die die-sacrificed ${skin}`; document.getElementById(`wrap-${targetIdx}`).classList.remove('wrap-kept'); updateStatus(t('status_sabotage_brag_res'), "var(--blood)"); } 
-                    else if (activeAI === 'zamin') { gameState.diceStates[targetIdx] = 'sacrificed'; document.getElementById(`val-${targetIdx}`).innerText = "X"; let skin = playerProfile.equipped.dice !== 'classic' ? `skin-${playerProfile.equipped.dice}` : ''; document.getElementById(`die-${targetIdx}`).className = `die die-sacrificed ${skin}`; updateStatus(t('status_sabotage_zamin_res'), "var(--enemy-color)"); }
-                    updateDialogue(gameState.currentEnemyId, 'hope_hate', 'ui-enemy-dialogue'); await triggerTutorial('seenHate', 'tuto_hate'); await new Promise(r => setTimeout(r, 1200));
+                    if (gameState.playerEspoir >= 3 && !gameState.hasUsedEspoirThisTurn) {
+                        let askText = ""; let targetVal = gameState.diceValues[targetIdx];
+                        if (gameState.currentEnemyId === 'letranger') askText = t('ask_sabotage_letranger', {val: targetVal}); else if (activeAI === 'kael') askText = t('ask_sabotage_kael', {val: targetVal}); else if (activeAI === 'brag') askText = t('ask_sabotage_brag', {val: targetVal}); else if (activeAI === 'zamin') askText = t('ask_sabotage_zamin', {val: targetVal}); else askText = t('status_elbereth_ask'); 
+                        updateStatus(askText, "var(--blood)"); document.getElementById(`wrap-${targetIdx}`).classList.add('pulse-danger'); audioManager.playSFX('audio/shadow.mp3', 0.1);
+                        countered = await new Promise(resolve => {
+                            let controlsHTML = `<button data-choice="elbereth" style="background: var(--gold); color: #000; font-weight: bold; border-color: var(--gold); box-shadow: 0 0 15px var(--gold);">${t('btn_elbereth')}</button><button data-choice="suffer">${t('btn_ignore')}</button>`;
+                            const tc = document.getElementById('turn-controls'); tc.innerHTML = controlsHTML;
+                            tc.querySelectorAll('button').forEach(btn => { btn.onclick = () => { tc.innerHTML = ''; document.getElementById(`wrap-${targetIdx}`).classList.remove('pulse-danger'); resolve(btn.getAttribute('data-choice') === 'elbereth'); }; });
+                        });
+                    }
+                    if (countered) {
+                        gameState.playerEspoir = 0; gameState.hasUsedEspoirThisTurn = true; gameState.matchStats.defendsUsed++; updateEspoirUI(); audioManager.playSFX('audio/dice.mp3', 0.2); updateStatus(t('status_elbereth_success'), "var(--gold)");
+                        if(activeAI === 'kael') gameState.matchStats.elberethVsKaelAndWon = true; 
+                        await new Promise(r => setTimeout(r, 1500));
+                    } else {
+                        if (!isAcharnement) {
+                            if (gameState.currentEnemyId === 'letranger') { updateStatus(t('status_sabotage_letranger'), "var(--blood)"); await new Promise(r => setTimeout(r, 1200)); } else if (activeAI === 'kael') { updateStatus(t('status_sabotage_kael'), "var(--blood)"); await new Promise(r => setTimeout(r, 1200)); } else if (activeAI === 'brag') { updateStatus(t('status_sabotage_brag'), "var(--blood)"); await new Promise(r => setTimeout(r, 1200)); } else if (activeAI === 'zamin') { updateStatus(t('status_sabotage_zamin'), "var(--enemy-color)"); await new Promise(r => setTimeout(r, 1200)); }
+                        }
+                        
+                        let skin = playerProfile.equipped.dice !== 'classic' ? `skin-${playerProfile.equipped.dice}` : '';
+                        
+                        if (activeAI === 'kael') { gameState.diceValues[targetIdx] = 1; gameState.diceStates[targetIdx] = 'locked'; document.getElementById(`val-${targetIdx}`).innerText = "1"; document.getElementById(`die-${targetIdx}`).className = `die die-danger ${skin}`; document.getElementById(`wrap-${targetIdx}`).classList.add('pulse-danger'); updateStatus(t('status_sabotage_kael_res'), "var(--blood)"); } 
+                        else if (activeAI === 'brag') { gameState.diceValues[targetIdx] = 0; gameState.diceStates[targetIdx] = 'sacrificed'; document.getElementById(`val-${targetIdx}`).innerText = "X"; document.getElementById(`die-${targetIdx}`).className = `die die-sacrificed ${skin}`; document.getElementById(`wrap-${targetIdx}`).classList.remove('wrap-kept'); updateStatus(t('status_sabotage_brag_res'), "var(--blood)"); } 
+                        else if (activeAI === 'zamin') { gameState.diceStates[targetIdx] = 'sacrificed'; document.getElementById(`val-${targetIdx}`).innerText = "X"; document.getElementById(`die-${targetIdx}`).className = `die die-sacrificed ${skin}`; updateStatus(t('status_sabotage_zamin_res'), "var(--enemy-color)"); }
+                        
+                        updateDialogue(gameState.currentEnemyId, 'hope_hate', 'ui-enemy-dialogue'); await triggerTutorial('seenHate', 'tuto_hate'); await new Promise(r => setTimeout(r, 1200));
+                    }
                 }
             }
         }
-    }
     }
 
     countLockedTotal = gameState.diceStates.filter(s => s === 'locked').length; let hasScoringDiceInThisRoll = rolledIndices.some(idx => gameState.diceStates[idx] === 'idle' && gameState.diceValues[idx] >= 4); let isDeroute = (countLockedTotal >= 2);
@@ -743,12 +740,9 @@ async function toggleKeepDie(index) {
             gameState.playerEspoir -= 2; gameState.hasUsedEspoirThisTurn = true; updateEspoirUI(); updateDialogue('dirhael', 'hope_hate', 'ui-hero-dialogue'); updateStatus(t('status_hope_used'), "var(--gold)"); document.getElementById('turn-controls').innerHTML = ''; 
             gameState.diceStates[index] = 'idle'; document.getElementById(`val-${index}`).innerText = "-"; document.getElementById(`die-${index}`).className = `die die-idle ${skin}`; document.getElementById(`wrap-${index}`).classList.remove('pulse-danger');
             
-            playerProfile.stats.purifications++; 
-            gameState.matchStats.purificationsThisMatch++; 
-            playerProfile.stats.purifForContract = (playerProfile.stats.purifForContract || 0) + 1; 
-            if(gameState.playerLives === 1) playerProfile.stats.routsSurvived++; 
-            addXP(10); 
-            saveProfile();
+            playerProfile.stats.purifications++; gameState.matchStats.purificationsThisMatch++; playerProfile.stats.purifForContract = (playerProfile.stats.purifForContract || 0) + 1; 
+            if(gameState.playerLives === 1) playerProfile.stats.routsSurvived++; addXP(10); saveProfile();
+            
             gameState.matchStats.purifyUsedThisTurn = true;
             if(gameState.matchStats.shadowUsedThisTurn) gameState.matchStats.purifyAndShadowSameTurn = true;
 
@@ -794,8 +788,12 @@ async function playEnemyTurn() {
 function evaluateEnemyRoll(rolledIndices) {
     let rollCountTens = rolledIndices.filter(idx => gameState.diceValues[idx] === 6).length; let rollCountOnes = rolledIndices.filter(idx => gameState.diceValues[idx] === 1).length;
 
-    if (rollCountTens >= 3) { rolledIndices.forEach(idx => { if(gameState.diceValues[idx] >= 4) { gameState.diceStates[idx] = 'kept'; document.getElementById(`wrap-${idx}`).classList.add('wrap-kept'); } }); recalculateScore(); let gained = gameState.turnScore; gameState.enemyScore += gained; updateGlobalUI(); let actionCallback = (gameState.enemyScore >= gameState.targetScore) ? () => { resolveRoundWinner('enemy'); } : () => { switchTurn(true); }; showEventScreen(t('ev_elan_title'), t('ev_elan_msg', {val: gained}), t('ev_elan_btn'), actionCallback, "var(--corruption)"); return; }
-    if (rollCountOnes >= 3) { audioManager.playSFX('audio/hit.mp3', 0.25); gameState.enemyHate = 0; updateHaineUI(); gameState.matchStats.enemyMasterfulFailure = true; showEventScreen(t('ev_malediction_title'), t('ev_malediction_msg'), t('ev_malediction_btn'), () => { handleDeroute('enemy'); }, "var(--gold)"); return; }
+    if (rollCountTens >= 3) { 
+        rolledIndices.forEach(idx => { if(gameState.diceValues[idx] >= 4) { gameState.diceStates[idx] = 'kept'; document.getElementById(`wrap-${idx}`).classList.add('wrap-kept'); } }); recalculateScore(); let gained = gameState.turnScore; gameState.enemyScore += gained; updateGlobalUI(); 
+        let actionCallback = (gameState.enemyScore >= gameState.targetScore) ? () => { resolveRoundWinner('enemy'); } : () => { switchTurn(true); }; 
+        showEventScreen(t('ev_elan_title'), t('ev_elan_msg', {val: gained}), t('ev_elan_btn'), actionCallback, "var(--corruption)"); return; 
+    }
+    if (rollCountOnes >= 3) { gameState.enemyHate = 0; updateHaineUI(); gameState.matchStats.enemyMasterfulFailure = true; showEventScreen(t('ev_malediction_title'), t('ev_malediction_msg'), t('ev_malediction_btn'), () => { handleDeroute('enemy'); }, "var(--gold)"); return; }
     
     let threshold = (gameState.enemyScore >= 60) ? 4 : 5; let targetIdx = -1; let maxVal = -1; rolledIndices.forEach(idx => { if (gameState.diceStates[idx] === 'idle' && gameState.diceValues[idx] >= threshold) { if (gameState.diceValues[idx] > maxVal) { maxVal = gameState.diceValues[idx]; targetIdx = idx; } } });
     if (targetIdx !== -1 && maxVal >= 5) { gameState.currentEnemyRolledIndices = rolledIndices; gameState.currentEnemyTargetIdx = targetIdx; document.getElementById(`die-${targetIdx}`).style.boxShadow = "0 0 25px var(--corruption)"; let btnText = maxVal === 6 ? t('btn_corrupt') : t('btn_devour'); let statusText = maxVal === 6 ? t('status_shadow_6') : t('status_shadow_other', {val: maxVal}); updateStatus(statusText, "var(--corruption)"); document.getElementById('turn-controls').innerHTML = `<button onclick="corruptEnemyDie()" style="background: var(--corruption); color: #fff; border-color: var(--corruption);">${btnText}</button><button onclick="ignoreEnemyDie()" style="border-color: #555; color: #888;">${t('btn_ignore')}</button>`; return; }
@@ -833,7 +831,8 @@ function processEnemyDecision() {
         let idleCount = gameState.diceStates.filter(s => s === 'idle').length; 
         let shouldStop = false; 
         let activeAI = gameState.currentEnemyId; 
-        let risk = (activeAI === 'letranger') ? ['prudent', 'agressif', 'kamikaze'][Math.floor(Math.random() * 3)] : gameState.enemyRiskProfile; 
+        // FIX ÉTRANGER : On utilise la personnalité fixée pour ce tour
+        let risk = (activeAI === 'letranger') ? gameState.strangerTurnPersonality : gameState.enemyRiskProfile; 
         
         if (idleCount === 0) { 
             shouldStop = true; 
@@ -848,14 +847,12 @@ function processEnemyDecision() {
                 case 'kamikaze': baseTargetScore = 25; minIdleToStop = 0; break; 
             } 
             let dynamicTargetScore = baseTargetScore + Math.floor(gap * 0.3); 
-            
-            // LA FAMEUSE RÈGLE DU DÉSESPOIR : Le joueur est à 15 Lieues (ou moins) de la victoire !
             let isDesperate = (gameState.playerScore >= gameState.targetScore - 15);
 
             if (gameState.enemyScore + gameState.turnScore >= gameState.targetScore) { 
                 shouldStop = true; 
             } else if (isDesperate) {
-                shouldStop = false; // MODE KAMIKAZE
+                shouldStop = false; 
             } else if (gameState.turnScore >= dynamicTargetScore || idleCount <= minIdleToStop) { 
                 if (risk === 'kael' && gap > 0 && gameState.playerScore >= 60 && gameState.turnScore < dynamicTargetScore) { shouldStop = false; } 
                 else { shouldStop = true; } 
@@ -892,9 +889,7 @@ function bankScore() {
         gameState.playerScore += gameState.turnScore; updateDialogue('dirhael', 'camp', 'ui-hero-dialogue'); updateStatus(t('status_camp_hero'), "var(--gold)"); 
         playerProfile.stats.totalLeagues += gameState.turnScore; gameState.heroRoutLastTurn = false; 
         
-        // C15 FIX: Le score exact de 80
         if (gameState.playerScore === 80) gameState.matchStats.exact80Round = true;
-
         if (gameState.turnScore > 0 && gameState.turnScore <= 15) gameState.matchStats.bankedUnder15 = true;
         if (gameState.turnScore > gameState.matchStats.highestTurnScoreThisMatch) gameState.matchStats.highestTurnScoreThisMatch = gameState.turnScore;
         
@@ -916,9 +911,7 @@ function resolveRoundWinner(winner) {
     let startLevel = playerProfile.level;
 
     if (winner === 'hero') {
-        // C6 ZÂMIN FIX : Si l'ennemi finit la manche avec 0 point global
         if (gameState.enemyScore === 0) gameState.matchStats.enemyLostRoundWithZero = true;
-
         gameState.heroRounds++; updateGlobalUI(); addXP(Math.floor(15 * mult)); 
         if (gameState.heroRounds >= 2) { 
             playerProfile.stats.gamesWon++; 
@@ -940,7 +933,7 @@ function resolveRoundWinner(winner) {
             
             let msg = `${t('end_vic_msg')}<br><br><span style="color:var(--gold); font-family:'Oswald'; font-size:22px;">${t('loot_vic_xp', {val: xpEarned})}</span><br><span style="color:var(--corruption); font-family:'Oswald'; font-size:22px;">${t('loot_vic_shards', {val: eclatsEarned + contractBonus})}</span>`;
             if (contractBonus > 0) msg += contractMsg;
-            if (playerProfile.level > startLevel && playerProfile.level < MAX_LEVEL) { msg += `<br><br><span style="color:#2ecc71; font-family:'Oswald'; font-size:20px; display:block; animation: pulseDanger 1s infinite alternate;">${t('loot_lvl_up', {lvl: playerProfile.level})}</span>`; audioManager.playSFX('audio/dice.mp3', 0.3); }
+            if (playerProfile.level > startLevel && playerProfile.level < MAX_LEVEL) { msg += `<br><br><span style="color:#2ecc71; font-family:'Oswald'; font-size:20px; display:block; animation: pulseDanger 1s infinite alternate;">${t('loot_lvl_up', {lvl: playerProfile.level})}</span>`; }
             showEndScreen(t('end_vic_title'), msg, t('end_vic_btn'), () => { exitDuel(); }, "var(--gold)"); 
         } else { document.getElementById('reward-modal').style.display = 'flex'; }
     } else {
@@ -977,6 +970,7 @@ function applyReward(choice) {
         showToast(toastMsg, "success");
     } 
 }
+
 function showEndScreen(t1, msg, btxt, cb, col) { const m = document.getElementById('end-modal'); const c = m.querySelector('.end-content'); document.getElementById('end-title').innerText = t1; document.getElementById('end-title').style.color = col; c.style.borderColor = col; c.style.boxShadow = `0 0 50px ${col}`; document.getElementById('end-message').innerHTML = msg; const b = document.getElementById('end-btn'); b.innerText = btxt; b.style.color = col; b.style.borderColor = col; b.onclick = () => { m.style.display = 'none'; cb(); }; m.style.display = 'flex'; }
 function showEventScreen(t1, msg, btxt, cb, col) { const m = document.getElementById('event-modal'); const c = m.querySelector('.event-content'); document.getElementById('event-title').innerText = t1; document.getElementById('event-title').style.color = col; c.style.borderColor = col; c.style.boxShadow = `0 0 50px ${col}`; document.getElementById('event-message').innerHTML = msg; const b = document.getElementById('event-btn'); b.innerText = btxt; b.style.color = col; b.style.borderColor = col; b.onclick = () => { m.style.display = 'none'; cb(); }; m.style.display = 'flex'; }
 function showRules() { updateStaticUI(); document.getElementById('rules-modal').style.display = 'flex'; }
@@ -1003,7 +997,31 @@ document.addEventListener('click', (e) => {
 // 8. HAUTS FAITS & ARSENAL
 // ==========================================
 const achievementsData = [
-    { id: 'fardeauAnneau', t_fr: "Le Fardeau de l'Anneau", t_en: "The Burden of the Ring", d_fr: "Survivre 3 tours avec l'Ombre max.", d_en: "Survive 3 turns with max Shadow." }, { id: 'flammeUdun', t_fr: "La Flamme d'Udûn", t_en: "Flame of Udûn", d_fr: "Purifier avec 1 seule Vie.", d_en: "Purify with 1 Life." }, { id: 'heritageNumenor', t_fr: "L'Héritage de Númenor", t_en: "Legacy of Númenor", d_fr: "Gagner 80 Lieues en 2 tours.", d_en: "Win 80 Leagues in 2 turns." }, { id: 'sermentParjures', t_fr: "Serment des Parjures", t_en: "Oathbreakers", d_fr: "Gagner après avoir perdu la 1ère manche.", d_en: "Win after losing the 1st round." }, { id: 'maliceMorgoth', t_fr: "Malice de Morgoth", t_en: "Malice of Morgoth", d_fr: "Ombre x5 en un duel.", d_en: "Shadow x5 in one duel." }, { id: 'ruseSmaug', t_fr: "Ruse de Smaug", t_en: "Cunning of Smaug", d_fr: "Tuer Brag/Zâmin >60 points.", d_en: "Kill Brag/Zâmin >60 points." }, { id: 'enduranceDunedain', t_fr: "Endurance Dúnedain", t_en: "Dúnedain Endurance", d_fr: "Battre Kael sans Espoir.", d_en: "Beat Kael without Hope." }, { id: 'fuiteComte', t_fr: "Fuite de la Comté", t_en: "Flight from Shire", d_fr: "Déroute au 1er tour.", d_en: "Rout on turn 1." }, { id: 'colereValar', t_fr: "Colère des Valar", t_en: "Wrath of Valar", d_fr: "Gagner avec 3 Déroutes.", d_en: "Win with 3 Routs." }, { id: 'pariIsildur', t_fr: "Pari d'Isildur", t_en: "Isildur's Gamble", d_fr: "Marquer 35+ en un jet.", d_en: "Score 35+ in one roll." }, { id: 'voieElfes', t_fr: "Voie des Elfes", t_en: "Way of Elves", d_fr: "Manche sans Déroute.", d_en: "Round without Rout." }, { id: 'fleauOmbre', t_fr: "Fléau de l'Ombre", t_en: "Shadow Bane", d_fr: "Purifier 3 fois.", d_en: "Purify 3 times." }, { id: 'marcheurNuit', t_fr: "Marcheur de Nuit", t_en: "Night Walker", d_fr: "5 victoires d'affilée.", d_en: "5 wins in a row." }, { id: 'pillardGobelin', t_fr: "Pillard Gobelin", t_en: "Goblin Looter", d_fr: "Battre Brag à 0 score.", d_en: "Beat Brag at 0 score." }, { id: 'negociateurNain', t_fr: "Négociateur Nain", t_en: "Dwarven Negotiator", d_fr: "Battre Zâmin avec 1 Vie, <3 Espoirs.", d_en: "Beat Zâmin with 1 Life, <3 Hope." }, { id: 'tueurKael', t_fr: "Résistance", t_en: "Resistance", d_fr: "Vaincre Kael 5 fois.", d_en: "Defeat Kael 5 times." }, { id: 'enigmeObscurite', t_fr: "Énigme Obscurité", t_en: "Riddle in Dark", d_fr: "Vaincre L'Étranger 3 fois.", d_en: "Defeat Stranger 3 times." }, { id: 'maitreFondcombe', t_fr: "Maître Fondcombe", t_en: "Master of Rivendell", d_fr: "Succès Magistral (Trois 6).", d_en: "Masterful Success (Three 6s)." }, { id: 'maledictionAnneau', t_fr: "Malédiction Anneau", t_en: "Curse of Ring", d_fr: "Mourir de l'Ombre à 90%.", d_en: "Die from Shadow at 90%." }, { id: 'bravoureHobbit', t_fr: "Bravoure Hobbit", t_en: "Hobbit Bravery", d_fr: "Boussole x3 et gagner.", d_en: "Compass x3 and win." }, { id: 'heritierElendil', t_fr: "Héritier Elendil", t_en: "Heir of Elendil", d_fr: "Acheter objet >5000.", d_en: "Buy item >5000." }, { id: 'tueurBalrog', t_fr: "Tueur Balrog", t_en: "Balrog Slayer", d_fr: "Total 50 000 Lieues.", d_en: "Total 50k Leagues." }, { id: 'ombreMordor', t_fr: "Ombre Mordor", t_en: "Shadow of Mordor", d_fr: "Jouer 100 parties.", d_en: "Play 100 matches." }, { id: 'retourRoi', t_fr: "Retour du Roi", t_en: "Return of King", d_fr: "Atteindre Niv. 40.", d_en: "Reach Lvl 40." }, { id: 'seigneurOuest', t_fr: "Seigneur de l'Ouest", t_en: "Lord of the West", d_fr: "Atteindre Niv. 50.", d_en: "Reach Lvl 50." }
+    { id: 'fardeauAnneau', t_fr: "Le Fardeau de l'Anneau", t_en: "The Burden of the Ring", d_fr: "Survivre 3 tours avec la jauge d'Ombre au maximum.", d_en: "Survive 3 turns with the Shadow gauge at maximum." }, 
+    { id: 'flammeUdun', t_fr: "La Flamme d'Udûn", t_en: "Flame of Udûn", d_fr: "Purifier une Embuscade en n'ayant plus qu'une seule Vie.", d_en: "Purify an Ambush with only 1 Life remaining." }, 
+    { id: 'heritageNumenor', t_fr: "L'Héritage de Númenor", t_en: "Legacy of Númenor", d_fr: "Remporter 80 Lieues en seulement 2 tours.", d_en: "Win 80 Leagues in exactly 2 turns." }, 
+    { id: 'sermentParjures', t_fr: "Serment des Parjures", t_en: "Oathbreakers", d_fr: "Gagner le duel après avoir perdu la première manche.", d_en: "Win the duel after losing the first round." }, 
+    { id: 'maliceMorgoth', t_fr: "Malice de Morgoth", t_en: "Malice of Morgoth", d_fr: "Utiliser l'Ombre 5 fois au cours d'un même duel.", d_en: "Use Shadow 5 times during a single duel." }, 
+    { id: 'ruseSmaug', t_fr: "Ruse de Smaug", t_en: "Cunning of Smaug", d_fr: "Vaincre Brag ou Zâmin avec plus de 60 Lieues d'avance.", d_en: "Defeat Brag or Zâmin with a lead of more than 60 Leagues." }, 
+    { id: 'enduranceDunedain', t_fr: "Endurance Dúnedain", t_en: "Dúnedain Endurance", d_fr: "Vaincre Kael sans utiliser d'Espoir pour se défendre.", d_en: "Defeat Kael without using Hope to defend." }, 
+    { id: 'fuiteComte', t_fr: "Fuite de la Comté", t_en: "Flight from the Shire", d_fr: "Subir une Déroute dès le premier lancer d'une manche.", d_en: "Suffer a Rout on the very first roll of a round." }, 
+    { id: 'colereValar', t_fr: "Colère des Valar", t_en: "Wrath of the Valar", d_fr: "Remporter le duel en ayant subi 3 Déroutes.", d_en: "Win the duel after suffering 3 Routs." }, 
+    { id: 'pariIsildur', t_fr: "Pari d'Isildur", t_en: "Isildur's Gamble", d_fr: "Marquer 35 Lieues ou plus en un seul lancer.", d_en: "Score 35+ Leagues in a single roll." }, 
+    { id: 'voieElfes', t_fr: "Voie des Elfes", t_en: "Way of the Elves", d_fr: "Remporter une manche sans subir aucune Déroute.", d_en: "Win a round without suffering any Rout." }, 
+    { id: 'fleauOmbre', t_fr: "Fléau de l'Ombre", t_en: "Shadow Bane", d_fr: "Purifier 3 Embuscades dans le même duel.", d_en: "Purify 3 Ambushes in the same duel." }, 
+    { id: 'marcheurNuit', t_fr: "Marcheur de Nuit", t_en: "Night Walker", d_fr: "Remporter 5 duels consécutifs.", d_en: "Win 5 consecutive duels." }, 
+    { id: 'pillardGobelin', t_fr: "Pillard Gobelin", t_en: "Goblin Looter", d_fr: "Vaincre Brag sans qu'il ne marque le moindre point.", d_en: "Defeat Brag without him scoring a single point." }, 
+    { id: 'negociateurNain', t_fr: "Négociateur Nain", t_en: "Dwarven Negotiator", d_fr: "Vaincre Zâmin avec 1 Vie restante et moins de 3 Espoirs.", d_en: "Defeat Zâmin with 1 Life left and less than 3 Hope." }, 
+    { id: 'tueurKael', t_fr: "Résistance", t_en: "Resistance", d_fr: "Vaincre Kael à 5 reprises au total.", d_en: "Defeat Kael 5 times in total." }, 
+    { id: 'enigmeObscurite', t_fr: "Énigme dans l'Obscurité", t_en: "Riddle in the Dark", d_fr: "Vaincre L'Étranger à 3 reprises au total.", d_en: "Defeat The Stranger 3 times in total." }, 
+    { id: 'maitreFondcombe', t_fr: "Maître de Fondcombe", t_en: "Master of Rivendell", d_fr: "Obtenir un Succès Magistral (trois '6' d'un coup).", d_en: "Obtain a Masterful Success (three '6's at once)." }, 
+    { id: 'maledictionAnneau', t_fr: "Malédiction de l'Anneau", t_en: "Curse of the Ring", d_fr: "Mourir de l'Ombre alors que le risque d'échec était de 90%.", d_en: "Die from Shadow when the risk was 90%." }, 
+    { id: 'bravoureHobbit', t_fr: "Bravoure Hobbit", t_en: "Hobbit Bravery", d_fr: "Utiliser la Boussole 3 fois et gagner le duel.", d_en: "Use the Compass 3 times and win the duel." }, 
+    { id: 'heritierElendil', t_fr: "Héritier d'Elendil", t_en: "Heir of Elendil", d_fr: "Acheter un objet valant 5000 Éclats ou plus au marché.", d_en: "Buy an item worth 5000 Shards or more at the market." }, 
+    { id: 'tueurBalrog', t_fr: "Tueur de Balrog", t_en: "Balrog Slayer", d_fr: "Parcourir un total de 50 000 Lieues.", d_en: "Travel a total of 50,000 Leagues." }, 
+    { id: 'ombreMordor', t_fr: "Ombre du Mordor", t_en: "Shadow of Mordor", d_fr: "Jouer 100 parties.", d_en: "Play 100 matches." }, 
+    { id: 'retourRoi', t_fr: "Le Retour du Roi", t_en: "Return of the King", d_fr: "Atteindre le Niveau 40.", d_en: "Reach Level 40." }, 
+    { id: 'seigneurOuest', t_fr: "Seigneur de l'Ouest", t_en: "Lord of the West", d_fr: "Atteindre le Niveau 50.", d_en: "Reach Level 50." }
 ];
 
 function checkAchievements() {
@@ -1062,30 +1080,23 @@ function switchArsenalTab(tabName) {
         let html = ''; achievementsData.forEach(a => { let u = playerProfile.achievements[a.id]; let achTitle = currentLang === 'fr' ? a.t_fr : a.t_en; let achDesc = currentLang === 'fr' ? a.d_fr : a.d_en; html += `<div class="achiev-item ${u ? 'unlocked' : ''}"><h3>${achTitle} ${u ? '✔️' : '🔒'}</h3><p>${achDesc}</p></div>`; }); area.innerHTML = html;
     } else if (tabName === 'contrats') {
         refreshContracts(); 
-        
         let html = `<div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px; font-size: 13px; color: #ccc; line-height: 1.4; font-style: italic;">${t('ui_contract_desc')}</div>`;
-        
-        let gamesReq = 3;
-        let played = playerProfile.stats.gamesSinceShuffle || 0;
-        let canShuffle = played >= gamesReq;
-        let remain = Math.max(0, gamesReq - played);
+        let gamesReq = 3; let played = playerProfile.stats.gamesSinceShuffle || 0; let canShuffle = played >= gamesReq; let remain = Math.max(0, gamesReq - played);
         let btnText = canShuffle ? t('ui_btn_shuffle_ready') : t('ui_btn_shuffle_wait', {val: remain});
         let btnStyle = canShuffle ? "border-color: var(--gold); color: var(--gold); background: #111; padding: 10px; width: 100%; border-radius: 4px; font-family:'Oswald', sans-serif; text-transform: uppercase;" : "border-color: #444; color: #666; background: #111; padding: 10px; width: 100%; border-radius: 4px; font-family:'Oswald', sans-serif; text-transform: uppercase; cursor: not-allowed;";
-        
         html += `<div style="text-align: center; margin-bottom: 20px;"><button onclick="shuffleContracts()" style="${btnStyle}" ${!canShuffle ? 'disabled' : ''}>🔄 ${btnText}</button></div>`;
         
         html += `<div class="arsenal-grid">`;
         playerProfile.activeContracts.forEach(cId => {
             let contract = contractsPool.find(c => c.id === cId);
             if (contract) { 
-                let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; 
-                let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
+                let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
                 html += `
                 <div class="arsenal-item" style="border-color:#555; background:rgba(0,0,0,0.4); text-align: left; padding: 15px;">
                     <h3 style="color:var(--gold); margin-top:0; font-size: 16px;">${cTitle}</h3>
                     <p style="font-size:12px; color:#ccc; min-height: 40px; margin: 10px 0;">${cDesc}</p>
-                    <div style="font-family:'Oswald', sans-serif; font-size:16px; color:var(--corruption); border-top: 1px solid #333; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                        <span>${t('ui_contract_reward')}</span>
+                    <div style="font-family:'Oswald', sans-serif; font-size:16px; color:var(--corruption); border-top: 1px solid #333; padding-top: 10px; text-align: center;">
+                        <span>${t('ui_contract_reward')}&nbsp;</span>
                         <span style="font-weight: bold;">${contract.reward} ✦</span>
                     </div>
                 </div>`; 
@@ -1095,14 +1106,11 @@ function switchArsenalTab(tabName) {
 
         if (playerProfile.completedContracts && playerProfile.completedContracts.length > 0) {
             let titleText = currentLang === 'fr' ? `Traques Accomplies (${playerProfile.completedContracts.length}/50)` : `Completed Hunts (${playerProfile.completedContracts.length}/50)`;
-            html += `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px; margin-top:30px;">${titleText}</h3>`;
-            html += `<div class="arsenal-grid" style="opacity: 0.5;">`; 
-            
+            html += `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px; margin-top:30px;">${titleText}</h3><div class="arsenal-grid" style="opacity: 0.5;">`; 
             playerProfile.completedContracts.forEach(cId => {
                 let contract = contractsPool.find(c => c.id === cId);
                 if (contract) { 
-                    let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; 
-                    let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
+                    let cTitle = currentLang === 'fr' ? contract.t_fr : contract.t_en; let cDesc = currentLang === 'fr' ? contract.d_fr : contract.d_en;
                     html += `
                     <div class="arsenal-item" style="border-color:#333; background:rgba(0,0,0,0.2); text-align: left; padding: 15px;">
                         <h3 style="color:#aaa; margin-top:0; font-size: 16px;">✔️ ${cTitle}</h3>
@@ -1112,7 +1120,6 @@ function switchArsenalTab(tabName) {
             });
             html += `</div>`;
         }
-
         area.innerHTML = html;
     } else if (tabName === 'vestiaire') {
         const renderEq = (title, key, dict) => { let equipKey = key; if (key === 'boards') equipKey = 'board'; if (key === 'frames') equipKey = 'frame'; let html = `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px;">${title}</h3><div class="arsenal-grid">`; for(let item in dict) { let isMarketItem = dict[item].price > 0; let itemName = currentLang === 'fr' ? dict[item].name_fr : dict[item].name_en; if(playerProfile.inventory[key].includes(item)) { let isEq = playerProfile.equipped[equipKey] === item; html += `<div class="arsenal-item ${isEq ? 'equipped' : ''}"><h3>${itemName}</h3><button onclick="equipItem('${equipKey}', '${item}')">${isEq ? t('ui_btn_equipped') : t('ui_btn_equip')}</button></div>`; } else if (!isMarketItem) { html += `<div class="arsenal-item" style="opacity:0.4; border-color:#222; background: transparent;"><h3 style="color:#555;">???</h3><p style="margin-top:5px;">${t('ui_locked_lvl')}</p></div>`; } } html += `</div>`; return html; };
