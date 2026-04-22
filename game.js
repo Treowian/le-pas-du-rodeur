@@ -814,7 +814,31 @@ async function corruptEnemyDie() {
     document.getElementById(`die-${idx}`).style.boxShadow = ""; updateDialogue('dirhael', 'shadow', 'ui-hero-dialogue'); document.getElementById('turn-controls').innerHTML = ''; 
     await triggerTutorial('seenShadow', 'tuto_shadow');
 
-    if (gameState.playerShadow >= 4) { let deathChance = Math.min((gameState.playerShadow - 3) * 25, 90); let roll = Math.random() * 100; if (roll < deathChance) { if(deathChance >= 90 && !playerProfile.achievements.maledictionAnneau) { playerProfile.achievements.maledictionAnneau = true; saveProfile(); } setTimeout(() => { showEndScreen(t('end_shadow_title'), t('end_shadow_msg', {chance: deathChance}), t('end_shadow_btn'), () => { exitDuel(); }, "var(--blood)"); }, 1500); return; } else { playerProfile.stats.survivedDeathRoll = true; setTimeout(() => { updateStatus(t('status_shadow_survive', {chance: deathChance}), "var(--blood)"); setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 2000); }, 1500); return; } } setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 1500);
+    if (gameState.playerShadow >= 4) { 
+        let deathChance = Math.min((gameState.playerShadow - 3) * 25, 90); 
+        let roll = Math.random() * 100; 
+        if (roll < deathChance) { 
+            if(deathChance >= 90 && !playerProfile.achievements.maledictionAnneau) { playerProfile.achievements.maledictionAnneau = true; saveProfile(); } 
+            
+            // NOUVELLE SANCTION : L'Ombre tue sur le coup (Perte instantanée de la manche)
+            setTimeout(() => {
+                audioManager.playSFX('audio/hit.mp3', 0.25);
+                
+                // La mort est absolue : on vide toutes les vies d'un coup
+                gameState.playerLives = 0; 
+                updateLivesUI();
+                
+                let shadowHitMsg = currentLang === 'fr' ? "L'Ombre vous a consumé ! Manche perdue." : "The Shadow consumed you! Round lost.";
+                updateStatus(shadowHitMsg, "var(--blood)");
+                
+                // L'ennemi remporte la manche
+                playerProfile.stats.currentWinStreak = 0;
+                saveProfile();
+                setTimeout(() => { resolveRoundWinner('enemy'); }, 2000);
+                
+            }, 1500);
+            return; 
+        } else { playerProfile.stats.survivedDeathRoll = true; setTimeout(() => { updateStatus(t('status_shadow_survive', {chance: deathChance}), "var(--blood)"); setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 2000); }, 1500); return; } } setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 1500);
 }
 
 function ignoreEnemyDie() { document.getElementById(`die-${gameState.currentEnemyTargetIdx}`).style.boxShadow = ""; document.getElementById('turn-controls').innerHTML = ''; resumeEnemyRoll(gameState.currentEnemyRolledIndices); }
