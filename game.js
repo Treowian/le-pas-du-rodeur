@@ -67,7 +67,7 @@ let gameState = {
     currentModifier: 'normal',
     diceValues: [0, 0, 0, 0, 0], diceStates: ['idle', 'idle', 'idle', 'idle', 'idle'], isRolling: false, hasKeptDieThisRoll: false, pendingDeroute: false, heroRoutLastTurn: false,
     currentEnemyRolledIndices: [], currentHeroRolledIndices: [], currentEnemyTargetIdx: -1,
-    matchStats: { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false, exact80Round: false, enemyLostRoundWithZero: false }
+    matchStats: { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false, exact80Round: false, enemyLostRoundWithZero: false, enemyHurtByAcharnement: false, survivedDeathRoll: false }
 };
 
 let toastTimeout;
@@ -135,7 +135,8 @@ const contractsPool = [
     { id: 'c45', t_fr: "Le Mur de Fer", t_en: "Iron Wall", d_fr: "Contrez Kael avec Elbereth et gagnez.", d_en: "Counter Kael with Elbereth and win.", reward: 150 },
     { id: 'c46', t_fr: "Le Tacticien", t_en: "The Tactician", d_fr: "Gagnez en ayant utilisé Purifier, Boussole et Elbereth.", d_en: "Win having used Purify, Compass and Elbereth.", reward: 200 },
     { id: 'c47', t_fr: "L'Éclair Ténébreux", t_en: "Dark Lightning", d_fr: "Corrompez un dé au tout 1er tour.", d_en: "Corrupt a die on the very 1st turn.", reward: 100 },
-    { id: 'c48', t_fr: "La Colère Aveugle", t_en: "Blind Anger", d_fr: "L'ennemi atteint 10 Haine sans pouvoir attaquer.", d_en: "Enemy hits 10 Hate without attacking.", reward: 250 },
+    // FIX CONTRAT COLÈRE AVEUGLE
+    { id: 'c48', t_fr: "La Colère Aveugle", t_en: "Blind Anger", d_fr: "Remportez le duel après que l'ennemi s'est blessé lui-même lors d'un Acharnement.", d_en: "Win the duel after the enemy hurt itself during a Desperate Strike.", reward: 250 },
     { id: 'c49', t_fr: "Le Joueur", t_en: "The Gambler", d_fr: "Subissez une Impasse avec 20+ Lieues en attente ce tour-ci.", d_en: "Suffer a Dead End with 20+ pending Leagues.", reward: 100 },
     { id: 'c50', t_fr: "Pression Constante", t_en: "Constant Pressure", d_fr: "L'ennemi subit 2 Déroutes dans le même duel.", d_en: "Enemy suffers 2 Routs in the same duel.", reward: 150 }
 ];
@@ -166,7 +167,7 @@ window.shuffleContracts = function() {
 function evaluateContracts(matchWon) {
     if (!playerProfile.activeContracts) return [];
     let completed = []; let ms = gameState.matchStats;
-    const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50'];
+    const requiresWin = ['c1','c2','c3','c4','c5','c6','c7','c8','c12','c13','c14','c16','c17','c18','c23','c24','c25','c27','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c45','c46','c50', 'c48'];
 
     playerProfile.activeContracts.forEach(cId => {
         if (!matchWon && requiresWin.includes(cId)) return;
@@ -203,7 +204,8 @@ function evaluateContracts(matchWon) {
         if(cId === 'c30' && ms.corruptedSix) isDone = true;
         if(cId === 'c31' && ms.devouredAdvance) isDone = true;
         if(cId === 'c32' && gameState.playerShadow === 3) isDone = true;
-        if(cId === 'c33' && playerProfile.stats.survivedDeathRoll) { isDone = true; playerProfile.stats.survivedDeathRoll = false; }
+        // FIX EXPLOIT CONTRAT TROMPE-LA-MORT
+        if(cId === 'c33' && ms.survivedDeathRoll) { isDone = true; }
         if(cId === 'c34' && (gameState.currentModifier === 'brouillard' || gameState.currentModifier === 'nuit' || gameState.currentModifier === 'froid')) isDone = true;
         if(cId === 'c39' && gameState.currentModifier === 'normal') isDone = true;
         if(cId === 'c40' && ms.totalTurnsThisMatch >= 15) isDone = true;
@@ -214,7 +216,8 @@ function evaluateContracts(matchWon) {
         if(cId === 'c45' && ms.elberethVsKaelAndWon) isDone = true;
         if(cId === 'c46' && ms.compassUsedThisMatch > 0 && ms.purificationsThisMatch > 0 && ms.defendsUsed > 0) isDone = true;
         if(cId === 'c47' && ms.firstTurnCorrupt) isDone = true;
-        if(cId === 'c48' && ms.enemyReachedMaxHate && !ms.enemyAttackedAfterMaxHate) isDone = true;
+        // FIX CONTRAT COLÈRE AVEUGLE
+        if(cId === 'c48' && ms.enemyHurtByAcharnement) isDone = true;
         if(cId === 'c49' && ms.rerollWith20PlusAndImpasse) isDone = true;
         if(cId === 'c50' && ms.deroutesThisMatch >= 2) isDone = true;
 
@@ -479,7 +482,7 @@ function enterDuel(id, fullName) {
     
     playerProfile.stats.gamesSinceShuffle = (playerProfile.stats.gamesSinceShuffle || 0) + 1;
 
-    gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false, exact80Round: false, enemyLostRoundWithZero: false };
+    gameState.matchStats = { turnsPlayedThisRound: 0, consecutiveShadowMaxTurns: 0, defendsUsed: 0, shadowsUsedThisRound: 0, firstRoundLost: false, deroutesThisMatch: 0, purificationsThisMatch: 0, compassUsedThisMatch: 0, shadowsUsedThisMatch: 0, highestTurnScoreThisMatch: 0, totalTurnsThisMatch: 0, bankedUnder15: false, enemyZeroPointRound: false, acceptedImpasseAndWon: false, sacrificedSix: false, devouredAdvance: false, corruptedSix: false, enemyMasterfulFailure: false, purifyAndShadowSameTurn: false, purifyUsedThisTurn: false, shadowUsedThisTurn: false, rerollWith20PlusAndImpasse: false, elberethVsKaelAndWon: false, firstTurnCorrupt: false, enemyReachedMaxHate: false, enemyAttackedAfterMaxHate: false, exact80Round: false, enemyLostRoundWithZero: false, enemyHurtByAcharnement: false, survivedDeathRoll: false };
     
     const modifiers = ['normal', 'brouillard', 'nuit', 'aube', 'froid', 'clairiere'];
     gameState.currentModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
@@ -636,7 +639,8 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
                     else if (allScoring.length > 0 && Math.random() < 0.33) { targetIdx = allScoring[0]; } 
                 } 
                 else if (activeAI === 'brag') { if (foursAndFives.length > 0) { targetIdx = foursAndFives[0]; } else if (tens.length > 0 && neutrals.length === 0) { targetIdx = tens[0]; } } 
-                else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[b] - gameState.diceValues[a]); targetIdx = allScoring[0]; } }
+                // FIX ZÂMIN : Tri a-b pour cibler le PLUS PETIT dé (la taxe), et non le plus gros
+                else if (activeAI === 'zamin') { if (allScoring.length === 1 && availableIndices.length <= 4) { targetIdx = allScoring[0]; } else if (neutrals.length > 0) { targetIdx = neutrals[0]; } else if (allScoring.length > 0) { allScoring.sort((a,b) => gameState.diceValues[a] - gameState.diceValues[b]); targetIdx = allScoring[0]; } }
             
             // --- PHASE 2 : L'ACHARNEMENT (Bouton Panique avec Anticipation) ---
             } else if (gameState.enemyHate < sabotageCost && tens.length > 0) {
@@ -663,6 +667,9 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
                     await new Promise(r => setTimeout(r, 1500));
 
                     if (roll < failChance) {
+                        // FIX CONTRAT COLÈRE AVEUGLE : On valide que l'ennemi s'est blessé
+                        gameState.matchStats.enemyHurtByAcharnement = true; 
+                        
                         if (gameState.enemyScore >= 15) {
                             gameState.enemyScore -= 15;
                             updateStatus(t('status_acharnement_fail_score'), "var(--gold)");
@@ -675,7 +682,9 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
                         targetIdx = -1; 
                     } else { activeAI = 'kael'; }
                 } else {
-                    gameState.enemyHate -= sabotageCost; updateHaineUI(); gameState.matchStats.enemyAttackedAfterMaxHate = true;
+                    gameState.enemyHate -= sabotageCost; updateHaineUI(); 
+                    // FIX CONTRAT COLÈRE AVEUGLE (L'ancienne version, on le garde au cas où pour d'autres stats, mais on ne valide l'attaque que SI la Haine était au Max)
+                    if (gameState.matchStats.enemyReachedMaxHate) { gameState.matchStats.enemyAttackedAfterMaxHate = true; }
                 }
 
                 if (targetIdx !== -1) {
@@ -763,7 +772,14 @@ function initiateCamp() {
     if (gameState.activePlayer !== 'hero') return; 
     const btnRoll = document.getElementById('btn-roll'); const btnStop = document.getElementById('btn-stop'); if (btnRoll) btnRoll.disabled = true; if (btnStop) btnStop.disabled = true;
     let keptSixes = gameState.diceStates.reduce((acc, state, idx) => { if (state === 'kept' && gameState.diceValues[idx] === 6) acc.push(idx); return acc; }, []);
-    if (keptSixes.length > 0 && gameState.playerEspoir <= 8) { updateStatus(t('status_camp_choice'), "var(--gold)"); document.getElementById('turn-controls').innerHTML = `<button onclick="executeCampSacrifice(${keptSixes[0]})" style="border-color: var(--gold); color: var(--gold);">${t('btn_camp_sacrifice')}</button><button onclick="executeCampNormal()">${t('btn_camp_normal')}</button>`; } else { bankScore(); }
+    
+    // FIX MÉTÉO NUIT : Le bouton calcule intelligemment s'il y a un réel intérêt à sacrifier selon le maximum d'Espoir autorisé
+    let maxEspoir = (gameState.currentModifier === 'nuit') ? 5 : 10;
+    
+    if (keptSixes.length > 0 && gameState.playerEspoir < maxEspoir) { 
+        updateStatus(t('status_camp_choice'), "var(--gold)"); 
+        document.getElementById('turn-controls').innerHTML = `<button onclick="executeCampSacrifice(${keptSixes[0]})" style="border-color: var(--gold); color: var(--gold);">${t('btn_camp_sacrifice')}</button><button onclick="executeCampNormal()">${t('btn_camp_normal')}</button>`; 
+    } else { bankScore(); }
 }
 
 function executeCampNormal() { document.getElementById('turn-controls').innerHTML = ''; bankScore(); }
@@ -838,7 +854,12 @@ async function corruptEnemyDie() {
                 
             }, 1500);
             return; 
-        } else { playerProfile.stats.survivedDeathRoll = true; setTimeout(() => { updateStatus(t('status_shadow_survive', {chance: deathChance}), "var(--blood)"); setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 2000); }, 1500); return; } } setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 1500);
+        } else { 
+            // FIX EXPLOIT CONTRAT : L'information reste cloisonnée à ce match
+            gameState.matchStats.survivedDeathRoll = true; 
+            setTimeout(() => { updateStatus(t('status_shadow_survive', {chance: deathChance}), "var(--blood)"); setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 2000); }, 1500); return; 
+        } 
+    } setTimeout(() => { resumeEnemyRoll(gameState.currentEnemyRolledIndices); }, 1500);
 }
 
 function ignoreEnemyDie() { document.getElementById(`die-${gameState.currentEnemyTargetIdx}`).style.boxShadow = ""; document.getElementById('turn-controls').innerHTML = ''; resumeEnemyRoll(gameState.currentEnemyRolledIndices); }
@@ -937,6 +958,10 @@ function resolveRoundWinner(winner) {
     if (winner === 'hero') {
         if (gameState.enemyScore === 0) gameState.matchStats.enemyLostRoundWithZero = true;
         gameState.heroRounds++; updateGlobalUI(); addXP(Math.floor(15 * mult)); 
+        
+        // FIX HAUTS FAITS (Númenor) : On vérifie les exploits à la fin de CHAQUE manche avant que les stats ne soient remises à zéro !
+        checkAchievements();
+
         if (gameState.heroRounds >= 2) { 
             playerProfile.stats.gamesWon++; 
             let eclatsEarned = Math.floor(10 * mult); playerProfile.eclatsOmbre += eclatsEarned; 
@@ -963,6 +988,10 @@ function resolveRoundWinner(winner) {
     } else {
         gameState.enemyRounds++; updateGlobalUI();
         if(gameState.heroRounds === 0 && gameState.enemyRounds === 1) gameState.matchStats.firstRoundLost = true;
+        
+        // Au cas où un Haut Fait puisse se déclencher même après avoir perdu la manche (pour la Ruse de Smaug par exemple)
+        checkAchievements();
+
         if (gameState.enemyRounds >= 2) { 
             let eclatsConsolation = Math.floor(3 * mult); playerProfile.eclatsOmbre += eclatsConsolation; playerProfile.stats.currentWinStreak = 0; 
             
@@ -986,7 +1015,7 @@ function applyReward(choice) {
     document.getElementById('reward-modal').style.display = 'none'; 
     if (choice === 'initiative') { 
         startNewRound(false, 'hero'); 
-    } else if (choice === 'shortcut') { 
+    } else if (choice === 'shortcut' || choice === 'vie') { 
         startNewRound(false, 'enemy'); 
         gameState.playerScore = 15; 
         updateGlobalUI();
@@ -1054,7 +1083,8 @@ function checkAchievements() {
     if(!a.flammeUdun && s.routsSurvived >= 1) { a.flammeUdun = true; unlockItem('dice', 'moria'); newlyUnlocked = true; }
     if(!a.heritageNumenor && ms.turnsPlayedThisRound <= 2 && gameState.playerScore >= 80) { a.heritageNumenor = true; unlockItem('titles', 'title_bloodwest'); unlockItem('dice', 'numenor'); newlyUnlocked = true; }
     if(!a.maliceMorgoth && ms.shadowsUsedThisRound >= 5) { a.maliceMorgoth = true; newlyUnlocked = true; }
-    if(!a.ruseSmaug && gameState.enemyScore >= 60 && gameState.enemyLives === 0 && (gameState.currentEnemyId==='brag'||gameState.currentEnemyId==='zamin')) { a.ruseSmaug = true; unlockItem('titles', 'title_thiefshadow'); newlyUnlocked = true; }
+    // FIX RUSE DE SMAUG : On calcule la vraie distance (+ de 60 d'avance) au lieu de regarder le score ennemi
+    if(!a.ruseSmaug && (gameState.playerScore - gameState.enemyScore >= 60) && gameState.enemyLives === 0 && (gameState.currentEnemyId==='brag'||gameState.currentEnemyId==='zamin')) { a.ruseSmaug = true; unlockItem('titles', 'title_thiefshadow'); newlyUnlocked = true; }
     if(!a.enduranceDunedain && ms.defendsUsed === 0 && (gameState.currentEnemyId==='kael'||gameState.currentEnemyId==='letranger') && gameState.heroRounds === 2) { a.enduranceDunedain = true; unlockItem('frames', 'star'); newlyUnlocked = true; }
     if(!a.fuiteComte && s.firstTurnRouts > 0) { a.fuiteComte = true; unlockItem('titles', 'title_hobbit'); newlyUnlocked = true; }
     if(!a.colereValar && ms.deroutesThisMatch >= 3 && gameState.heroRounds === 2) { a.colereValar = true; newlyUnlocked = true; }
