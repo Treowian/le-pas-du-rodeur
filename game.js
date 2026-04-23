@@ -597,6 +597,12 @@ async function evaluateHeroRoll(rolledIndices, isReevaluation = false) {
             rolledIndices.forEach(idx => { if(gameState.diceValues[idx] >= 4) { gameState.diceStates[idx] = 'kept'; document.getElementById(`wrap-${idx}`).classList.add('wrap-kept'); } }); recalculateScore(); let gained = gameState.turnScore; gameState.playerScore += gained; updateGlobalUI(); playerProfile.stats.totalLeagues += gained; saveProfile(); addXP(10);
             let currentSeuil = (gameState.currentModifier === 'brouillard') ? 8 : SEUIL_HAINE; if (gained >= currentSeuil) { gameState.enemyHate = Math.min(10, gameState.enemyHate + 1); updateHaineUI(); }
             if(!playerProfile.achievements.maitreFondcombe) { playerProfile.achievements.maitreFondcombe = true; saveProfile(); }
+            
+            // NOUVEAU FIX : On enregistre ce record pour les contrats (L'Insatiable / Le Sprinteur) !
+            if (gained > gameState.matchStats.highestTurnScoreThisMatch) {
+                gameState.matchStats.highestTurnScoreThisMatch = gained;
+            }
+
             let actionCallback = (gameState.playerScore >= gameState.targetScore) ? () => { resolveRoundWinner('hero'); } : () => { switchTurn(true); }; 
             showEventScreen(t('ev_pas_title'), t('ev_pas_msg', {val: gained}), t('ev_pas_btn'), actionCallback, "var(--gold)"); return; 
         }
@@ -759,7 +765,15 @@ async function toggleKeepDie(index) {
         } else { if (gameState.pendingDeroute) { updateStatus(t('status_deroute_forced'), "var(--blood)"); document.getElementById('turn-controls').innerHTML = `<button onclick="acceptDeroute()">${t('btn_suffer')}</button>`; } else { updateStatus(t('status_cannot_purify'), "var(--blood)"); } return; }
     }
     if (val >= 4 && state !== 'locked' && state !== 'sacrificed') {
-        if (state === 'idle') { gameState.diceStates[index] = 'kept'; wrapEl.classList.add('wrap-kept'); gameState.hasKeptDieThisRoll = true; } else if (state === 'kept') { gameState.diceStates[index] = 'idle'; wrapEl.classList.remove('wrap-kept'); }
+        // SÉCURITÉ 1 : Impossible de toucher à un dé mis de côté lors d'un lancer précédent
+        if (!gameState.currentHeroRolledIndices.includes(index)) return;
+
+        if (state === 'idle') { gameState.diceStates[index] = 'kept'; wrapEl.classList.add('wrap-kept'); } 
+        else if (state === 'kept') { gameState.diceStates[index] = 'idle'; wrapEl.classList.remove('wrap-kept'); }
+        
+        // SÉCURITÉ 2 (FIX EXPLOIT) : On vérifie dynamiquement si au moins un dé fraîchement lancé est gardé
+        gameState.hasKeptDieThisRoll = gameState.currentHeroRolledIndices.some(idx => gameState.diceStates[idx] === 'kept');
+        
         let remainingLocked = gameState.diceStates.filter(s => s === 'locked').length; recalculateScore(); if (remainingLocked >= 2) { document.getElementById('btn-roll').disabled = true; document.getElementById('btn-stop').disabled = true; }
     }
 }
