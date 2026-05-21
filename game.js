@@ -1173,7 +1173,8 @@ function switchArsenalTab(tabName) {
         html += `</div>`; 
 
         if (playerProfile.completedContracts && playerProfile.completedContracts.length > 0) {
-            let titleText = currentLang === 'fr' ? `Traques Accomplies (${playerProfile.completedContracts.length}/50)` : `Completed Hunts (${playerProfile.completedContracts.length}/50)`;
+            let totalContracts = contractsPool.length;
+            let titleText = currentLang === 'fr' ? `Traques Accomplies (${playerProfile.completedContracts.length}/${totalContracts})` : `Completed Hunts (${playerProfile.completedContracts.length}/${totalContracts})`;
             html += `<h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px; margin-top:30px;">${titleText}</h3><div class="arsenal-grid" style="opacity: 0.5;">`; 
             playerProfile.completedContracts.forEach(cId => {
                 let contract = contractsPool.find(c => c.id === cId);
